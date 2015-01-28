@@ -1,4 +1,19 @@
-install the following npm modules globally:
+INSTALL
 
-npm install -g yo grunt-cli generator-webapp nodemon express-generator express jshint  generator-angular-fullstack less
+I've installed this pretty easily on a mac..
+
+You'll need the following. Find their installation instructions on their websites:
+
+npm
+(home)brew 
+bower
+
+You can OPTIONALLY install these global modules for easier development:
+npm install -g grunt-cli nodemon express express-generator less jshint
+
+I've used mongodb as database:
 brew install mongodb && mongod
+
+And finally install the app normally:
+npm install
+bower install
