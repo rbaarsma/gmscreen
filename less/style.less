@@ -1,0 +1,40 @@
+/*
+ * GM Screen Main Stylesheet
+ *
+ * only edit .less file -- will automatically be converted by nodejs
+ *
+ * @author: Rein Baarsma <rein@solidwebcode.com>
+ */
+
+@import "/../bower_components/bootstrap/less/bootstrap";
+
+@side-background: #990000;
+@main-background: white;
+
+@padding: 20px;
+
+gm-side {
+  .make-md-column(3);
+  background-color: @side-background;
+  padding: @padding;
+  color: white;
+  border-left: 3px solid black;
+}
+
+gm-main {
+  .make-md-column(9);
+  background-color: @main-background;
+  padding: @padding;
+}
+
+gm-container {
+  .container-fluid;
+  height: 100%;
+  min-height: 100%;
+}
+
+gm-container-row {
+  .row;
+  height: 100%;
+  background-color: green;
+}

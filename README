@@ -1,0 +1,4 @@
+install the following npm modules globally:
+
+npm install -g yo grunt-cli generator-webapp nodemon express-generator express jshint  generator-angular-fullstack less
+brew install mongodb && mongod
