@@ -6,10 +6,10 @@ var NPC = require('../models/npc.js');
 
 /* GET NPC listing. */
 router.get('/', function(req, res, next) {
-  NPC.find(function (err, npcs) {
-      if (err) return next(err);
-      res.json(npcs);
-  })
+    NPC.find(function (err, npcs) {
+        if (err) return next(err);
+        res.json(npcs);
+    })
 });
 
 /* POST new NPC */
@@ -36,7 +36,7 @@ router.post('/', function (req, res, next) {
     });
 });
 
-/* DELETE NPC by id */
+/* DELETE by id */
 router.delete('/:id', function(req, res, next) {
     NPC.findByIdAndRemove(req.params.id, req.body, function (err, post) {
         if (err) return next(err);

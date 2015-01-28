@@ -34,6 +34,7 @@ app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use('/less', expressLess(path.join(__dirname, '/less'), {debug: app.get('env') == 'development', compress: app.get('env') != 'development'}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(path.join(__dirname, '/bower_components')));
+app.use('/fonts',  express.static(path.join(__dirname, '/bower_components/bootstrap/fonts')));
 
 app.use('/', routes);
 app.use('/users', users);
