@@ -11,7 +11,7 @@ angular.module('gm', [])
         return $http.get('/npcs');
     }])
 
-    .directive('gmSide', function ($http) {
+    .directive('gmSide', function () {
        return {
            'templateUrl': 'partial/side.html',
            'controller': ['$http', 'NPCs', function($http, NPCs) {
@@ -56,5 +56,29 @@ angular.module('gm', [])
            }],
            'controllerAs': 'side'
        };
+    })
+    .directive('gmNpc', function () {
+        return {
+            link: function (scope, element, attrs) {
+                $(element).draggable({
+                    connectToSortable: 'gm-main',
+                    helper: 'clone',
+                    revert: 'invalid',
+                    stop: function (event, ui) {
+                        var npc = scope.$parent.side.npcs[scope.$index];
+                        ui.helper[0].innerHTML = npc;
+                    }
+                });
+            }
+        };
+    })
+    .directive('gmMain', function () {
+        return {
+            link: function (scope, element, attrs) {
+                $(element).sortable({
+                    'connectWith': "gm-npc"
+                });
+            }
+        }
     })
 ;
