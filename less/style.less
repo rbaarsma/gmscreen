@@ -27,6 +27,17 @@ input {
   color: #aaa;
 }
 
+npc-item {
+  display:block;
+}
+
+.npc-panel {
+  float: left;
+  width: 300px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
 gm-side {
   .make-md-column(3);
   background-color: @side-background;
@@ -35,10 +46,11 @@ gm-side {
   border-left: 3px solid black;
 }
 
-gm-main {
+gm-panels {
   .make-md-column(9);
   background-color: @main-background;
   padding: @padding;
+  border:1px dotted black;
 }
 
 gm-container {
@@ -52,3 +64,12 @@ gm-container-row {
   height: 100%;
   background-color: green;
 }
+
+.ui-draggable-dragging {
+  .panel;
+  .panel-primary;
+  border-style: dotted;
+  width: 300px;
+  height: 200px;
+}
+.ui-draggable-dragging button { display: none; }

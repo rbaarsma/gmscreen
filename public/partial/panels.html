@@ -1,0 +1,15 @@
+<npc-panel class="npc-panel panel panel-primary" ng-repeat="npc in npcs" ng-show="npc.in_panel">
+    <div class="panel-heading">
+        <button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.remove($index)"><i class="glyphicon glyphicon-remove"></i></button>
+        <h3 class="panel-title">{{ npc.name }}</h3>
+    </div>
+    <div class="panel-body">
+        STR<br>
+        DEX<br>
+        CON<br>
+        INT<br>
+        WIS<br>
+        CHA<br>
+
+    </div>
+<npc-panel>

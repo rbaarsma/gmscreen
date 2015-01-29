@@ -1,13 +1,10 @@
-<gm-npc ng-repeat="npc in side.npcs">
-    <div ng-class="{ loading: npc.loading }" ng-hide="npc.panel">
-        name: {{ npc.name }}
-        <button class="btn-danger" ng-click="side.remove($index)"><i class="glyphicon glyphicon-remove"></i></button>
-    </div>
-    <div ng-show="npc.panel">
-        <h3>{{ npc.name }}</h3>
-    </div>
-</gm-npc>
+<npc-item ng-repeat="npc in npcs" ng-class="{ loading: sideCtrl.npc.loading }">
+    name: {{ npc.name }}
+    <button class="btn-danger" ng-click="sideCtrl.remove($index)"><i class="glyphicon glyphicon-remove"></i></button>
+    <button class="btn-success" ng-click="sideCtrl.addToPanel($index)"><i class="glyphicon glyphicon-plus-sign"></i></button>
+
+</npc-item>
 <form>
-    <input ng-model="side.name" placeholder="NPC Name" required>
-    <button ng-click="side.add()" >Add</button>
+    <input ng-model="sideCtrl.name" placeholder="NPC Name" required>
+    <button ng-click="sideCtrl.add()">Add</button>
 </form>
