@@ -45,7 +45,7 @@ angular.module('gm', [])
                 };
 
                 this.add = function (data) {
-                    NPCCollection.add({'name': self.name});
+                    NPCCollection.add({name: self.name});
                 };
 
                 this.addToPanel = function(index) {

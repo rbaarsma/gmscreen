@@ -29,7 +29,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 /* POST edit NPC by id */
-router.post('/:id', function (req, res, next) {
+router.patch('/:id', function (req, res, next) {
     NPC.findByIdAndUpdate(req.params.id, req.body, function (err, post) {
         if (err) return next(err);
         res.json(post);
@@ -43,5 +43,7 @@ router.delete('/:id', function(req, res, next) {
         res.json(post);
     });
 });
+
+
 
 module.exports = router;

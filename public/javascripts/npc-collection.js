@@ -12,7 +12,8 @@ var NPCCollection = function ($http, $rootScope) {
     this.request = function (url, method, data) {
         return $http({
             'method': method,
-            'url': url
+            'url': url,
+            'data': data
         }).error(function (data, status) {
             // TODO: show error flash or something
             console.log(data, status);
@@ -41,7 +42,7 @@ var NPCCollection = function ($http, $rootScope) {
 
         var npc = $rootScope.npcs[index];
 
-        return this.request('/npcs/' + npc._id, 'POST', npc)
+        return this.request('/npcs/' + npc._id, 'PATCH', npc)
             .then(function (data) {
                 $rootScope.npcs[index].loading = false;
                 console.log('npc updated');
@@ -52,15 +53,16 @@ var NPCCollection = function ($http, $rootScope) {
     // add single NPC
     this.add = function (data) {
         data.loading = true;
-        var index = $rootScope.npcs.push(npc);
-        return $http.request('/npcs', 'POST', npc)
+        var index = $rootScope.npcs.push(data);
+        console.log(data);
+        return this.request('/npcs', 'POST', data)
             .success(function (data) {
+                console.log(data);
                 data.loading = false;
                 $rootScope.npcs[index - 1] = data;
                 console.log('npc added');
             })
-            ;
-
+        ;
     };
 
     // remove single NPC
