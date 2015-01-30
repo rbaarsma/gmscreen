@@ -8,6 +8,11 @@
 var NPCCollection = function ($http, $rootScope) {
     var self=this;
 
+    self.CLASSES = [
+        {name: 'Barbarian', hd: 12},
+        {name: 'Fighter', hd: 10}
+    ];
+
     $rootScope.npcs = [];
     self.timeout = null;
     self.changed = {};
@@ -45,6 +50,9 @@ var NPCCollection = function ($http, $rootScope) {
         this.request('/npcs', 'GET')
             .success(function (data) {
                 $rootScope.npcs = data;
+                for (i in $rootScope.npcs) {
+                    self.recalculate($rootScope.npcs[i]);
+                }
             })
         ;
     };
@@ -64,18 +72,14 @@ var NPCCollection = function ($http, $rootScope) {
 
         // TODO: also add to window unload
         self.changed[npc._id] = npc;
-
-        console.log(npc.stats[2].stat);
     };
 
     // add single NPC
     this.add = function (data) {
         data.loading = true;
         var index = $rootScope.npcs.push(data);
-        console.log(data);
         return this.request('/npcs', 'POST', data)
             .success(function (data) {
-                console.log(data);
                 data.loading = false;
                 $rootScope.npcs[index - 1] = data;
                 console.log('npc added');
@@ -92,6 +96,33 @@ var NPCCollection = function ($http, $rootScope) {
                 console.log('npc removed');
             });
         ;
+    };
+
+    this.recalculate = function (npc) {
+        console.log(npc);
+
+        var conmod = npc.stats[2].mod,
+            dexmod = npc.stats[1].mod;
+
+        // calculate hp
+        npc.hp = 0;
+        for (i in npc.classes) {
+            for (j in self.CLASSES) {
+                if (self.CLASSES[j].name == npc.classes[i].name) {
+                    var hd = self.CLASSES[j].hd,
+                        hpplvl = Math.floor(hd/2)+ 1,
+                        lvl =  npc.classes[i].level
+                        ;
+
+                    npc.hp += i == 0 ? hd + (hpplvl * (lvl-1)) : hpplvl * lvl;
+                    npc.hp += conmod * lvl;
+                }
+            }
+        }
+
+        // calculate ac
+        npc.ac = 10 + dexmod;
+        npc.it = dexmod;
     };
 
     this.load();

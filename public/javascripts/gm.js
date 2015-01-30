@@ -22,22 +22,44 @@ angular.module('gm', [])
     .controller('PanelController', ['$http', '$rootScope', 'NPCCollection', function($http, $rootScope, NPCCollection) {
         var self=this;
 
-        this.templates = [
-            {'name': 'test'}
-        ];
+        self.classes = NPCCollection.CLASSES;
 
-        this.changeStat = function (npc, stat) {
-            stat.mod = Math.floor(stat.stat/2)-5;
+        this.addClass = function (npc) {
+            npc.classes.push({name: 'Barbarian', level: 1});
+            console.log(npc.classes);
             NPCCollection.update(npc);
         };
 
+        this.removeClass = function (npc, index) {
+            npc.classes.splice(index, 1);
+            NPCCollection.update(npc);
+        }
+
+        this.changeStat = function (npc, stat) {
+            stat.mod = Math.floor(stat.stat / 2) - 5;
+            NPCCollection.recalculate(npc, stat);
+            NPCCollection.update(npc);
+        };
+
+        this.changeLevel = function (npc) {
+            console.log('changelevel');
+            console.log(npc.classes);
+            var level = 0;
+            for (k in npc.classes) {
+                console.log(npc.classes[k].level);
+                level += npc.classes[k].level;
+            }
+            npc.lvl = level;
+            NPCCollection.recalculate(npc);
+            NPCCollection.update(npc);
+        }
+
         this.generate = function (index) {
-            console.log('generating');
-            $http.post('/npcs/'+ $rootScope.npcs[index]._id+'/generate', $rootScope.npcs[index])
+            var npc = $rootScope.npcs[index];
+            $http.post('/npcs/'+ npc._id+'/generate', npc)
                 .success(function(data) {
-                    console.log(data);
-                    console.log(data.stats);
                     $rootScope.npcs[index] = data;
+                    NPCCollection.recalculate($rootScope.npcs[index]);
                 })
             ;
         };
@@ -74,7 +96,7 @@ angular.module('gm', [])
                 };
 
                 this.add = function (data) {
-                    NPCCollection.add({name: self.name});
+                    NPCCollection.add({name: self.name, classes: [{name: 'Barbarian', level: 1}]});
                     self.name = "";
                 };
 

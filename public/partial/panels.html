@@ -5,19 +5,29 @@
     </div>
     <div class="panel-body">
         <form class="form-inline">
-            <div class="form-group">
-                <label for="npc-cr">CR</label>
-                <input id="npc-cr" class="form-control" type="number" ng-model="npc.cr">
+            <div ng-repeat="class in npc.classes">
+                <div class="form-group row">
+                    <label class="col-sm-2" for="npc-class{{ $index }}">Class</label>
+                    <select ng-change="panelCtrl.addClassHd(class, cls.hd)" class="col-sm-3" id="npc-class{{ $index }}" name="npc-class{{ $index }}" ng-model="class.name" ng-options="cls.name as cls.name for cls in panelCtrl.classes"></select>
+                    <input ng-change="panelCtrl.changeLevel(npc)" class="col-sm-3" type="number" min="1" max="20" ng-model="class.level">
+                    <button class="col-sm-2 btn btn-xs btn-success" ng-click="panelCtrl.addClass(npc)"><i class="glyphicon glyphicon-plus-sign"></i></button>
+                    <button class="col-sm-2 btn btn-xs btn-danger" ng-click="panelCtrl.removeClass(npc, $index)"><i class="glyphicon glyphicon-remove"></i></button>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="npc-template">Template</label>
-                <select ng-s id="npc-template" ng-model="npc.template" ng-options="template.name for template in panelCtrl.templates"></select>
-                <button ng-click="panelCtrl.generate($index)">Generate</button>
+            <div>
+                <button ng-click="panelCtrl.generate($index)">Randomize</button>
             </div>
+        </form>
+        <form class="form-inline">
             <div ng-repeat="stat in npc.stats">
                 {{ stat.name }}:
                 <input type="number" ng-change="panelCtrl.changeStat(npc, stat)" ng-model="npc.stats[$index].stat" value="{{ stat.stat }}">
                 ({{ stat.mod|modifier }})
+            </div>
+            <div>
+                HP: {{ npc.hp }}
+                AC: {{ npc.ac }}
+                IT: {{ npc.it }}
             </div>
         </form>
     </div>

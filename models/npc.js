@@ -4,6 +4,7 @@ var NPCSchema = new mongoose.Schema({
     name: String,
     in_panel: Boolean,
     stats: Array,
+    classes: Array,
     updated_at: { type: Date, default: Date.now }
 });
 
