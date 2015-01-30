@@ -11,12 +11,39 @@ angular.module('gm', [])
         return new NPCCollection($http, $rootScope);
     }])
 
+    // filter to show + sign expressively for things like modifiers
+    .filter('modifier', function() {
+        return function(input) {
+            input = parseInt(input);
+            return input > 0 ? '+'+input : input;
+        };
+    })
+
     .controller('PanelController', ['$http', '$rootScope', 'NPCCollection', function($http, $rootScope, NPCCollection) {
         var self=this;
 
+        this.templates = [
+            {'name': 'test'}
+        ];
+
+        this.changeStat = function (stat) {
+            stat.mod = Math.floor(stat.stat/2)-5;
+        };
+
+        this.generate = function (index) {
+            console.log('generating');
+            $http.post('/npcs/'+ $rootScope.npcs[index]._id+'/generate', $rootScope.npcs[index])
+                .success(function(data) {
+                    console.log(data);
+                    console.log(data.stats);
+                    $rootScope.npcs[index] = data;
+                })
+            ;
+        };
+
         this.remove = function (index) {
             NPCCollection.update(index, {in_panel: false});
-        }
+        };
     }])
 
     .directive('gmPanels', function () {
@@ -46,6 +73,7 @@ angular.module('gm', [])
 
                 this.add = function (data) {
                     NPCCollection.add({name: self.name});
+                    self.name = "";
                 };
 
                 this.addToPanel = function(index) {
