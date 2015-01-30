@@ -6,7 +6,26 @@
  * @constructor
  */
 var NPCCollection = function ($http, $rootScope) {
+    var self=this;
+
     $rootScope.npcs = [];
+    self.timeout = null;
+    self.changed = {};
+
+    // on unload do synchronious ajax to save last changes.
+    $(window).unload(function () {
+        for (id in self.changed) {
+            // use plain old ajax to be able to make async: false request.
+            $.ajax('/npcs/' + id, {
+                'method': 'PATCH',
+                // unlike JSON.stringify, this also removes the angular stuff that otherwise
+                // bothers MongoDB in the backend
+                'data': angular.toJson(self.changed[id]),
+                'contentType': 'application/json',
+                'async': false // otherwise doesn't work on unload
+            })
+        }
+    })
 
     // helper function that always handles errors the same way
     this.request = function (url, method, data) {
@@ -30,24 +49,23 @@ var NPCCollection = function ($http, $rootScope) {
         ;
     };
 
-    // update single NPC
-    this.update = function (index, data) {
-        if (typeof data != 'object')
-            throw new Error('invalid object to update npc');
+    // update single NPC after 1000 ms. Refresh timer on new update.
+    this.update = function (npc) {
+        if (self.timeout != null)
+            window.clearTimeout(self.timeout);
 
-        data.loading = true;
-        for (var k in data) {
-            $rootScope.npcs[index][k] = data[k];
-        }
+        self.timeout = window.setTimeout(function () {
+            self.request('/npcs/' + npc._id, 'PATCH', npc)
+                .success(function () {
+                    delete self.changed[npc._id];
+                })
+            ;
+        }, 5000);
 
-        var npc = $rootScope.npcs[index];
+        // TODO: also add to window unload
+        self.changed[npc._id] = npc;
 
-        return this.request('/npcs/' + npc._id, 'PATCH', npc)
-            .then(function (data) {
-                $rootScope.npcs[index].loading = false;
-                console.log('npc updated');
-            });
-        ;
+        console.log(npc.stats[2].stat);
     };
 
     // add single NPC

@@ -1,7 +1,7 @@
 <npc-item ng-repeat="npc in npcs" ng-class="{ loading: sideCtrl.npc.loading }">
     name: {{ npc.name }}
     <button class="btn-danger" ng-click="sideCtrl.remove($index)"><i class="glyphicon glyphicon-remove"></i></button>
-    <button class="btn-success" ng-click="sideCtrl.addToPanel($index)"><i class="glyphicon glyphicon-plus-sign"></i></button>
+    <button class="btn-success" ng-click="sideCtrl.addToPanel(npc)"><i class="glyphicon glyphicon-plus-sign"></i></button>
 
 </npc-item>
 <form>

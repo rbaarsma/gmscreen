@@ -26,8 +26,9 @@ angular.module('gm', [])
             {'name': 'test'}
         ];
 
-        this.changeStat = function (stat) {
+        this.changeStat = function (npc, stat) {
             stat.mod = Math.floor(stat.stat/2)-5;
+            NPCCollection.update(npc);
         };
 
         this.generate = function (index) {
@@ -41,8 +42,9 @@ angular.module('gm', [])
             ;
         };
 
-        this.remove = function (index) {
-            NPCCollection.update(index, {in_panel: false});
+        this.remove = function (npc) {
+            npc.in_panel = false;
+            NPCCollection.update(npc);
         };
     }])
 
@@ -76,8 +78,9 @@ angular.module('gm', [])
                     self.name = "";
                 };
 
-                this.addToPanel = function(index) {
-                    NPCCollection.update(index, {in_panel: true});
+                this.addToPanel = function(npc) {
+                    npc.in_panel = true;
+                    NPCCollection.update(npc);
                 }
             }],
             'controllerAs': 'sideCtrl'

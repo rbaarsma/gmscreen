@@ -30,8 +30,11 @@ router.get('/:id', function(req, res, next) {
 
 /* POST edit NPC by id */
 router.patch('/:id', function (req, res, next) {
+    console.log(req.body);
     NPC.findByIdAndUpdate(req.params.id, req.body, function (err, post) {
+        console.log(err);
         if (err) return next(err);
+        console.log(post);
         res.json(post);
     });
 });

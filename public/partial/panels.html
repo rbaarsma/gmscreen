@@ -1,6 +1,6 @@
 <npc-panel ng-class="{ loading: panelCtrl.npc.loading }" class="npc-panel panel panel-primary" ng-repeat="npc in npcs" ng-show="npc.in_panel">
     <div class="panel-heading">
-        <button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.remove($index)"><i class="glyphicon glyphicon-remove"></i></button>
+        <button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.remove(npc)"><i class="glyphicon glyphicon-remove"></i></button>
         <h3 class="panel-title">{{ npc.name }}</h3>
     </div>
     <div class="panel-body">
@@ -16,7 +16,7 @@
             </div>
             <div ng-repeat="stat in npc.stats">
                 {{ stat.name }}:
-                <input type="number" ng-change="panelCtrl.changeStat(stat)" ng-model="npc.stats[$index].stat" value="{{ stat.stat }}">
+                <input type="number" ng-change="panelCtrl.changeStat(npc, stat)" ng-model="npc.stats[$index].stat" value="{{ stat.stat }}">
                 ({{ stat.mod|modifier }})
             </div>
         </form>
