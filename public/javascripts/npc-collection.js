@@ -8,6 +8,7 @@
 var NPCCollection = function ($http, $rootScope) {
     var self=this;
 
+    // TODO: maybe this should be in a constant accessible to both frontend and backend?
     self.CLASSES = [
         {name: 'Barbarian', hd: 12},
         {name: 'Fighter', hd: 10}
