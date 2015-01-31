@@ -5,14 +5,9 @@
  * @param $rootScope
  * @constructor
  */
+
 var NPCCollection = function ($http, $rootScope) {
     var self=this;
-
-    // TODO: maybe this should be in a constant accessible to both frontend and backend?
-    self.CLASSES = [
-        {name: 'Barbarian', hd: 12},
-        {name: 'Fighter', hd: 10}
-    ];
 
     $rootScope.npcs = [];
     self.timeout = null;
@@ -51,6 +46,7 @@ var NPCCollection = function ($http, $rootScope) {
         this.request('/npcs', 'GET')
             .success(function (data) {
                 $rootScope.npcs = data;
+                console.log(data);
                 for (i in $rootScope.npcs) {
                     self.recalculate($rootScope.npcs[i]);
                 }
@@ -99,30 +95,27 @@ var NPCCollection = function ($http, $rootScope) {
         ;
     };
 
+    // recalculate stats
     this.recalculate = function (npc) {
-        console.log(npc);
-
         var conmod = npc.stats[2].mod,
             dexmod = npc.stats[1].mod;
 
         // calculate hp
         npc.hp = 0;
         for (i in npc.classes) {
-            for (j in self.CLASSES) {
-                if (self.CLASSES[j].name == npc.classes[i].name) {
-                    var hd = self.CLASSES[j].hd,
-                        hpplvl = Math.floor(hd/2)+ 1,
-                        lvl =  npc.classes[i].level
-                        ;
+            var cls = npc.classes[i],
+                hpplvl = Math.floor(cls.hd/2)+ 1;
 
-                    npc.hp += i == 0 ? hd + (hpplvl * (lvl-1)) : hpplvl * lvl;
-                    npc.hp += conmod * lvl;
-                }
-            }
+            console.log(cls);
+            console.log(hpplvl);
+
+            npc.hp += i == 0 ? cls.hd + (hpplvl * (cls.level-1)) : hpplvl * cls.level;
+            npc.hp += conmod * cls.level;
         }
 
         // calculate ac
-        npc.ac = 10 + dexmod;
+
+        npc.ac = 10 + npc.armor.ac + (typeof npc.shield != 'undefined' ? npc.shield.ac : 0) + (dexmod > 0 && dexmod > npc.armor.maxdex ? npc.armor.maxdex : dexmod);
         npc.it = dexmod;
     };
 

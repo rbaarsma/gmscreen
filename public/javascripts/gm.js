@@ -22,11 +22,26 @@ angular.module('gm', [])
     .controller('PanelController', ['$http', '$rootScope', 'NPCCollection', function($http, $rootScope, NPCCollection) {
         var self=this;
 
-        self.classes = NPCCollection.CLASSES;
+        $rootScope.config = {};
+        $http.get('/config')
+            .success(function (data) {
+                $rootScope.config = data;
+                console.log($rootScope.config);
+            })
+        ;
+
+        this.recalculate = function (npc) {
+            NPCCollection.recalculate(npc);
+            NPCCollection.update(npc);
+        };
+
+        this.changeSkill = function () {
+            console.log($rootScope.npcs);
+        }
+
 
         this.addClass = function (npc) {
             npc.classes.push({name: 'Barbarian', level: 1});
-            console.log(npc.classes);
             NPCCollection.update(npc);
         };
 
@@ -37,7 +52,7 @@ angular.module('gm', [])
 
         this.changeStat = function (npc, stat) {
             stat.mod = Math.floor(stat.stat / 2) - 5;
-            NPCCollection.recalculate(npc, stat);
+            NPCCollection.recalculate(npc);
             NPCCollection.update(npc);
         };
 
@@ -58,6 +73,7 @@ angular.module('gm', [])
             var npc = $rootScope.npcs[index];
             $http.post('/npcs/'+ npc._id+'/generate', npc)
                 .success(function(data) {
+                    console.log(data);
                     $rootScope.npcs[index] = data;
                     NPCCollection.recalculate($rootScope.npcs[index]);
                 })
