@@ -14,7 +14,7 @@ router.get('/config', function(req, res, next) {
     };
 
     for (var i=0; i<DND.CLASSES.length; i++)
-        config.CLASSES.push({name: DND.CLASSES[i].name});
+        config.CLASSES.push({name: DND.CLASSES[i].name, hd: DND.CLASSES[i].hd});
     for (var i=0; i<DND.SKILLS.length; i++)
         config.SKILLS.push({name: DND.SKILLS[i].name});
 

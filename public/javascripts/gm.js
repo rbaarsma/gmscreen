@@ -19,77 +19,74 @@ angular.module('gm', [])
         };
     })
 
-    .controller('PanelController', ['$http', '$rootScope', 'NPCCollection', function($http, $rootScope, NPCCollection) {
-        var self=this;
-
-        $rootScope.config = {};
-        $http.get('/config')
-            .success(function (data) {
-                $rootScope.config = data;
-                console.log($rootScope.config);
-            })
-        ;
-
-        this.recalculate = function (npc) {
-            NPCCollection.recalculate(npc);
-            NPCCollection.update(npc);
-        };
-
-        this.changeSkill = function () {
-            console.log($rootScope.npcs);
-        }
-
-
-        this.addClass = function (npc) {
-            npc.classes.push({name: 'Barbarian', level: 1});
-            NPCCollection.update(npc);
-        };
-
-        this.removeClass = function (npc, index) {
-            npc.classes.splice(index, 1);
-            NPCCollection.update(npc);
-        }
-
-        this.changeStat = function (npc, stat) {
-            stat.mod = Math.floor(stat.stat / 2) - 5;
-            NPCCollection.recalculate(npc);
-            NPCCollection.update(npc);
-        };
-
-        this.changeLevel = function (npc) {
-            console.log('changelevel');
-            console.log(npc.classes);
-            var level = 0;
-            for (k in npc.classes) {
-                console.log(npc.classes[k].level);
-                level += npc.classes[k].level;
-            }
-            npc.lvl = level;
-            NPCCollection.recalculate(npc);
-            NPCCollection.update(npc);
-        }
-
-        this.generate = function (index) {
-            var npc = $rootScope.npcs[index];
-            $http.post('/npcs/'+ npc._id+'/generate', npc)
-                .success(function(data) {
-                    console.log(data);
-                    $rootScope.npcs[index] = data;
-                    NPCCollection.recalculate($rootScope.npcs[index]);
-                })
-            ;
-        };
-
-        this.remove = function (npc) {
-            npc.in_panel = false;
-            NPCCollection.update(npc);
-        };
-    }])
-
     .directive('gmPanels', function () {
         return {
             'templateUrl': 'partial/panels.html',
-            'controller': 'PanelController',
+            'controller': ['$http', '$scope', '$rootScope', 'NPCCollection', function($http, $scope, $rootScope, NPCCollection) {
+                var self=this;
+
+                $rootScope.config = {};
+                $http.get('/config')
+                    .success(function (data) {
+                        $rootScope.config = data;
+                        console.log($rootScope.config);
+                    })
+                ;
+
+                this.recalculate = function (npc) {
+                    NPCCollection.recalculate(npc);
+                    NPCCollection.update(npc);
+                };
+
+                this.changeSkill = function () {
+                    console.log($rootScope.npcs);
+                };
+
+                this.addClass = function (npc) {
+                    npc.classes.push({name: 'Barbarian', level: 1});
+                    NPCCollection.update(npc);
+                };
+
+                this.removeClass = function (npc, index) {
+                    npc.classes.splice(index, 1);
+                    NPCCollection.update(npc);
+                }
+
+                this.changeStat = function (npc, stat) {
+                    stat.mod = Math.floor(stat.stat / 2) - 5;
+                    NPCCollection.recalculate(npc);
+                    NPCCollection.update(npc);
+                };
+
+                this.changeLevel = function (npc) {
+                    console.log('changelevel');
+                    console.log(npc.classes);
+                    var level = 0;
+                    for (k in npc.classes) {
+                        console.log(npc.classes[k].level);
+                        level += npc.classes[k].level;
+                    }
+                    npc.lvl = level;
+                    NPCCollection.recalculate(npc);
+                    NPCCollection.update(npc);
+                }
+
+                this.generate = function (index) {
+                    var npc = $rootScope.npcs[index];
+                    $http.post('/npcs/'+ npc._id+'/generate', npc)
+                        .success(function(data) {
+                            console.log(data);
+                            $rootScope.npcs[index] = data;
+                            NPCCollection.recalculate($rootScope.npcs[index]);
+                        })
+                    ;
+                };
+
+                this.remove = function (npc) {
+                    npc.in_panel = false;
+                    NPCCollection.update(npc);
+                };
+            }],
             'controllerAs': 'panelCtrl',
             link: function (scope, element, attrs) {
                 $(element).sortable({

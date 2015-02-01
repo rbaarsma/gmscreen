@@ -39,8 +39,10 @@
             </div>
             <div>
                 <h3>Equipment</h3>
-                <div><b>Armor</b>: {{ npc.armor.name }}</div>
-                <div><b>Shield</b>: {{ npc.shield.name }}</div>
+                <div><b>Armors</b>:
+                <span class="text-capitalize" ng-repeat="armor in npc.armors">
+                    {{ armor.name }}{{$last ? '' : ', '}}
+                </span>
                 <div ng-repeat="weapon in npc.weapons">
                     <b class="text-capitalize">{{ weapon.type }}</b>: {{ weapon.name }}
                 </div>

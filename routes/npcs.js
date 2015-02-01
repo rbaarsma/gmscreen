@@ -48,11 +48,8 @@ router.get('/:id', function(req, res, next) {
 
 /* POST edit NPC by id */
 router.patch('/:id', function (req, res, next) {
-    console.log(req.body);
-
     NPC.findByIdAndUpdate(req.params.id, req.body, function (err, post) {
         if (err) return next(err);
-        console.log(post);
         res.json(post);
     });
 });
@@ -145,15 +142,15 @@ router.post('/:id/generate', function(req, res, next) {
 
     // contains shield?
     var index = armors.indexOf(12);
-    npc.shield = {};
+    npc.armors = [];
     if (index) {
         // add shield?
         if (Math.random() > .5)
-            npc.shield = DND.ARMORS[armors[index]];
+            npc.armors.push(DND.ARMORS[armors[index]]);
         armors.splice(index, 1);
     }
 
-    npc.armor = DND.ARMORS[13];
+    var npcarmor = null
     // search for suitable armor, prefer best
     for (i=armors.length-1; i>0; i--) {
         var armor = DND.ARMORS[armors[i]];
@@ -174,10 +171,12 @@ router.post('/:id/generate', function(req, res, next) {
             if (Math.random() > .8)
                 continue;
 
-            npc.armor = armor;
+            npcarmor = armor;
             break;
         }
     }
+    if (npcarmor !== null)
+        npc.armors.push(npcarmor);
 
     var melee = null, ranged = null;
     while (melee == null || ranged == null) {
@@ -190,7 +189,7 @@ router.post('/:id/generate', function(req, res, next) {
         }
 
         var w = DND.WEAPONS[k];
-        if (typeof npc.shield.name != 'undefined') {
+        if (npc.armors[0].name == 'Shield') {
             if (w.hands > 1) {
                 weapons.splice(i,1);
                 continue;

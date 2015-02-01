@@ -103,21 +103,35 @@ var NPCCollection = function ($http, $rootScope) {
         // calculate hp
         npc.hp = 0;
         for (i in npc.classes) {
+            for (var j=0; j<$rootScope.config.CLASSES.length; j++) {
+                if (npc.classes[i].name == $rootScope.config.CLASSES[j].name) {
+                    var hd = $rootScope.config.CLASSES[j].hd;
+                }
+            }
+
             var cls = npc.classes[i],
-                hpplvl = Math.floor(cls.hd/2)+ 1;
+                hpplvl = Math.floor(hd/2)+ 1;
 
             console.log(cls);
             console.log(hpplvl);
 
-            npc.hp += i == 0 ? cls.hd + (hpplvl * (cls.level-1)) : hpplvl * cls.level;
+            npc.hp += i == 0 ? hd + (hpplvl * (cls.level-1)) : hpplvl * cls.level;
             npc.hp += conmod * cls.level;
         }
 
         // calculate ac
-
-        npc.ac = 10 + npc.armor.ac + (typeof npc.shield != 'undefined' ? npc.shield.ac : 0) + (dexmod > 0 && dexmod > npc.armor.maxdex ? npc.armor.maxdex : dexmod);
+        var ac = 10,
+            maxeddex = dexmod;
+        for (var i = 0; i<npc.armors.length; i++) {
+            ac += npc.armors[i].ac;
+            if (npc.armors[i].maxdex > -1 && maxeddex > npc.armors[i].maxdex)
+                maxeddex = npc.armors[i].maxdex;
+        }
+        npc.ac = ac + maxeddex
         npc.it = dexmod;
     };
 
-    this.load();
+    window.setTimeout(function () {
+        self.load();
+    }, 100)
 };
