@@ -94,6 +94,21 @@
                             </div>
                         </div>
                     </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Background
+                            <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                            <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('background', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
+                        </div>
+                        <div class="panel-body">
+                            <h3>{{ npc.background.name }}</h3>
+                            <div ng-show="npc.background.speciality"><i>{{ npc.background.speciality }}</i></div>
+                            <div><b>Personality</b>: {{ npc.background.personality }}</div>
+                            <div><b>Ideal</b>: {{ npc.background.ideal }}</div>
+                            <div><b>Bond</b>: {{ npc.background.bond }}</div>
+                            <div><b>Flaw</b>: {{ npc.background.flaw }}</div>
+                        </div>
+                    </div>
                 </form>
             </div>
         </npc-panel>

@@ -73,6 +73,9 @@ router.post('/:id/randomize', function(req, res, next) {
             case 'equipment':
                 npc.randomizeEquipment();
                 break;
+            case 'background':
+                npc.randomizeBackground();
+                break;
         }
         npc.recalculate();
         console.log(npc.race);

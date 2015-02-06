@@ -55,6 +55,7 @@ var NPCSchema = new mongoose.Schema({
     it: Number,
     hp: Number,
     race: Object,
+    background: Object,
     prof: Number, // proficiency bonus
     name: String,
     in_panel: Boolean,
@@ -193,9 +194,31 @@ NPCSchema.methods.recalculate = function () {
 }
 
 NPCSchema.methods.randomizeAll = function () {
+    this.randomizeBackground();
     this.randomizeStats();
     this.randomizeSkills();
     this.randomizeEquipment();
+}
+
+NPCSchema.methods.randomizeBackground = function () {
+    var k = Math.floor(Math.random() * DND.BACKGROUNDS.length),
+        s = DND.BACKGROUNDS[k].specialities.length > 0 ? Math.floor(Math.random() * DND.BACKGROUNDS[k].specialities.length) : null,
+        p = Math.floor(Math.random() * DND.BACKGROUNDS[k].personalities.length),
+        i = Math.floor(Math.random() * DND.BACKGROUNDS[k].ideals.length),
+        b = Math.floor(Math.random() * DND.BACKGROUNDS[k].bonds.length),
+        f = Math.floor(Math.random() * DND.BACKGROUNDS[k].flaws.length);
+
+    console.log([k,s,p,i,b,f]);
+
+    this.background = {
+        key: k,
+        name: DND.BACKGROUNDS[k].name,
+        speciality: s !== null ? DND.BACKGROUNDS[k].specialities[s] : null,
+        personality: DND.BACKGROUNDS[k].personalities[p],
+        ideal: DND.BACKGROUNDS[k].ideals[i],
+        bond: DND.BACKGROUNDS[k].bonds[b],
+        flaw: DND.BACKGROUNDS[k].flaws[f],
+    };
 }
 
 NPCSchema.methods.randomizeStats = function () {
