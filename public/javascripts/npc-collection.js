@@ -100,8 +100,9 @@ var NPCCollection = function ($http, $rootScope) {
         var conmod = npc.stats[2].mod,
             dexmod = npc.stats[1].mod;
 
-        // calculate hp
+        // calculate hp, lvl
         npc.hp = 0;
+        npc.lvl = 0;
         for (i in npc.classes) {
             for (var j=0; j<$rootScope.config.CLASSES.length; j++) {
                 if (npc.classes[i].name == $rootScope.config.CLASSES[j].name) {
@@ -112,12 +113,13 @@ var NPCCollection = function ($http, $rootScope) {
             var cls = npc.classes[i],
                 hpplvl = Math.floor(hd/2)+ 1;
 
-            console.log(cls);
-            console.log(hpplvl);
-
             npc.hp += i == 0 ? hd + (hpplvl * (cls.level-1)) : hpplvl * cls.level;
             npc.hp += conmod * cls.level;
+            npc.lvl += cls.level;
         }
+
+        // calculate proficiency bonus based on level
+        npc.prof = Math.floor(npc.lvl/5) + 2;
 
         // calculate ac
         var ac = 10,
@@ -129,6 +131,11 @@ var NPCCollection = function ($http, $rootScope) {
         }
         npc.ac = ac + maxeddex
         npc.it = dexmod;
+
+        // recalculate skills
+        for (var i=0; i<npc.skills.length; i++) {
+            npc.skills[i].mod = npc.prof + npc.stats[npc.skills[i].stat].mod;
+        }
     };
 
     window.setTimeout(function () {

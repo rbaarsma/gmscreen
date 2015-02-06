@@ -10,13 +10,16 @@ router.get('/', function(req, res, next) {
 router.get('/config', function(req, res, next) {
     var config = {
         CLASSES: [],
-        SKILLS: []
+        SKILLS: [],
+        RACES: []
     };
 
     for (var i=0; i<DND.CLASSES.length; i++)
         config.CLASSES.push({name: DND.CLASSES[i].name, hd: DND.CLASSES[i].hd});
     for (var i=0; i<DND.SKILLS.length; i++)
-        config.SKILLS.push({name: DND.SKILLS[i].name});
+        config.SKILLS.push({name: DND.SKILLS[i].name, stat: DND.SKILLS[i].stat});
+    for (var i=0; i<DND.RACES.length; i++)
+        config.RACES.push({name: DND.RACES[i].name});
 
     res.json(config);
 });

@@ -33,6 +33,7 @@ var WeaponSchema = new mongoose.Schema({
 
 
 var NPCSchema = new mongoose.Schema({
+    race: Object,
     prof: Number, // proficiency bonus
     name: String,
     in_panel: Boolean,

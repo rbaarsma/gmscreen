@@ -5,6 +5,10 @@
     </div>
     <div class="panel-body">
         <form class="form-inline">
+            <div class="form-group">
+                <label class="col-sm-5" for="npc-race">Race</label>
+                <select ng-change="panelCtrl.recalculate(npc)" class="col-sm-7" id="npc-race" name="npc-race" ng-model="npc.race" ng-options="rc.name as rc.name for rc in config.RACES"></select>
+            </div>
             <div ng-repeat="class in npc.classes">
                 <div class="form-group row">
                     <label class="col-sm-2" for="npc-class{{ $index }}">Class</label>
@@ -33,7 +37,7 @@
             <div>
                 <h3>Skills</h3>
                 <div ng-repeat="skill in npc.skills">
-                    <select ng-change="panelCtrl.changeSkill()" class="col-sm-3" name="npc-skill{{ $index }}" ng-model="skill.name" ng-options="skl.name as skl.name for skl in config.SKILLS"></select>
+                    <select ng-change="panelCtrl.changeSkill(npc)" class="col-sm-3" name="npc-skill{{ $index }}" ng-model="skill.name" ng-options="skl.name as skl.name for skl in config.SKILLS"></select>
                     {{ skill.mod|modifier }}
                 </div>
             </div>

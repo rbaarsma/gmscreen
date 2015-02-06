@@ -38,8 +38,13 @@ angular.module('gm', [])
                     NPCCollection.update(npc);
                 };
 
-                this.changeSkill = function () {
-                    console.log($rootScope.npcs);
+                this.changeSkill = function (npc) {
+                    for (var j=0; j<$rootScope.config.SKILLS.length; j++) {
+                        if (npc.skills[i].name == $rootScope.config.SKILLS[j].name) {
+                            npc.skills[i].stat = $rootScope.config.SKILLS[j].stat;
+                        }
+                    }
+                    self.recalculate(npc);
                 };
 
                 this.addClass = function (npc) {
