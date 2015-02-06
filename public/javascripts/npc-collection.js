@@ -95,47 +95,18 @@ var NPCCollection = function ($http, $rootScope) {
         ;
     };
 
+    this.randomize = function (type, index) {
+        var npc = $rootScope.npcs[index];
+        return this.request('/npcs/' + npc._id+'/randomize?type='+type, 'POST', npc)
+            .success(function (data) {
+                $rootScope.npcs[index] = data;
+            });
+        ;
+    }
+
     // recalculate stats
     this.recalculate = function (npc) {
-        var conmod = npc.stats[2].mod,
-            dexmod = npc.stats[1].mod;
-
-        // calculate hp, lvl
-        npc.hp = 0;
-        npc.lvl = 0;
-        for (i in npc.classes) {
-            for (var j=0; j<$rootScope.config.CLASSES.length; j++) {
-                if (npc.classes[i].name == $rootScope.config.CLASSES[j].name) {
-                    var hd = $rootScope.config.CLASSES[j].hd;
-                }
-            }
-
-            var cls = npc.classes[i],
-                hpplvl = Math.floor(hd/2)+ 1;
-
-            npc.hp += i == 0 ? hd + (hpplvl * (cls.level-1)) : hpplvl * cls.level;
-            npc.hp += conmod * cls.level;
-            npc.lvl += cls.level;
-        }
-
-        // calculate proficiency bonus based on level
-        npc.prof = Math.floor(npc.lvl/5) + 2;
-
-        // calculate ac
-        var ac = 10,
-            maxeddex = dexmod;
-        for (var i = 0; i<npc.armors.length; i++) {
-            ac += npc.armors[i].ac;
-            if (npc.armors[i].maxdex > -1 && maxeddex > npc.armors[i].maxdex)
-                maxeddex = npc.armors[i].maxdex;
-        }
-        npc.ac = ac + maxeddex
-        npc.it = dexmod;
-
-        // recalculate skills
-        for (var i=0; i<npc.skills.length; i++) {
-            npc.skills[i].mod = npc.prof + npc.stats[npc.skills[i].stat].mod;
-        }
+        return; // recalculation now happends onUpdate at server level
     };
 
     window.setTimeout(function () {

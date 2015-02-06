@@ -29,13 +29,17 @@ angular.module('gm', [])
                 $http.get('/config')
                     .success(function (data) {
                         $rootScope.config = data;
-                        console.log($rootScope.config);
+                        // add subraces when race changes
                     })
                 ;
 
                 this.recalculate = function (npc) {
                     NPCCollection.recalculate(npc);
                     NPCCollection.update(npc);
+                };
+
+                this.randomize = function (type, index) {
+                    NPCCollection.randomize(type, index);
                 };
 
                 this.changeSkill = function (npc) {
@@ -75,17 +79,6 @@ angular.module('gm', [])
                     NPCCollection.recalculate(npc);
                     NPCCollection.update(npc);
                 }
-
-                this.generate = function (index) {
-                    var npc = $rootScope.npcs[index];
-                    $http.post('/npcs/'+ npc._id+'/generate', npc)
-                        .success(function(data) {
-                            console.log(data);
-                            $rootScope.npcs[index] = data;
-                            NPCCollection.recalculate($rootScope.npcs[index]);
-                        })
-                    ;
-                };
 
                 this.remove = function (npc) {
                     npc.in_panel = false;
