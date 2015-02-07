@@ -1,67 +1,86 @@
 <div class="row">
-    <div class="col-md-4" ng-class="{ loading: panelCtrl.npc.loading }" ng-repeat="npc in npcs" ng-show="npc.in_panel">
+    <div class="npc-panel-container" ng-class="{ loading: panelCtrl.npc.loading, maximized: npc.maximized }" ng-repeat="npc in npcs" ng-show="npc.in_panel">
         <npc-panel class="npc-panel panel panel-primary">
             <div class="panel-heading">
                 <button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.remove(npc)"><i class="glyphicon glyphicon-remove"></i></button>
+                <button ng-hide="npc.maximized" class="btn btn-xs pull-right" ng-click="npc.maximized = true; panelCtrl.recalculate(npc);"><i class="glyphicon glyphicon-plus"></i></button>
+                <button ng-show="npc.maximized" class="btn btn-xs pull-right" ng-click="npc.maximized = false; panelCtrl.recalculate(npc);"><i class="glyphicon glyphicon-minus"></i></button>
+                <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('all', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
                 <h3 class="panel-title">{{ npc.name }}</h3>
             </div>
             <div class="panel-body">
                 <form class="form-inline">
-                    <div class="form-group">
-                        <label class="col-sm-5" for="npc-race">Race</label>
-                        <select ng-change="panelCtrl.changeRace(npc)" class="col-sm-7" id="npc-race" name="npc-race" ng-model="npc.race.name" ng-options="rc.name as rc.name group by rc.race for rc in config.RACES"></select>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Classes
-                            <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
-                            <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('stats', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
-                            <button class="pull-right btn btn-xs btn-success" ng-click="panelCtrl.addClass(npc)"><i class="glyphicon glyphicon-plus-sign"></i></button>
-                        </div>
-                        <div class="panel-body">
 
-                            <div ng-repeat="class in npc.classes">
+                    <npc-section>
+                        <div class="form-group">
+                            <input type="file" ng-file-select ng-file-change="panelCtrl.onFileSelect(npc, $files)" accept="image/png, image/jpeg">
+                            <img ng-model="npc._picture_id" ng-show="npc._picture_id" ng-src="/npcs/{{ npc._id }}/picture?{{ npc._picture_id }}">
+                        </div>
+                    </npc-section>
+                    <npc-section>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Base
+                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('base', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
+                            </div>
+                            <div class="panel-body">
                                 <div class="form-group row">
-                                    <label class="col-sm-2" for="npc-class{{ $index }}">Class</label>
-                                    <select ng-change="panelCtrl.recalculate(npc)" class="col-sm-3" id="npc-class{{ $index }}" name="npc-class{{ $index }}" ng-model="class.name" ng-options="cls.name as cls.name for cls in config.CLASSES"></select>
-                                    <input ng-change="panelCtrl.changeLevel(npc)" class="col-sm-3" type="number" min="1" max="20" ng-model="class.level">
-                                    <button class="col-sm-2 btn btn-xs btn-danger" ng-click="panelCtrl.removeClass(npc, $index)"><i class="glyphicon glyphicon-remove"></i></button>
+                                    <label class="col-sm-5" for="npc-race">Name</label>
+                                    <input class="col-sm-7" type="text" ng-model="npc.name" ng-change="panelCtrl.recalculate(npc);">
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="npc-race">Race</label>
+                                    <select ng-change="panelCtrl.changeRace(npc)" class="col-sm-7" id="npc-race" name="npc-race" ng-model="npc.race.name" ng-options="rc.name as rc.name group by rc.race for rc in config.RACES"></select>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="npc-background">Background</label>
+                                    <select ng-change="panelCtrl.changeBackground(npc)" class="col-sm-7" id="npc-background" name="npc-background" ng-model="npc.background.name" ng-options="bg.name as bg.name for bg in config.BACKGROUNDS"></select>
+                                </div>
+                                <hr>
+                                <div ng-repeat="class in npc.classes">
+                                    <div class="form-group row">
+                                        <label class="col-sm-2" for="npc-class{{ $index }}">Class</label>
+                                        <select ng-change="panelCtrl.recalculate(npc)" class="col-sm-3" id="npc-class{{ $index }}" name="npc-class{{ $index }}" ng-model="class.name" ng-options="cls.name as cls.name for cls in config.CLASSES"></select>
+                                        <input ng-change="panelCtrl.changeLevel(npc)" class="col-sm-3" type="number" min="1" max="20" ng-model="class.level">
+                                        <button class="col-sm-2 btn btn-xs btn-danger" ng-click="panelCtrl.removeClass(npc, $index)"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success btn-sm" ng-click="panelCtrl.addClass(npc)"><i class="glyphicon glyphicon-plus-sign"></i> Add Class</button>
+                            </div>
+                        </div>
+                    </npc-section>
+                    <npc-section>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Stats
+                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('stats', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
+                            </div>
+                            <div class="panel-body">
+                                <div ng-repeat="stat in npc.stats">
+                                    {{ stat.name }}:
+                                    <input type="number" min="1" max="30" ng-change="panelCtrl.changeStat(npc, stat)" ng-model="npc.stats[$index].stat" value="{{ stat.stat }}">
+                                    ({{ stat.mod|modifier }})
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div>
-                        <button ng-click="panelCtrl.randomize('all', $index)">Randomize everything</button>
-                    </div>
-                </form>
-                <form class="form-inline">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Stats
-                            <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
-                            <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('stats', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
-                        </div>
-                        <div class="panel-body">
-                            <div ng-repeat="stat in npc.stats">
-                                {{ stat.name }}:
-                                <input type="number" ng-change="panelCtrl.changeStat(npc, stat)" ng-model="npc.stats[$index].stat" value="{{ stat.stat }}">
-                                ({{ stat.mod|modifier }})
+                    </npc-section>
+                    <npc-section>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Abilities
+                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                            </div>
+                            <div class="panel-body">
+
+                                <div>HP: {{ npc.hp }}</div>
+                                <div>AC: {{ npc.ac }}</div>
+                                <div>IT: {{ npc.it }}</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Abilities
-                            <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
-                        </div>
-                        <div class="panel-body">
-
-                            <div>HP: {{ npc.hp }}</div>
-                            <div>AC: {{ npc.ac }}</div>
-                            <div>IT: {{ npc.it }}</div>
-                        </div>
-                    </div>
-                    <div>
+                    </npc-section>
+                    <npc-section>
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 Skills
@@ -75,8 +94,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div>
+                    </npc-section>
+                    <npc-section>
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 Equipment
@@ -84,31 +103,37 @@
                                 <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('equipment', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
                             </div>
                             <div class="panel-body">
-                                <div><b>Armors</b>:
-                                <span class="text-capitalize" ng-repeat="armor in npc.armors">
-                                    {{ armor.name }}{{$last ? '' : ', '}}
-                                </span>
+                                <div>
+                                    <b>Armor</b>: {{ npc.armor.name }}
+                                    <input type="number" ng-model="npc.armor.ac" size="3">
+                                </div>
+                                <div>
+                                    <b>Shield</b>: {{ npc.shield.name }}
+                                    <input ng-change="panelCtrl.recalculate(npc);" type="number" ng-model="npc.shield.ac" size="3">
+                                </div>
                                 <div ng-repeat="weapon in npc.weapons">
                                     <b class="text-capitalize">{{ weapon.type }}</b>: {{ weapon.name }}
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Background
-                            <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
-                            <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('background', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
+                    </npc-section>
+                    <npc-section>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Background
+                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('background', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
+                            </div>
+                            <div class="panel-body">
+                                <div><h4>{{ npc.background.name}}</h4></div>
+                                <div ng-show="npc.background.speciality"><i>{{ npc.background.speciality }}</i></div>
+                                <div><b>Personality</b>: {{ npc.background.personality }}</div>
+                                <div><b>Ideal</b>: {{ npc.background.ideal }}</div>
+                                <div><b>Bond</b>: {{ npc.background.bond }}</div>
+                                <div><b>Flaw</b>: {{ npc.background.flaw }}</div>
+                            </div>
                         </div>
-                        <div class="panel-body">
-                            <h3>{{ npc.background.name }}</h3>
-                            <div ng-show="npc.background.speciality"><i>{{ npc.background.speciality }}</i></div>
-                            <div><b>Personality</b>: {{ npc.background.personality }}</div>
-                            <div><b>Ideal</b>: {{ npc.background.ideal }}</div>
-                            <div><b>Bond</b>: {{ npc.background.bond }}</div>
-                            <div><b>Flaw</b>: {{ npc.background.flaw }}</div>
-                        </div>
-                    </div>
+                    </npc-section>
                 </form>
             </div>
         </npc-panel>

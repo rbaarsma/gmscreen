@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
-
+var fs = require('fs');
+var multiparty = require('multiparty');
 var mongoose = require('mongoose');
 var NPC = require('../models/npc.js');
-var DND = require('../models/dnd.js');
+var Picture = require('../models/picture.js');
 
 function recalculate(npc) {
 
@@ -21,6 +22,7 @@ router.get('/', function(req, res, next) {
 router.post('/', function (req, res, next) {
     NPC.create(req.body, function (err, post) {
         if (err) return next(err);
+        post.randomizeAll();
         res.json(post);
     });
 });
@@ -53,16 +55,16 @@ router.delete('/:id', function(req, res, next) {
 
 /* generate by id */
 router.post('/:id/randomize', function(req, res, next) {
-    var npc = NPC.findById(req.params.id, function (err, npc) {
+    var npc = NPC.findByIdAndUpdate(req.params.id, req.body, function (err, npc) {
         if (err) return next(err);
 
-        npc.classes = req.body.classes;
-        npc.race = req.body.race;
         npc.calc('config');
-
         switch (req.query.type) {
             case 'all':
                 npc.randomizeAll();
+                break;
+            case 'base':
+                npc.randomizeBase();
                 break;
             case 'stats':
                 npc.randomizeStats();
@@ -85,5 +87,35 @@ router.post('/:id/randomize', function(req, res, next) {
     });
 });
 
+router.post('/:id/picture', function(req, res, next) {
+    var form = new multiparty.Form();
+    form.parse(req, function(err, fields, files) {
+        var file = files.file[0];
+
+        var pic = new Picture({
+            'name': file.name,
+            'data': fs.readFileSync(file.path),
+            'content_type': file.headers['content-type']
+        });
+        pic.save();
+
+        NPC.findByIdAndUpdate(req.params.id, {'_picture_id': pic._id}, function (err, npc) {
+            if (err) return next(err);
+            res.json({_picture_id: pic._id});
+        });
+
+
+    });
+});
+
+router.get('/:id/picture', function(req, res, next) {
+    NPC.findById(req.params.id, '_picture_id', function (err, npc) {
+        if (err) return next(err);
+        Picture.findById(npc._picture_id, function (err, pic) {
+            res.contentType(pic.content_type);
+            res.send(pic.data);
+        });
+    });
+});
 
 module.exports = router;

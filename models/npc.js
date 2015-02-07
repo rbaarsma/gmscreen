@@ -21,7 +21,7 @@ Array.prototype.contains = function(v) {
 
 var StatSchema = new mongoose.Schema({
     name: String,
-    stat:  { type: Number, min: 1, max: 30 },
+    stat:  { type: Number, min: 1 },
     mod: { type: Number },
 });
 
@@ -37,13 +37,6 @@ var SkillSchema = new mongoose.Schema({
     stat: Number
 });
 
-var ArmorSchema = new mongoose.Schema({
-    name: String,
-    ac: Number,
-    maxdex: Number,
-    minstr: Number
-});
-
 var WeaponSchema = new mongoose.Schema({
     name: String,
     damage: String,
@@ -51,6 +44,7 @@ var WeaponSchema = new mongoose.Schema({
 });
 
 var NPCSchema = new mongoose.Schema({
+    _picture_id: mongoose.Schema.Types.ObjectId,
     ac: Number,
     it: Number,
     hp: Number,
@@ -62,9 +56,12 @@ var NPCSchema = new mongoose.Schema({
     stats: [StatSchema],
     classes: [ClassSchema],
     skills: [SkillSchema],
-    armors: [ArmorSchema],
+    shield: { name: String, ac: Number },
+    armor: { name: String, ac: Number,  maxdex: Number,  minstr: Number },
+    items: [],
     weapons: [WeaponSchema],
-    updated_at: { type: Date, default: Date.now }
+    updated_at: { type: Date, default: Date.now },
+    maximized: Boolean, // show maximized in view
 });
 
 /**
@@ -103,6 +100,7 @@ NPCSchema.methods.calc = function (props) {
                     for (var j = 0; j < DND.CLASSES.length; j++) {
                         if (DND.CLASSES[j].name == this.classes[i].name) {
                             var class_config = DND.CLASSES[j]
+
                             this.classes[i].key = j;
                             this.classes[i].hd = class_config.hd; // actually a bit hidden here.. maybe shouldn't be here
                             this.level += this.classes[i].level;
@@ -138,18 +136,23 @@ NPCSchema.methods.calc = function (props) {
                 this.config.armors = this.config.armors.unique();
                 this.config.weapons = this.config.weapons.unique();
                 this.config.languages = this.config.languages.unique();
+
+                console.log('config');
+                console.log(this.config);
+
                 break;
 
             case 'ac':
                 var ac = 10,
-                    maxeddex = this.stats[1].mod;
-                for (var i = 0; i<this.calced('armors').length; i++) {
-                    ac += this.armors[i].ac;
-                    if (this.armors[i].maxdex > -1 && maxeddex > this.armors[i].maxdex) {
-                        maxeddex = this.armors[i].maxdex;
-                    }
-                }
-                this.ac = ac + maxeddex;
+                    dexmod = this.stats[1].mod;
+                console.log('ac');
+                ac += this.shield.ac;
+                console.log(ac);
+                ac += this.armor.ac;
+                console.log(ac);
+                ac += this.armor.maxdex > 0 && dexmod > this.armor.maxdex ? this.armor.maxdex : dexmod;
+                console.log(ac);
+                this.ac = ac;
                 break;
 
             case 'it':
@@ -162,8 +165,11 @@ NPCSchema.methods.calc = function (props) {
                 for (var i=0; i<this.classes.length; i++) {
                     var cls = this.classes[i],
                         hpplvl = Math.floor(cls.hd / 2) + 1;
+                    console.log(this.hp);
                     this.hp += i == 0 ? cls.hd + (hpplvl * (this.level - 1)) : hpplvl * this.level;
+                    console.log(this.hp);
                     this.hp += this.stats[2].mod * this.level;
+                    console.log(this.hp);
                 }
                 break;
 
@@ -194,15 +200,55 @@ NPCSchema.methods.recalculate = function () {
 }
 
 NPCSchema.methods.randomizeAll = function () {
+    this.randomizeBase();
     this.randomizeBackground();
     this.randomizeStats();
     this.randomizeSkills();
     this.randomizeEquipment();
 }
 
+NPCSchema.methods.randomizeBase = function () {
+    this.background = {
+        name: DND.BACKGROUNDS[Math.floor(Math.random() * DND.BACKGROUNDS.length)].name
+    };
+
+    // pick race
+    var r = Math.floor(Math.random() * DND.RACES.length),
+        subraces = DND.RACES[r].subraces;
+    this.race = {name: subraces.length > 0 ? subraces[Math.floor(Math.random() * subraces.length)].name : DND.RACES[r].name};
+
+    // pick class(es)
+    var class_names = []
+    for (var i=0; i<DND.CLASSES.length; i++)
+        class_names.push(DND.CLASSES[i].name);
+
+    this.classes = [];
+    var level = Math.floor((Math.random()*Math.random())*20)+1;
+    var classes = 1 + Math.round(Math.random()*Math.random()) + Math.round(Math.random()*Math.random()); // 1, 2 or 3
+    for (var i=classes; i>0; i--) {
+        var random = Math.floor(Math.random()*class_names.length);
+        var clslvl = i==0 ? level: Math.floor((Math.random())*(level-i))+1;
+        if (clslvl < 1)
+            clslvl = 1;
+        this.classes.push({
+            name: class_names[random],
+            level: clslvl
+        });
+        level -= clslvl;
+        class_names.splice(random, 1);
+    }
+    console.log(this.classes);
+};
+
 NPCSchema.methods.randomizeBackground = function () {
-    var k = Math.floor(Math.random() * DND.BACKGROUNDS.length),
-        s = DND.BACKGROUNDS[k].specialities.length > 0 ? Math.floor(Math.random() * DND.BACKGROUNDS[k].specialities.length) : null,
+
+    for (var k = 0; k < DND.BACKGROUNDS.length; k++) {
+        if (DND.BACKGROUNDS[k].name == this.background.name) {
+            break;
+        }
+    }
+
+    var s = DND.BACKGROUNDS[k].specialities.length > 0 ? Math.floor(Math.random() * DND.BACKGROUNDS[k].specialities.length) : null,
         p = Math.floor(Math.random() * DND.BACKGROUNDS[k].personalities.length),
         i = Math.floor(Math.random() * DND.BACKGROUNDS[k].ideals.length),
         b = Math.floor(Math.random() * DND.BACKGROUNDS[k].bonds.length),
@@ -274,19 +320,26 @@ NPCSchema.methods.randomizeEquipment = function () {
     var armors = this.calced('config').armors,
         weapons = this.calced('config').weapons;
 
+    console.log(weapons);
+
     armors.sort(function (a,b) {return a-b;});
     weapons.sort(function (a,b) {return a-b;});
 
     var index = armors.indexOf(12);
-    this.armors = [];
-    if (index) {
+    console.log(index);
+    this.shield = {name: '-', ac: 0};
+    console.log(this.shield);
+    if (index > 0) {
+        console.log(armors[index]);
         // add shield?
         if (Math.random() > .5)
-            this.armors.push(DND.ARMORS[armors[index]]);
+            this.shield = DND.ARMORS[armors[index]];
+        console.log(this.shield);
         armors.splice(index, 1);
     }
+    console.log(this.shield);
 
-    var npcarmor = null;
+    var npcarmor = {name: '-', ac: 0, maxdex: -1, minstr: 0};
     var dexmod = this.calced('stats')[1].mod;
     this.calc(['level']);
 
@@ -314,8 +367,9 @@ NPCSchema.methods.randomizeEquipment = function () {
             break;
         }
     }
-    if (npcarmor !== null)
-        this.armors.push(npcarmor);
+    console.log(npcarmor);
+    this.armor = npcarmor;
+    console.log(this.armor);
 
     var melee = null, ranged = null;
     while (melee == null || ranged == null) {
@@ -327,8 +381,9 @@ NPCSchema.methods.randomizeEquipment = function () {
             continue;
         }
 
+        console.log(k);
         var w = DND.WEAPONS[k];
-        if (this.armors[0].name == 'Shield') {
+        if (this.shield.name = '-') {
             if (w.hands > 1) {
                 weapons.splice(i,1);
                 continue;
@@ -356,4 +411,3 @@ NPCSchema.methods.randomizeEquipment = function () {
 }
 
 module.exports = mongoose.model('NPC', NPCSchema);
-

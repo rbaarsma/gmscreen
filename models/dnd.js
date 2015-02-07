@@ -202,8 +202,8 @@ DND.CLASSES = [
         hd: 8,
         skills: [0,1,5,10,8,3],
         skillsno: 2,
-        weapons: DND.WEAPON_GROUPS.simple.push(28),
-        languages: ['druidic'],
+        weapons: DND.WEAPON_GROUPS.simple.concat([28]),
+        languages: [],
         tools: [], // 2 artistan tools
         armors: [],
         saves: [0,1]

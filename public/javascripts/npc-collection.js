@@ -60,14 +60,15 @@ var NPCCollection = function ($http, $rootScope) {
             window.clearTimeout(self.timeout);
 
         self.timeout = window.setTimeout(function () {
-            self.request('/npcs/' + npc._id, 'PATCH', npc)
-                .success(function () {
-                    delete self.changed[npc._id];
-                })
-            ;
+            for (id in self.changed) {
+                self.request('/npcs/' + npc._id, 'PATCH', npc)
+                    .success(function () {
+                        delete self.changed[npc._id];
+                    })
+                ;
+            }
         }, 5000);
 
-        // TODO: also add to window unload
         self.changed[npc._id] = npc;
     };
 
@@ -96,6 +97,9 @@ var NPCCollection = function ($http, $rootScope) {
     };
 
     this.randomize = function (type, index) {
+        // clear for update
+        delete self.changed[$rootScope.npcs[index]._id];
+
         var npc = $rootScope.npcs[index];
         return this.request('/npcs/' + npc._id+'/randomize?type='+type, 'POST', npc)
             .success(function (data) {

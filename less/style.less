@@ -43,6 +43,18 @@ gm-side {
   border-left: 3px solid black;
 }
 
+.npc-panel-container {
+  .make-md-column(4);
+}
+.npc-panel-container.maximized {
+  .make-md-column(12);
+}
+
+.npc-panel-container.maximized npc-section {
+  .make-md-column(4);
+}
+
+
 gm-panels {
   .make-md-column(9);
   background-color: @main-background;
