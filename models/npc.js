@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var DND = require('./dnd.js');
+var extend = require('node.extend');
 
 // TODO: should be in it's own require
 Array.prototype.unique = function() {
@@ -90,6 +91,8 @@ NPCSchema.methods.calc = function (props) {
 
                 this.level = 0;
                 this.config = {
+                    classes: [],
+                    race: {},
                     armors: [],
                     weapons: [],
                     languages: [],
@@ -102,44 +105,64 @@ NPCSchema.methods.calc = function (props) {
                         if (DND.CLASSES[j].name == this.classes[i].name) {
                             var class_config = DND.CLASSES[j]
 
+                            this.config.classes[i] = class_config;
+
                             this.classes[i].key = j;
                             this.classes[i].hd = class_config.hd; // actually a bit hidden here.. maybe shouldn't be here
                             this.level += this.classes[i].level;
                             this.config.armors = this.config.armors.concat(class_config.armors);
                             this.config.weapons = this.config.weapons.concat(class_config.weapons);
                             this.config.languages = this.config.languages.concat(class_config.languages);
-                            this.config.skills = this.config.skills.concat(class_config.skills);
-
-                            if (i == 0) {
-                                this.config.skillsno = class_config.skillsno;
-                            }
                         }
                     }
                 }
 
                 // get stuff from race config
-                /*
-                // TODO: this.race.name should be subrace name
+                race_loop:
                 for (var j = 0; j < DND.RACES.length; j++) {
-                    if (DND.RACES[j].name == this.race.name) {
-                        var race_config = DND.RACES[j]
-                        this.race.key = j;
-                        this.speed = this.race.speed;
-                        this.config.armors = this.config.armors.concat(race_config.armors);
-                        this.config.weapons = this.config.weapons.concat(race_config.weapons);
-                        this.config.languages = this.config.languages.concat(race_config.languages);
-                        this.config.skills = this.config.skills.concat(race_config.skills);
+                    var race_config = DND.RACES[j];
+                    if (race_config.subraces.length > 0) {
+                        for (var k = 0; k< race_config.subraces.length; k++) {
+                            if (race_config.subraces[k].name == this.race.name) {
+                                this.config.race = extend(race_config, race_config.subraces[k]);
+                                break race_loop;
+                            }
+                        }
+                    } else {
+                        if (race_config.name == this.race.name) {
+                            this.config.race = race_config;
+                            break race_loop;
+                        }
                     }
                 }
-                */
 
-                this.config.skills = this.config.skills.unique();
+                // get background
+                for (var j = 0; j < DND.BACKGROUNDS.length; j++) {
+                    var background = DND.BACKGROUNDS[j];
+                    if (background.name == this.background.name) {
+                        this.config.background = background;
+                        break;
+                    }
+                }
+
+                this.size = this.config.race.size;
+                this.speed = this.config.race.speed;
+                if (this.config.race.armors)
+                    this.config.armors = this.config.armors.concat(this.config.race.armors);
+                if (this.config.race.weapons)
+                    this.config.weapons = this.config.weapons.concat(this.config.race.weapons);
+                if (this.config.race.languages)
+                    this.config.languages = this.config.languages.concat(this.config.race.languages);
+
+                // do something with languages '*' ==> choose a random language
+
                 this.config.armors = this.config.armors.unique();
                 this.config.weapons = this.config.weapons.unique();
                 this.config.languages = this.config.languages.unique();
 
-                console.log('config');
+                console.log(' --------- config ---------');
                 console.log(this.config);
+                console.log(' --------- /config ---------');
 
                 break;
 
@@ -299,20 +322,55 @@ NPCSchema.methods.randomizeStats = function () {
     this.stats = stats;
 }
 
-
+/**
+ * According to the rules you get:
+ *  1. skill proficiencies from your main class
+ *  2. an additional skill for multiclass to rogue, ranger or bard from their skill list
+ *  3. background skill proficiencies
+ *  4. race skill proficiencies
+ *
+ *  TODO: currently skills may be chosen twice
+ */
 NPCSchema.methods.randomizeSkills = function () {
-    // randomize skills
+    var self = this,
+        config = this.calced('config'),
+        prof = this.calced('prof'),
+        stats = this.calced('stats');
     this.skills = [];
 
-    var skills = this.calced('config').skills.slice();
-    for (var i = 0; i < this.config.skillsno; i++) {
-        var random = Math.floor(Math.random() * skills.length),
-            key = skills[random],
-            skill = DND.SKILLS[key];
+    // helper function to add skill with correct key/mod
+    var addSkill = function (key) {
+        var skill = DND.SKILLS[key];
         skill.key = key;
-        skill.mod = this.calced('stats')[skill.stat].mod + this.calced('prof');
-        this.skills.push(skill);
+        skill.mod = stats[skill.stat].mod + prof;
+        self.skills.push(skill);
+    }
+
+    // 1. add random skill from class list
+    var skills = config.classes[0].skills.slice(); // copy array
+    for (var i = 0; i < this.config.classes[0].skillsno; i++) {
+        var random = Math.floor(Math.random() * skills.length);
+        addSkill(skills[random]);
         skills.splice(random, 1);
+    }
+
+    // 2. add additional random skill for rogue/ranger/bard
+    for (var i = 1; i < this.classes.length; i++) {
+        var skills = config.classes[i].skills,
+            random = Math.floor(Math.random() * skills.length);
+        addSkill(skills[random]);
+    }
+
+    // 3. add background skill proficiency
+    var skills = config.background.skills;
+    for (var i = 0; i < skills.length; i++) {
+        addSkill(skills[i]);
+    }
+
+    // 4. add race skill proficiency
+    var skills = config.race.skills || [];
+    for (var i = 0; i < skills.length; i++) {
+        addSkill(skills[i]);
     }
 }
 
