@@ -20,10 +20,29 @@ router.get('/', function(req, res, next) {
 
 /* POST new NPC */
 router.post('/', function (req, res, next) {
-    NPC.create(req.body, function (err, post) {
+    NPC.create(req.body, function (err, npc) {
         if (err) return next(err);
-        post.randomizeAll();
-        res.json(post);
+
+        if (!npc.race)
+            npc.randomizeRace();
+        if (!npc.classes[0].name || !npc.classes[0].level)
+            npc.randomizeClasses(!!req.body.multiclass, npc.classes[0].name, npc.classes[0].level);
+        if (!npc.background)
+            npc.randomizeBackground();
+        if (!npc.gender)
+            npc.randomizeGender();
+        if (!npc.name)
+            npc.randomizeName();
+
+        npc.randomizeBackgroundStuff();
+        npc.randomizeAlignment();
+        npc.randomizeStats();
+        npc.randomizeSkills();
+        npc.randomizeEquipment();
+
+        npc.recalculate();
+        npc.save();
+        res.json(npc);
     });
 });
 

@@ -1,4 +1,5 @@
 var DND = {
+    ALIGNMENTS: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
     STATNAMES: ['STR','DEX','CON','INT','WIS','CHA'],
     DAMAGE_TYPES: [
         /*  0 */ 'bludgeoning',
@@ -129,6 +130,7 @@ DND.CLASSES = [
         tools: [],
         weapons: DND.WEAPON_GROUPS.all,
         armors: DND.ARMOR_GROUPS.lightmediumshield,
+        alignments: ['NG','CG','N','CN','NE','CE'],
         saves: [0,2]
     },
     {
@@ -139,6 +141,7 @@ DND.CLASSES = [
         tools: [],
         weapons: DND.WEAPON_GROUPS.simple.concat([34,22,26,28]),
         armors: DND.ARMOR_GROUPS.light,
+        alignments: ['NG','CG','N','CN','NE','CE'],
         saves: [1,5],
         spells: [
             ["Blade Ward","Dancing Lights","Friends","Light","Mage Hand","Mending","Message","Minor Illusion","Prestidigitation","True Strike","Vicious Mockery"],
@@ -158,6 +161,7 @@ DND.CLASSES = [
         weapons: DND.WEAPON_GROUPS.simple,
         armors: DND.ARMOR_GROUPS.lightmediumshield,
         saves: [1,5],
+        alignments: ['LG','NG','CG','LN','CN','LE','NE','CE'],
         spells: [
             ["Guidance","Light","Mending","Resistance","Sacred Flame","Spare the Dying","Thaumaturgy"],
             ["Bane","Bless","Command","Create or Destroy Water","Cure Wounds","Detect Evil and Good","Detect Magic","Detect Poison and Disease","Guiding Bolt","Healing Word","Inflict Wounds","Protection from Evil and Good","Purify Food and Drink","Sanctuary","Shield of Faith"],
@@ -177,6 +181,7 @@ DND.CLASSES = [
         tools: [0],
         armors: [0,1,2,3,12],
         saves: [3,4],
+        alignments: ['NG','LN','N','CN','NE'],
         spells: [
             ["Druidcraft","Guidance","Mending","Poison Spray","Produce Flame","Resistance","Shillelagh","Thorn Whip"],
             ["Animal Friendship","Charm Person","Create or Destroy Water","Cure Wounds","Detect Magic","Detect Poison and Disease","Entangle","Faerie Fire","Fog Cloud","Goodberry","Healing Word","Jump","Longstrider","Purify Food and Drink","Speak with Animals","Thunderwave"],
@@ -195,6 +200,7 @@ DND.CLASSES = [
         languages: ['druidic'],
         tools: [0],
         armors: DND.ARMOR_GROUPS.all,
+        alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         saves: [0,2]
     },
     {
@@ -206,6 +212,7 @@ DND.CLASSES = [
         languages: [],
         tools: [], // 2 artistan tools
         armors: [],
+        alignments: ['LG','LN','LE'],
         saves: [0,1]
     },
     {
@@ -218,6 +225,7 @@ DND.CLASSES = [
         tools: [],
         armors: DND.ARMOR_GROUPS.all,
         saves: [3,5],
+        alignments: ['LG','NG','CG'],
         spells: [
             ["Bless","Command","Compelled Duel","Cure Wounds","Detect Evil and Good","Detect Magic","Detect Poison and Disease","Divine Favor","Heroism","Protection from Evil and Good","Purify Food and Drink","Searing Smite","Shield of Faith","Thunderous Smite","Wrathful Smite"],
             ["Aid","Branding Smite","Find Steed","Lesser Restoration","Locate Object","Magic Weapon","Protection from Poison","Zone of Truth"],
@@ -234,6 +242,7 @@ DND.CLASSES = [
         tools: [],
         armors: DND.ARMOR_GROUPS.all,
         saves: [0,1],
+        alignments: ['NG','LN','N','CN','NE'],
         spells: [
             ["Alarm","Animal Friendship","Cure Wounds","Detect Magic","Detect Poison and Disease","Ensnaring Strike","Fog Cloud","Goodberry","Hail of Thorns","Hunter's Mark","Jump","Longstrider","Speak with Animals"],
             ["Animal Messenger","Barkskin","Beast Sense","Cordon of Arrows","Darkvision","Find Traps","Lesser Restoration","Locate Animals or Plants","Locate Object","Pass without Trace","Protection from Poison","Silence","Spike Growth"],
@@ -249,6 +258,7 @@ DND.CLASSES = [
         languages: [],
         tools: [1],
         armors: DND.ARMOR_GROUPS.light,
+        alignments: ['NG','CG','N','CN','NE','CE'],
         saves: [1,3]
     },
     {
@@ -261,6 +271,7 @@ DND.CLASSES = [
         tools: [],
         armors: [],
         saves: [2,5],
+        alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         spells: [
             ["Acid Splash","Blade Ward","Chill Touch","Dancing Lights","Fire Bolt","Friends","Light","Mage Hand","Mending","Message","Minor Illusion","Poison Spray","Prestidigitation","Ray of Frost","Shocking Grasp","True Strike"],
             ["Burning Hands","Charm Person","Chromatic Orb","Color Spray","Comprehend Languages","Detect Magic","Disguise Self","Expeditious Retreat","False Life","Feather Fall","Fog Cloud","Jump","Mage Armor","Ray of Sickness","Shield","Silent Image","Sleep","Thunderwave","Witch Bolt"],
@@ -280,6 +291,7 @@ DND.CLASSES = [
         tools: [],
         armors: DND.ARMOR_GROUPS.light,
         saves: [3,5],
+        alignments: ['LN','N','CN','LE','NE','CE'],
         spells: [
             ["Blade Ward","Chill Touch","Eldritch Blast","Friends","Mage Hand","Minor Illusion","Poison Spray","Prestidigitation","True Strike"],
             ["Armor of Agathys","Arms of Hadar","Charm Person","Comprehend Languages","Expeditious Retreat","Hellish Rebuke","Hex","Illusory Script","Protection from Good and Evil","Unseen Servant","Witch Bolt"],
@@ -300,6 +312,7 @@ DND.CLASSES = [
         tools: [],
         armors: [],
         saves: [3,4],
+        alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         spells: [
             ["Acid Splash","Blade Ward","Chill Touch","Dancing Lights","Fire Bolt","Friends","Light","Mage Hand","Mending","Message","Minor Illusion","Poison Spray","Prestidigitation","Ray of Frost","Shocking Grasp","True Strike"],
             ["Alarm","Burning Hands","Charm Person","Chromatic Orb","Color Spray","Comprehend Languages","Detect Magic","Disguise Self","Expeditious Retreat","False Life","Feather Fall","Find Familiar","Find Familiar","Fog Cloud","Grease","Identify","Illusory Script","Jump","Longstrider","Mage Armor","Magic Missile","Protection from Good and Evil","Ray of Sickness","Shield","Silent Image","Sleep","Tasha's Hideous Laughter","Tenser's Floating Disk","Thunderwave","Unseen Servant","Witch Bolt"],
@@ -312,11 +325,25 @@ DND.CLASSES = [
 ];
 DND.RACES = [
     {
+        name: 'Human',
+        size: 'Medium',
+        speed: 30,
+        stats: [{index: 0, bonus: 1},{index: 1, bonus: 1},{index: 2, bonus: 1},{index: 3, bonus: 1},{index: 4, bonus: 1},{index: 5, bonus: 1}],
+        alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
+        languages: ['Common','*'],
+        subraces: [],
+        names: {
+            male: ["Ander","Blath","Bran","Frath","Geth","Lander","Luth","Malcer","Stor","Taman","Urth","Aseir","Bardeid","Haseid","Khemed","Mehmen","Sudeiman","Zasheir","Bor","Fodel","Glar","Grigor","Igan","Ivor","Kosef","Mival","Orel","Pavel","Sergor"],
+            female: ["Amafrey","Betha","Cefrey","Kethra","Mara","Olga","Silifrey","Westra","Atala","Ceidil","Hama","Jasmal","Meilil","Seipora","Yasheira","Zasheida","Alethra","Kara","Katernin","Mara","Natali","Olma","Tana","Zora"],
+            last: ["Brightwood","Helder","Hornraven","Lackman","Stormwind","Windrivver","Basha","Dumein","Jassan","Khalid","Mostana","Pashar","Rein","Bersk","Chernin","Dotsk","Kulenov","Marsk","Nemetsk","Shemov","Starag"]
+        }
+    },
+    {
         name: 'Gnome',
         size: 'Small',
         speed: 25,
         stats: [{index: 3, bonus: 2}],
-        alignments: ['G'],
+        alignments: ['LG','NG','CG'],
         abils: ['Darkvision', 'Gnome Cunning'],
         languages: ['Common', 'Gnomish'],
         subraces: [
@@ -335,7 +362,7 @@ DND.RACES = [
         size: 'Medium',
         speed: 30,
         stats: [{index: 0, bonus: 2}, {index: 2, bonus: 1}],
-        alignments: ['C','N','E'],
+        alignments: ['CG','CN','CE','N','NE','E'],
         abils: ['Darkvision','Menacing','Relentless Endurance','Savage Attacks'],
         skills: [15],
         languages: ['Common', 'Orc'],
@@ -350,7 +377,7 @@ DND.RACES = [
         size: 'Medium',
         speed: 30,
         stats: [{index: 3, bonus: 2}, {index: 5, bonus: 1}],
-        alignments: ['E'],
+        alignments: ['LE','NE','CE'],
         abils: ['Darkvision','Hellish Resistance','Infernal Legacy'],
         spells: [['Thaumaturgy'],[],['Hellish Rebuke'],['Darkness']],
         languages: ['Common', 'Infernal'],
@@ -366,7 +393,7 @@ DND.RACES = [
         size: 'Medium',
         speed: 30,
         stats: [{index: 5, bonus: 2}, {index: '*', bonus: 1}, {index: '*', bonus: 1}],
-        alignments: ['C'],
+        alignments: ['CG','CN'],
         abils: ['Darkvision','Fey Ancestry','Skill Versality'],
         skills: ['*','*'],
         languages: ['Common', 'Elvish','*'],
@@ -382,7 +409,7 @@ DND.RACES = [
         size: 'Medium',
         speed: 30,
         stats: [{index: 0, bonus: 2}],
-        alignments: ['L','G','C','E'],
+        alignments: ['LG','CG','LE','CE'],
         abils: ['Draconic Ancestry', 'Breath Weapon', 'Damage Resistance'],
         languages: ['Common', 'Draconic'],
         subraces: [],
@@ -390,20 +417,6 @@ DND.RACES = [
             male: ["Arjhan","Balasar","Bharash","Donaar","Ghesh","Heskan","Kriv","Medrash","Mehen","Nadarr","Pandjed","Patrin","Rhogar","Shamash","Shedinn","Tarhun","Torinn"],
             female: ["Akra","Biri","Daar","Farideh","Harann","Flavilar","Jheri","Kava","Korinn","Mishann","Nala","Perra","Raiann","Sora","Surina","Thava","Uadjit"],
             last: ["Clethtinthiallor","Daardendrian","Delmirev","Drachedandion","Fenkenkabradon","Kepeshkmolik","Kerrhylon","Kimbatuul","inxakasendalor","Myastan","Nemmonis","Norixius","Ophinshtalajiir","Prexijandilin","Shestendeliath","Turnuroth","Verthisathurgiesh","Yarjerit"]
-        }
-    },
-    {
-        name: 'Human',
-        size: 'Medium',
-        speed: 30,
-        stats: [{index: 0, bonus: 1},{index: 1, bonus: 1},{index: 2, bonus: 1},{index: 3, bonus: 1},{index: 4, bonus: 1},{index: 5, bonus: 1}],
-        alignments: [],
-        languages: ['Common','*'],
-        subraces: [],
-        names: {
-            male: ["Ander","Blath","Bran","Frath","Geth","Lander","Luth","Malcer","Stor","Taman","Urth","Aseir","Bardeid","Haseid","Khemed","Mehmen","Sudeiman","Zasheir","Bor","Fodel","Glar","Grigor","Igan","Ivor","Kosef","Mival","Orel","Pavel","Sergor"],
-            female: ["Amafrey","Betha","Cefrey","Kethra","Mara","Olga","Silifrey","Westra","Atala","Ceidil","Hama","Jasmal","Meilil","Seipora","Yasheira","Zasheida","Alethra","Kara","Katernin","Mara","Natali","Olma","Tana","Zora"],
-            last: ["Brightwood","Helder","Hornraven","Lackman","Stormwind","Windrivver","Basha","Dumein","Jassan","Khalid","Mostana","Pashar","Rein","Bersk","Chernin","Dotsk","Kulenov","Marsk","Nemetsk","Shemov","Starag"]
         }
     },
     {
@@ -429,7 +442,7 @@ DND.RACES = [
         size: 'Medium',
         speed: 30,
         stats: [{index: 1, bonus: 2}],
-        alignments: ['G', 'C'],
+        alignments: ['LG','NG','CG','CN'],
         abils: ['Darkvision','Fey Ancestry','Keen Senses', 'Trance'],
         skills: [12],
         languages: ['Common', 'Elvish'],
@@ -454,7 +467,7 @@ DND.RACES = [
             { name: 'Hill Dwarf', stats: [{index: 3, bonus: 1}], abils: ['Dwarven Toughness'] },
             { name: 'Moutain Dwarf', stats: [{index: 0, bonus: 2}], armors: DND.ARMOR_GROUPS.lightmedium, abils: ['Dwarven Armor Training'] }
         ],
-        alignments: ['L','G'],
+        alignments: ['LG','NG','CG','LE','LN'],
         abils: ['Darkvision','Dwarven Resilience', 'Dwarven Combat Training'],
         languages: ['Common', 'Dwarven'],
         names: {

@@ -37,6 +37,10 @@
                                     <label class="col-sm-5" for="npc-background">Background</label>
                                     <select ng-change="panelCtrl.changeBackground(npc)" class="col-sm-7" id="npc-background" name="npc-background" ng-model="npc.background.name" ng-options="bg.name as bg.name for bg in config.BACKGROUNDS"></select>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="npc-alignment">Alignment</label>
+                                    <select ng-change="panelCtrl.changeBackground(npc)" class="col-sm-7" id="npc-alignment" name="npc-alignment" ng-model="npc.alignment" ng-options="al as al for al in config.ALIGNMENTS"></select>
+                                </div>
                                 <hr>
                                 <div ng-repeat="class in npc.classes">
                                     <div class="form-group row">
@@ -73,7 +77,6 @@
                                 <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
                             </div>
                             <div class="panel-body">
-
                                 <div>HP: {{ npc.hp }}</div>
                                 <div>AC: {{ npc.ac }}</div>
                                 <div>IT: {{ npc.it }}</div>

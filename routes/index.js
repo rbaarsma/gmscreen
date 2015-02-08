@@ -12,7 +12,8 @@ router.get('/config', function(req, res, next) {
         CLASSES: [],
         SKILLS: [],
         RACES: [],
-        BACKGROUNDS: []
+        BACKGROUNDS: [],
+        ALIGNMENTS: DND.ALIGNMENTS
     };
 
     for (var i=0; i<DND.CLASSES.length; i++)

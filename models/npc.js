@@ -33,6 +33,7 @@ var ClassSchema = new mongoose.Schema({
 });
 
 var SkillSchema = new mongoose.Schema({
+    key: Number,
     name: String,
     mod: Number,
     stat: Number
@@ -51,6 +52,7 @@ var NPCSchema = new mongoose.Schema({
     hp: Number,
     race: Object,
     background: Object,
+    alignment: String,
     prof: Number, // proficiency bonus
     name: String,
     in_panel: Boolean,
@@ -160,9 +162,9 @@ NPCSchema.methods.calc = function (props) {
                 this.config.weapons = this.config.weapons.unique();
                 this.config.languages = this.config.languages.unique();
 
-                console.log(' --------- config ---------');
-                console.log(this.config);
-                console.log(' --------- /config ---------');
+                //console.log(' --------- config ---------');
+                //console.log(this.config);
+                //console.log(' --------- /config ---------');
 
                 break;
 
@@ -225,33 +227,61 @@ NPCSchema.methods.recalculate = function () {
 
 NPCSchema.methods.randomizeAll = function () {
     this.randomizeBase();
-    this.randomizeBackground();
+    this.randomizeBackgroundStuff();
+    this.randomizeAlignment();
     this.randomizeStats();
     this.randomizeSkills();
     this.randomizeEquipment();
 }
 
 NPCSchema.methods.randomizeBase = function () {
-    this.background = {
-        name: DND.BACKGROUNDS[Math.floor(Math.random() * DND.BACKGROUNDS.length)].name
-    };
+    this.randomizeBackground();
+    this.randomizeRace();
+    this.randomizeClasses(true);
+};
 
-    // pick race
-    var r = Math.floor(Math.random() * DND.RACES.length),
-        subraces = DND.RACES[r].subraces;
-    this.race = {name: subraces.length > 0 ? subraces[Math.floor(Math.random() * subraces.length)].name : DND.RACES[r].name};
+NPCSchema.methods.randomizeName = function () {
+    var names = this.calced('config').race.names,
+        firstnames = names[this.gender],
+        lastnames = names.last || [];
+    this.name = firstnames[Math.floor(Math.random() * firstnames.length)];
+    if (lastnames.length > 0) {
+        this.name += ' ' + lastnames[Math.floor(Math.random() * lastnames.length)];
+    }
+}
 
-    // pick class(es)
+NPCSchema.methods.randomizeGender = function () {
+    var genders = ['male','female'];
+    this.gender = genders[Math.round(Math.random())];
+}
+
+NPCSchema.methods.randomizeClasses = function (multiclass, name, level) {
     var class_names = []
     for (var i=0; i<DND.CLASSES.length; i++)
         class_names.push(DND.CLASSES[i].name);
 
+    console.log('level: '+level);
+    if (!level) {
+        console.log('randomizing level');
+        level = Math.floor((Math.random() * Math.random()) * 20) + 1;
+    } else if (level[1] == '-') {
+        level = Math.floor((Math.random() * Math.random()) * (level[2]-level[0])) + level[0];
+    } // else level=level
+    console.log('level: '+level);
+
+    var index = class_names.indexOf(name);
+    if (index > -1) {
+        this.classes[0].level = level;
+        return;
+    }
+
     this.classes = [];
-    var level = Math.floor((Math.random()*Math.random())*20)+1;
-    var classes = 1 + Math.round(Math.random()*Math.random()) + Math.round(Math.random()*Math.random()); // 1, 2 or 3
+    var classes = multiclass ? 1 : (1 + Math.round(Math.random()*Math.random()) + Math.round(Math.random()*Math.random())); // 1, 2 or 3
     for (var i=classes; i>0; i--) {
+        console.log(i);
         var random = Math.floor(Math.random()*class_names.length);
-        var clslvl = i==0 ? level: Math.floor((Math.random())*(level-i))+1;
+        var clslvl = i==1 ? level : Math.floor((Math.random())*(level-i))+1;
+        console.log(clslvl);
         if (clslvl < 1)
             clslvl = 1;
         this.classes.push({
@@ -260,11 +290,48 @@ NPCSchema.methods.randomizeBase = function () {
         });
         level -= clslvl;
         class_names.splice(random, 1);
-    }
-    console.log(this.classes);
-};
+    }};
 
 NPCSchema.methods.randomizeBackground = function () {
+    this.background = {
+        name: DND.BACKGROUNDS[Math.floor(Math.random() * DND.BACKGROUNDS.length)].name
+    };
+};
+
+NPCSchema.methods.randomizeRace = function () {
+    var r = Math.floor(Math.random() * DND.RACES.length),
+        subraces = DND.RACES[r].subraces;
+    this.race = {name: subraces.length > 0 ? subraces[Math.floor(Math.random() * subraces.length)].name : DND.RACES[r].name};
+
+};
+
+/**
+ * 1. determine possible alignments
+ *  - based on backstory
+ * 2. determine preffered alignments
+ *  - based on class
+ *  - based on race
+ */
+NPCSchema.methods.randomizeAlignment = function () {
+    var self = this,
+        config = this.calced('config');
+
+    if (this.config.backstory) {
+        // see if there's something here
+    }
+
+    // concat race and class, non-unique
+    var choices = config.classes[0].alignments.concat(config.race.alignments);
+
+    // add random alignment, for the odd ones'
+    var all = DND.ALIGNMENTS;
+    choices.push( all[Math.floor(Math.random() * all.length)] );
+
+    // pick random
+    this.alignment = choices[Math.floor(Math.random() * choices.length)];
+}
+
+NPCSchema.methods.randomizeBackgroundStuff = function () {
 
     for (var k = 0; k < DND.BACKGROUNDS.length; k++) {
         if (DND.BACKGROUNDS[k].name == this.background.name) {
@@ -344,34 +411,76 @@ NPCSchema.methods.randomizeSkills = function () {
         skill.key = key;
         skill.mod = stats[skill.stat].mod + prof;
         self.skills.push(skill);
-    }
+    };
 
-    // 1. add random skill from class list
-    var skills = config.classes[0].skills.slice(); // copy array
-    for (var i = 0; i < this.config.classes[0].skillsno; i++) {
-        var random = Math.floor(Math.random() * skills.length);
-        addSkill(skills[random]);
-        skills.splice(random, 1);
-    }
+    var removeExistingSkills = function (skills) {
+        console.log(self.skills.length);
+        for (var i=0; i<self.skills.length; i++) {
+            console.log('key: '+self.skills[i]['key']);
+            var index = skills.indexOf(self.skills[i].key);
+            console.log('index: '+index)
+            if (index > -1) {
+                skills.splice(index, 1);
+            }
+        }
+        return skills;
+    };
 
-    // 2. add additional random skill for rogue/ranger/bard
-    for (var i = 1; i < this.classes.length; i++) {
-        var skills = config.classes[i].skills,
-            random = Math.floor(Math.random() * skills.length);
-        addSkill(skills[random]);
-    }
-
-    // 3. add background skill proficiency
+    // 1. add background skill proficiency
     var skills = config.background.skills;
     for (var i = 0; i < skills.length; i++) {
         addSkill(skills[i]);
     }
 
-    // 4. add race skill proficiency
+    // 2. add race skill proficiency
     var skills = config.race.skills || [];
     for (var i = 0; i < skills.length; i++) {
-        addSkill(skills[i]);
+        if (skills[i] == '*') { // * means any
+            var choices = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
+            addSkill(Math.floor(Math.random() * choices.length));
+        } else {
+            addSkill(skills[i]);
+        }
     }
+
+    console.log(this.skills);
+
+    // 3. add random skill from class list
+    var skills = config.classes[0].skills.slice(); // copy array
+    console.log('class choices:');
+    console.log(skills);
+
+    // remove skills that are already chosen
+    removeExistingSkills(skills);
+    console.log('after removing:');
+    console.log(skills);
+
+    // actually choose alass skills
+    for (var i = 0; i < skills.length > 0 && this.config.classes[0].skillsno; i++) {
+        var random = Math.floor(Math.random() * skills.length);
+        addSkill(skills[random]);
+        skills.splice(random, 1);
+    }
+
+
+    // 4. add additional random skill for rogue/ranger/bard
+    for (var i = 1; i < this.classes.length; i++) {
+        if (this.classes[i].name == 'Rogue' || this.classes[i].name == 'Bard' || this.classes[i].name == 'Ranger') {
+            console.log('adding additional skill');
+            var skills = config.classes[i].skills;
+            removeExistingSkills(skills);
+            console.log('choices after removal: ');
+            console.log(skills);
+            if (skills.length == 0)
+                return;
+
+            var random = Math.floor(Math.random() * skills.length);
+            addSkill(skills[random]);
+        }
+    }
+
+    console.log('finally');
+    console.log(this.skills);
 }
 
 NPCSchema.methods.randomizeEquipment = function () {

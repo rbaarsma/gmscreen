@@ -77,14 +77,14 @@ var NPCCollection = function ($http, $rootScope) {
         self.changed[npc._id] = npc;
     };
 
-    // add single NPC
-    this.add = function (data) {
+    // create new single NPC
+    this.create = function (data) {
         data.loading = true;
         var index = $rootScope.npcs.push(data);
         return this.request('/npcs', 'POST', data)
             .success(function (data) {
                 data.loading = false;
-                $rootScope.npcs[index - 1] = data;
+                $rootScope.npcs[index-1] = data;
                 console.log('npc added');
             })
         ;

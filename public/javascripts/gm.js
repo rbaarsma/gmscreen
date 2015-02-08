@@ -172,5 +172,35 @@
                 }
             };
         })
+        .directive('npcNew', function () {
+            return {
+                'templateUrl': 'partial/npc-new.html',
+                'controller': ['$http', '$scope', 'NPCCollection', function ($http, $scope, NPCCollection) {
+                    this.show = false;
+                    $scope.npc = {
+                        classes: [{name: '', level: ''}],
+                        multiclass: true,
+                        in_panel: true,
+                        maximized: true
+                    };
+
+                    this.generate = function () {
+                        NPCCollection.create($scope.npc);
+                        this.show=false;
+                    }
+                    /*
+                    this.addClass = function (npc) {
+                        npc.classes.push({name: '', level: ''});
+                    };
+
+                    this.removeClass = function (npc, index) {
+                        npc.classes.splice(index, 1);
+                    }
+                    */
+
+                }],
+                'controllerAs': 'modalCtrl'
+            }
+        })
     ;
 })();
