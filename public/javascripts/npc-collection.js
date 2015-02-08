@@ -62,8 +62,13 @@ var NPCCollection = function ($http, $rootScope) {
         self.timeout = window.setTimeout(function () {
             for (id in self.changed) {
                 self.request('/npcs/' + npc._id, 'PATCH', npc)
-                    .success(function () {
-                        delete self.changed[npc._id];
+                    .success(function (data) {
+                        for (var i=0; i<$rootScope.npcs.length; i++) {
+                            if ($rootScope.npcs[i]._id == id) {
+                                $rootScope.npcs[i] = data;
+                            }
+                        }
+                        delete self.changed[id];
                     })
                 ;
             }

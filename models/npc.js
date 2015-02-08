@@ -61,6 +61,7 @@ var NPCSchema = new mongoose.Schema({
     items: [],
     weapons: [WeaponSchema],
     updated_at: { type: Date, default: Date.now },
+    notes: String,
     maximized: Boolean, // show maximized in view
 });
 
@@ -196,7 +197,7 @@ NPCSchema.methods.calced = function (prop) {
 }
 
 NPCSchema.methods.recalculate = function () {
-    this.calc(['ac','hp','it']);
+    this.calc(['ac','hp','it','prof']);
 }
 
 NPCSchema.methods.randomizeAll = function () {
@@ -320,31 +321,28 @@ NPCSchema.methods.randomizeEquipment = function () {
     var armors = this.calced('config').armors,
         weapons = this.calced('config').weapons;
 
-    console.log(weapons);
-
-    armors.sort(function (a,b) {return a-b;});
-    weapons.sort(function (a,b) {return a-b;});
+    armors.sort(function (a, b) {
+        return a - b;
+    });
+    weapons.sort(function (a, b) {
+        return a - b;
+    });
 
     var index = armors.indexOf(12);
-    console.log(index);
     this.shield = {name: '-', ac: 0};
-    console.log(this.shield);
     if (index > 0) {
-        console.log(armors[index]);
         // add shield?
         if (Math.random() > .5)
             this.shield = DND.ARMORS[armors[index]];
-        console.log(this.shield);
         armors.splice(index, 1);
     }
-    console.log(this.shield);
 
     var npcarmor = {name: '-', ac: 0, maxdex: -1, minstr: 0};
     var dexmod = this.calced('stats')[1].mod;
     this.calc(['level']);
 
     // search for suitable armor, prefer best
-    for (i=armors.length-1; i>0; i--) {
+    for (i = armors.length - 1; i > 0; i--) {
         var armor = DND.ARMORS[armors[i]];
         if (this.level == 1 && armor.cost > 50) {
             continue;
@@ -371,43 +369,71 @@ NPCSchema.methods.randomizeEquipment = function () {
     this.armor = npcarmor;
     console.log(this.armor);
 
-    var melee = null, ranged = null;
-    while (melee == null || ranged == null) {
-        var i = Math.floor(Math.random() * weapons.length);
-
-        var k = weapons[i];
-        if (weapons.length > 14 && k < 15) {
-            weapons.splice(i,1);
-            continue;
-        }
-
-        console.log(k);
-        var w = DND.WEAPONS[k];
-        if (this.shield.name = '-') {
-            if (w.hands > 1) {
-                weapons.splice(i,1);
-                continue;
-            }
-        }
-
-        if (w.type == 'melee'){
-            if (melee) {
-                weapons.splice(i,1);
-                continue;
+    // prepare choices in grouped arrays
+    var s1hmelee = [], s2hmelee = [], m1hmelee = [], m2hmelee = [], sranged = [], mranged = [];
+    for (var i = 0; i < weapons.length; i++) {
+        var wep = DND.WEAPONS[weapons[i]];
+        if (wep.type == 'melee') {
+            if (wep.complexity == 'simple') {
+                if (wep.hands == 1) {
+                    for (var j = 0; j < wep.pickchance; j++) {
+                        s1hmelee.push(weapons[i]);
+                    }
+                } else {
+                    for (var j = 0; j < wep.pickchance; j++) {
+                        s2hmelee.push(weapons[i]);
+                    }
+                }
             } else {
-                melee = w;
+                if (wep.hands == 1) {
+                    for (var j = 0; j < wep.pickchance; j++) {
+                        m1hmelee.push(weapons[i]);
+                    }
+                } else {
+                    for (var j = 0; j < wep.pickchance; j++) {
+                        m2hmelee.push(weapons[i]);
+                    }
+                }
             }
-        }
-        if (w.type == 'ranged'){
-            if (ranged) {
-                weapons.splice(i,1);
-                continue;
+        } else {
+            if (wep.complexity == 'simple') {
+                for (var j = 0; j < wep.pickchance; j++) {
+                    sranged.push(weapons[i]);
+                }
             } else {
-                ranged = w;
+                for (var j = 0; j < wep.pickchance; j++) {
+                    mranged.push(weapons[i]);
+                }
             }
         }
     }
-    this.weapons = [melee, ranged];
+    console.log('-------- weapons --------');
+    console.log(s2hmelee);
+    console.log(s1hmelee);
+    console.log(m2hmelee);
+    console.log(m1hmelee);
+    console.log(sranged);
+    console.log(mranged);
+    console.log('-------- /weapons --------');
+
+    // pick ranged
+    var choices = mranged.length > 0 ? mranged : sranged;
+    this.weapons.push(DND.WEAPONS[choices[Math.floor(Math.random() * choices.length)]]);
+
+    // pick melee
+    if (this.shield.ac == 0) {
+        if (Math.random() > .7) {
+            var choices = m2hmelee.length > 0 ? m2hmelee : s2hmelee;
+        } else {
+            var choices = m1hmelee.length > 0 ? m1hmelee : s1hmelee;
+            this.weapons.push(DND.WEAPONS[choices[Math.floor(Math.random() * choices.length)]]);
+            var choices = m1hmelee.length > 0 ? m1hmelee : s1hmelee;
+        }
+    } else {
+        var choices = m1hmelee.length > 0 ? m1hmelee : s1hmelee;
+    }
+    this.weapons.push(DND.WEAPONS[choices[Math.floor(Math.random() * choices.length)]]);
+
 }
 
 module.exports = mongoose.model('NPC', NPCSchema);
