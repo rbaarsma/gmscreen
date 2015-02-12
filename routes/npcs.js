@@ -23,11 +23,13 @@ router.post('/', function (req, res, next) {
     NPC.create(req.body, function (err, npc) {
         if (err) return next(err);
 
+        console.log(npc.background);
+
         if (!npc.race)
             npc.randomizeRace();
         if (!npc.classes[0].name || !npc.classes[0].level)
             npc.randomizeClasses(!!req.body.multiclass, npc.classes[0].name, npc.classes[0].level);
-        if (!npc.background)
+        if (!npc.background || !npc.background.name)
             npc.randomizeBackground();
         if (!npc.gender)
             npc.randomizeGender();
@@ -95,7 +97,7 @@ router.post('/:id/randomize', function(req, res, next) {
                 npc.randomizeEquipment();
                 break;
             case 'background':
-                npc.randomizeBackground();
+                npc.randomizeBackgroundStuff();
                 break;
         }
         npc.recalculate();

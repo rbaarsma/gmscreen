@@ -13,6 +13,13 @@
 
 @padding: 20px;
 
+tag {
+  padding-right: 5px;
+}
+tag button.label {
+  margin: 0;
+}
+
 button {
   .btn;
   .btn-primary;
@@ -60,10 +67,14 @@ gm-side {
   .make-md-column(12);
 }
 
-.npc-panel-container.maximized npc-section {
-  .make-md-column(4);
+.npc-panel-body {
+  padding:0 !important;
 }
 
+.npc-panel-container.maximized npc-section {
+  .make-md-column(4);
+  .make-sm-column(6);
+}
 
 gm-panels {
   .make-md-column(9);

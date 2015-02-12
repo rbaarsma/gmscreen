@@ -50,6 +50,8 @@ var NPCCollection = function ($http, $rootScope) {
                 for (i in $rootScope.npcs) {
                     self.recalculate($rootScope.npcs[i]);
                 }
+
+                $rootScope.$broadcast('npcs.loaded');
             })
         ;
     };

@@ -4,7 +4,7 @@
  * @author Rein Baarsma <rein@solidwebcode.com>
  */
 (function () {
-    angular.module('gm', ['angularFileUpload'])
+    angular.module('gm', ['angularFileUpload', 'masonry'])
 
         // Service
         .factory('NPCCollection', ['$http', '$rootScope', function ($http, $rootScope) {
@@ -16,6 +16,11 @@
             return function (input) {
                 input = parseInt(input);
                 return input > 0 ? '+' + input : input;
+            };
+        })
+
+        .directive('gmContainer', function () {
+            return {
             };
         })
 
@@ -32,6 +37,17 @@
                             // add subraces when race changes
                         })
                     ;
+
+                    this.removeTag = function (npc, index) {
+                        npc.tags.splice(index, 1);
+                    };
+
+                    this.addTag = function (npc) {
+                        npc.tags = npc.tags || [];
+                        npc.tags.push(self.newtag);
+                        NPCCollection.update(npc)
+                        self.newtag = "";
+                    };
 
                     // image stuff
                     this.onFileSelect = function (npc, image) {
@@ -129,7 +145,6 @@
                         'connectWith': "gm-npc"
                     });
                 }
-
             };
         })
 
@@ -152,6 +167,9 @@
                     this.addToPanel = function (npc) {
                         npc.in_panel = true;
                         NPCCollection.update(npc);
+                        console.log($rootScope);
+
+                        $rootScope.$broadcast('masonry.update');
                     }
                 }],
                 'controllerAs': 'sideCtrl'
@@ -202,5 +220,85 @@
                 'controllerAs': 'modalCtrl'
             }
         })
+
+        .directive('masonry', function($timeout) {
+            return {
+                restrict: 'AC',
+                link: function(scope, elem, attrs) {
+
+
+                    var container = elem[0];
+                    var options = angular.extend({
+                        itemSelector: '.item'
+                    }, angular.fromJson(attrs.masonry));
+
+                    var masonry = scope.masonry = scope.$root.masonry = new Masonry(container, options);
+
+                    var debounceTimeout = 0;
+                    scope.update = function() {
+                        if (debounceTimeout) {
+                            $timeout.cancel(debounceTimeout);
+                        }
+                        debounceTimeout = $timeout(function() {
+                            debounceTimeout = 0;
+
+                            masonry.reloadItems();
+                            masonry.layout();
+
+                            elem.children(options.itemSelector).css('visibility', 'visible');
+                        }, 120);
+                    };
+
+                    scope.$root.$on('masonry.update', scope.update);
+
+                    scope.removeBrick = function() {
+                        $timeout(function() {
+                            masonry.reloadItems();
+                            masonry.layout();
+                        }, 500);
+                    };
+
+                    scope.appendBricks = function(ele) {
+                        masonry.appended(ele);
+                    };
+
+                    scope.$on('masonry.layout', function() {
+                        masonry.layout();
+                    });
+
+                    scope.update();
+                }
+            };
+        })
+
+        .directive('masonryTile', function() {
+            return {
+                restrict: 'AC',
+                link: function(scope, elem) {
+                    console.log('linked');
+                    //elem.css('visibility', 'hidden');
+
+                    window.setTimeout(function () {
+                        var master = elem.parent('*[masonry]:first').scope(),
+                            update = master.update,
+                            removeBrick = master.removeBrick,
+                            appendBricks = master.appendBricks;
+
+                        if (update) {
+                            //imagesLoaded( elem.get(0), update);
+                            elem.ready(update);
+                        }
+                        if (appendBricks) {
+                            //imagesLoaded( elem.get(0), appendBricks(elem));
+                        }
+                        scope.$on('$destroy', function() {
+                            if (removeBrick) {
+                                removeBrick();
+                            }
+                        });
+                    },0 );
+                }
+            };
+        });
     ;
 })();

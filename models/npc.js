@@ -53,6 +53,7 @@ var NPCSchema = new mongoose.Schema({
     race: Object,
     background: Object,
     alignment: String,
+    tags: [String],
     prof: Number, // proficiency bonus
     name: String,
     in_panel: Boolean,
