@@ -45,6 +45,11 @@ var WeaponSchema = new mongoose.Schema({
     type: String,
 });
 
+var SectionSchema = new mongoose.Schema({
+    id: String,
+    show: Boolean
+});
+
 var NPCSchema = new mongoose.Schema({
     _picture_id: mongoose.Schema.Types.ObjectId,
     ac: Number,
@@ -67,6 +72,7 @@ var NPCSchema = new mongoose.Schema({
     updated_at: { type: Date, default: Date.now },
     notes: String,
     maximized: Boolean, // show maximized in view
+    sections: [SectionSchema]
 });
 
 /**

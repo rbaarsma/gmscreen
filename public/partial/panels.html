@@ -12,17 +12,26 @@
                 <div masonry='{ "itemSelector" : "npc-section"}'>>
                 <form class="form-horizontal" >
 
-                    <npc-section masonry-tile >
-                        <div class="form-group">
-                            <input type="file" ng-file-select ng-file-change="panelCtrl.onFileSelect(npc, $files)" accept="image/png, image/jpeg, image/gif">
-                            <img class="img-responsive" ng-model="npc._picture_id" ng-show="npc._picture_id" ng-src="/npcs/{{ npc._id }}/picture?{{ npc._picture_id }}">
+                    <npc-section masonry-tile class="section-image">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Image
+                                <button class="pull-right btn btn-xs resizable"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('base', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <input type="file" ng-file-select ng-file-change="panelCtrl.onFileSelect(npc, $files)" accept="image/png, image/jpeg, image/gif">
+                                    <img class="img-responsive" ng-model="npc._picture_id" ng-show="npc._picture_id" ng-src="/npcs/{{ npc._id }}/picture?{{ npc._picture_id }}">
+                                </div>
+                            </div>
                         </div>
                     </npc-section>
-                    <npc-section masonry-tile>
+                    <npc-section id="base_{{ npc._id }}" masonry-tile class="section-base">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 Base
-                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs resizable"><i class="glyphicon glyphicon-minus"></i></button>
                                 <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('base', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
                             </div>
                             <div class="panel-body">
@@ -55,11 +64,11 @@
                             </div>
                         </div>
                     </npc-section>
-                    <npc-section masonry-tile>
+                    <npc-section masonry-tile class="section-stats">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 Stats
-                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs resizable"><i class="glyphicon glyphicon-minus"></i></button>
                                 <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('stats', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
                             </div>
                             <div class="panel-body">
@@ -71,11 +80,11 @@
                             </div>
                         </div>
                     </npc-section>
-                    <npc-section masonry-tile>
+                    <npc-section masonry-tile class="section-abilities">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 Abilities
-                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs resizable"><i class="glyphicon glyphicon-minus"></i></button>
                             </div>
                             <div class="panel-body">
                                 <div>HP: {{ npc.hp }}</div>
@@ -85,11 +94,11 @@
                             </div>
                         </div>
                     </npc-section>
-                    <npc-section masonry-tile>
+                    <npc-section masonry-tile class="section-skills">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 Skills
-                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs resizable"><i class="glyphicon glyphicon-minus"></i></button>
                                 <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('skills', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
                             </div>
                             <div class="panel-body">
@@ -100,11 +109,11 @@
                             </div>
                         </div>
                     </npc-section>
-                    <npc-section masonry-tile>
+                    <npc-section masonry-tile class="section-equipment">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 Equipment
-                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs resizable"><i class="glyphicon glyphicon-minus"></i></button>
                                 <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('equipment', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
                             </div>
                             <div class="panel-body">
@@ -122,11 +131,11 @@
                             </div>
                         </div>
                     </npc-section>
-                    <npc-section masonry-tile>
+                    <npc-section masonry-tile class="section-background">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 Background
-                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs resizable"><i class="glyphicon glyphicon-minus"></i></button>
                                 <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('background', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
                             </div>
                             <div class="panel-body">
@@ -154,11 +163,11 @@
                             </div>
                         </div>
                     </npc-section>
-                    <npc-section masonry-tile>
+                    <npc-section masonry-tile class="section-notes">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 Notes
-                                <button class="pull-right btn btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs resizable"><i class="glyphicon glyphicon-minus"></i></button>
                                 <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('equipment', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
                             </div>
                             <div class="panel-body">

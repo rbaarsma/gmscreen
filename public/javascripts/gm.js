@@ -4,7 +4,7 @@
  * @author Rein Baarsma <rein@solidwebcode.com>
  */
 (function () {
-    angular.module('gm', ['angularFileUpload', 'masonry'])
+    angular.module('gm', ['angularFileUpload'])
 
         // Service
         .factory('NPCCollection', ['$http', '$rootScope', function ($http, $rootScope) {
@@ -93,9 +93,11 @@
                     };
 
                     this.changeSkill = function (npc) {
-                        for (var j = 0; j < $rootScope.config.SKILLS.length; j++) {
-                            if (npc.skills[i].name == $rootScope.config.SKILLS[j].name) {
-                                npc.skills[i].stat = $rootScope.config.SKILLS[j].stat;
+                        for (var i = 0; i < npc.skills.length; i++) {
+                            for (var j = 0; j < $rootScope.config.SKILLS.length; j++) {
+                                if (npc.skills[i].name == $rootScope.config.SKILLS[j].name) {
+                                    npc.skills[i].stat = $rootScope.config.SKILLS[j].stat;
+                                }
                             }
                         }
                         self.recalculate(npc);
@@ -206,16 +208,6 @@
                         NPCCollection.create($scope.npc);
                         this.show=false;
                     }
-                    /*
-                    this.addClass = function (npc) {
-                        npc.classes.push({name: '', level: ''});
-                    };
-
-                    this.removeClass = function (npc, index) {
-                        npc.classes.splice(index, 1);
-                    }
-                    */
-
                 }],
                 'controllerAs': 'modalCtrl'
             }
@@ -225,7 +217,21 @@
             return {
                 restrict: 'AC',
                 link: function(scope, elem, attrs) {
-
+                    console.log(elem);
+                    if (scope.npc.sections.length > 0) {
+                        for (var i=0; i<scope.npc.sections.length; i++) {
+                            //console.log(scope.npc.sections[key].show);
+                            if (scope.npc.sections[i].show === false) {
+                                var key = scope.npc.sections[i].id;
+                                console.log(key);
+                                //console.log(key);
+                                //console.log($('#' + key).find('.panel-body'));
+                                $(elem).find('.'+key).find('.panel-body').toggleClass('hide');
+                                var tg = $(elem).find('.'+key).find('.panel-heading .glyphicon');
+                                $(tg).toggleClass('glyphicon-minus').toggleClass('glyphicon-plus');
+                            }
+                        }
+                    }
 
                     var container = elem[0];
                     var options = angular.extend({
@@ -271,13 +277,10 @@
             };
         })
 
-        .directive('masonryTile', function() {
+        .directive('masonryTile', function(NPCCollection) {
             return {
                 restrict: 'AC',
                 link: function(scope, elem) {
-                    console.log('linked');
-                    //elem.css('visibility', 'hidden');
-
                     window.setTimeout(function () {
                         var master = elem.parent('*[masonry]:first').scope(),
                             update = master.update,
@@ -295,6 +298,34 @@
                             if (removeBrick) {
                                 removeBrick();
                             }
+                        });
+
+                        $(elem).find('.resizable').on('click', function (event) {
+                            $(elem).find('.panel-body').toggleClass('hide');
+                            var tg = event.target;
+                            if (tg.tagName != 'I') {
+                                tg = $(tg).find('i.glyphicon');
+                            }
+
+                            if (typeof scope.npc.sections == 'undefined')
+                                scope.npc.sections = [];
+
+                            var obj = null;
+                            for (var i=0; i<scope.npc.sections.length; i++) {
+                                if (scope.npc.sections[i].id == $(elem).attr('class')) {
+                                    obj = scope.npc.sections[i];
+                                }
+                            }
+
+                            if (obj === null)
+                                obj = scope.npc.sections.push({'id': $(elem).attr('class'), 'show': true});
+
+                            obj.show = $(tg).hasClass('glyphicon-plus');
+
+                            NPCCollection.update(scope.npc);
+
+                            $(tg).toggleClass('glyphicon-minus').toggleClass('glyphicon-plus');
+                            update();
                         });
                     },0 );
                 }
