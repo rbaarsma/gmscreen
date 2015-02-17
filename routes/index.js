@@ -16,8 +16,14 @@ router.get('/config', function(req, res, next) {
         ALIGNMENTS: DND.ALIGNMENTS
     };
 
-    for (var i=0; i<DND.CLASSES.length; i++)
-        config.CLASSES.push({name: DND.CLASSES[i].name, hd: DND.CLASSES[i].hd});
+    for (var i=0; i<DND.CLASSES.length; i++) {
+        config.CLASSES.push({
+            name: DND.CLASSES[i].name,
+            hd: DND.CLASSES[i].hd,
+            paths: DND.CLASSES[i].paths,
+            fighting_styles: DND.CLASSES[i].fighting_styles ? DND.CLASSES[i].fighting_styles : []
+        });
+    }
     for (var i=0; i<DND.SKILLS.length; i++)
         config.SKILLS.push({name: DND.SKILLS[i].name, stat: DND.SKILLS[i].stat});
     for (var i=0; i<DND.BACKGROUNDS.length; i++)

@@ -29,6 +29,8 @@ var StatSchema = new mongoose.Schema({
 var ClassSchema = new mongoose.Schema({
     index: Number,
     name: String,
+    path: String,
+    fighting_style: String,
     level: { type: Number, min: 1, max: 20 },
 });
 
@@ -68,6 +70,7 @@ var NPCSchema = new mongoose.Schema({
     shield: { name: String, ac: Number },
     armor: { name: String, ac: Number,  maxdex: Number,  minstr: Number },
     items: [],
+    features: [String],
     weapons: [WeaponSchema],
     updated_at: { type: Date, default: Date.now },
     notes: String,
@@ -87,6 +90,40 @@ NPCSchema.methods.calc = function (props) {
 
     for (var _i=0; _i<props.length; _i++) {
         switch (props[_i]) {
+            case 'features':
+                var features = [];
+                var found = {};
+                var class_config = this.calced('config').classes;
+                for (var i = 0; i < this.classes.length; i++) {
+                    var clsconfig = class_config[i];
+                    for (var j = 0; j < this.classes[i].level; j++) {
+                        for (var k = 0; k < clsconfig.features[j].length; k++) {
+                            var feature = clsconfig.features[j][k];
+
+                            switch (feature) {
+                                case 'Ability Score Improvement':
+                                    // add stats?
+                                    continue;
+                                case 'Extra Attack':
+                                    if (!found[feature])
+                                        found[feature] = 0;
+                                    found[feature]++;
+                                    feature += ' ('+found[feature]+')';
+                                    break;
+                                case 'Path':
+                                    feature = this.classes[i].name + ' Path';
+                                    feature += ' ('+this.classes[i].path+')';
+                                    break;
+                            }
+
+                            features.push(feature);
+                        }
+                    }
+                }
+
+                this.features = features.unique();
+                break;
+
             // calculate Proficiency Bonus based on level
             case 'prof':
                 this.prof = Math.floor(this.calced('level') / 5) + 2;
@@ -116,7 +153,7 @@ NPCSchema.methods.calc = function (props) {
 
                             this.config.classes[i] = class_config;
 
-                            this.classes[i].key = j;
+                            this.classes[i].index = j;
                             this.classes[i].hd = class_config.hd; // actually a bit hidden here.. maybe shouldn't be here
                             this.level += this.classes[i].level;
                             this.config.armors = this.config.armors.concat(class_config.armors);
@@ -229,6 +266,7 @@ NPCSchema.methods.calced = function (prop) {
 }
 
 NPCSchema.methods.recalculate = function () {
+    this.calc('features'); // make sure it's calculated
     this.calc(['ac','hp','it','prof']);
 }
 
@@ -245,6 +283,7 @@ NPCSchema.methods.randomizeBase = function () {
     this.randomizeBackground();
     this.randomizeRace();
     this.randomizeClasses(true);
+    this.randomizePath();
 };
 
 NPCSchema.methods.randomizeName = function () {
@@ -297,7 +336,20 @@ NPCSchema.methods.randomizeClasses = function (multiclass, name, level) {
         });
         level -= clslvl;
         class_names.splice(random, 1);
-    }};
+    }
+};
+
+NPCSchema.methods.randomizePath = function () {
+    var features = this.calced('features'),
+        config = this.calced('config');
+
+    for (var i=0; i<this.classes.length; i++) {
+        var clsconfig = config.classes[i],
+            paths = clsconfig.paths,
+            rand = Math.floor(Math.random()*paths.length);
+        this.classes[i].path = paths[rand];
+    }
+};
 
 NPCSchema.methods.randomizeBackground = function () {
     this.background = {

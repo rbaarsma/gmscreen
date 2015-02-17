@@ -34,7 +34,7 @@
                     $http.get('/config')
                         .success(function (data) {
                             $rootScope.config = data;
-                            // add subraces when race changes
+                            console.log(data);
                         })
                     ;
 
