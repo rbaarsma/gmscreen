@@ -26,6 +26,13 @@ var StatSchema = new mongoose.Schema({
     mod: { type: Number },
 });
 
+var AttackSchema = new mongoose.Schema({
+    name: String,
+    bonus: Number,
+    damage: String,
+    special: String
+});
+
 var ClassSchema = new mongoose.Schema({
     index: Number,
     name: String,
@@ -65,6 +72,8 @@ var NPCSchema = new mongoose.Schema({
     name: String,
     in_panel: Boolean,
     stats: [StatSchema],
+    editing: [String],
+    attacks: [AttackSchema],
     classes: [ClassSchema],
     skills: [SkillSchema],
     shield: { name: String, ac: Number },
@@ -90,6 +99,22 @@ NPCSchema.methods.calc = function (props) {
 
     for (var _i=0; _i<props.length; _i++) {
         switch (props[_i]) {
+            case 'attacks':
+                console.log('attacks');
+                var attacks = [],
+                    stats = this.calced('stats');
+                for (var i=0; i<this.weapons.length; i++) {
+                    var weapon = this.weapons[i];
+                    attacks.push({
+                        name: weapon.name,
+                        bonus: weapon.type == 'ranged' ? stats[1].mod : stats[0].mod,
+                        damage: weapon.damage + (weapon.type == 'ranged' ? '' :  '+'+stats[0].mod),
+                        special: ''
+                    });
+                }
+                this.attacks = attacks;
+
+                break;
             case 'features':
                 var features = [];
                 var found = {};
@@ -266,7 +291,8 @@ NPCSchema.methods.calced = function (prop) {
 }
 
 NPCSchema.methods.recalculate = function () {
-    this.calc('features'); // make sure it's calculated
+    this.calced('features');
+    this.calced('attacks');
     this.calc(['ac','hp','it','prof']);
 }
 

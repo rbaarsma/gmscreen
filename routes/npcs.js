@@ -99,6 +99,12 @@ router.post('/:id/randomize', function(req, res, next) {
             case 'background':
                 npc.randomizeBackgroundStuff();
                 break;
+            case 'features':
+                npc.calc('features');
+                break;
+            case 'attacks':
+                npc.calc('attacks');
+                break;
         }
         npc.recalculate();
         console.log(npc.race);

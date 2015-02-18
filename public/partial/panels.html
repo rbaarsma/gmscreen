@@ -108,11 +108,42 @@
                                 Features
                                 <button class="pull-right btn btn-xs resizable"><i class="glyphicon glyphicon-minus"></i></button>
                                 <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('features', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
+                                <button class="pull-right btn btn-xs" ng-click="panelCtrl.toggleEditing(npc, 'features')"><i class="glyphicon glyphicon-pencil"></i></button>
                             </div>
                             <div class="panel-body">
                                 <div ng-repeat="feature in npc.features">
-                                    {{ feature }}
+                                    <div ng-hide="panelCtrl.isEditing(npc, 'features')">{{ feature }}</div>
+                                    <div ng-show="panelCtrl.isEditing(npc, 'features')"><input ng-model="feature"></div>
                                 </div>
+                            </div>
+                        </div>
+                    </npc-section>
+                    <npc-section masonry-tile class="section-attacks">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Attacks
+                                <button class="pull-right btn btn-xs resizable"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomize('attacks', $index)"><i class="glyphicon glyphicon-repeat"></i></button>
+                                <button class="pull-right btn btn-xs" ng-click="panelCtrl.toggleEditing(npc, 'attacks')"><i class="glyphicon glyphicon-pencil"></i></button>
+                            </div>
+                            <div class="panel-body">
+                                <div ng-repeat="attack in npc.attacks">
+                                    <div class="form-group" ng-show="panelCtrl.isEditing(npc, 'attacks')">
+                                        <label class="col-sm-5" for="attack-name">Name</label>
+                                        <input class="col-sm-7" id="attack-name" ng-model="attack.name" ng-change="panelCtrl.recalculate(npc);">
+                                        <label class="col-sm-5" for="attack-bonus">Bonus</label>
+                                        <input class="col-sm-7" id="attack-bonus" type="number" ng-model="attack.bonus" ng-change="panelCtrl.recalculate(npc);">
+                                        <label class="col-sm-5" for="attack-damage">Damage</label>
+                                        <input class="col-sm-7" id="attack-damage" ng-model="attack.damage" ng-change="panelCtrl.recalculate(npc);">
+                                        <label class="col-sm-5" for="attack-special">Special</label>
+                                        <input class="col-sm-7" id="attack-special" ng-model="attack.special" ng-change="panelCtrl.recalculate(npc);">
+                                    </div>
+                                    <div class="" ng-show="!panelCtrl.isEditing(npc, 'attacks')">
+                                        {{ attack.name }} {{ attack.bonus|modifier }} {{ attack.damage }} ({{ attack.damage|dieaverage }})
+                                        <div ng-show="attack.special != ''">{{ attack.special }}</div>
+                                    </div>
+                                </div>
+                                <button ng-show="panelCtrl.isEditing(npc, 'attacks')" class="btn btn-success btn-sm" ng-click="panelCtrl.addAttack(npc)"><i class="glyphicon glyphicon-plus-sign"></i> Add Attack</button>
                             </div>
                         </div>
                     </npc-section>

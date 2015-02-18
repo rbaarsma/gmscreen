@@ -19,6 +19,30 @@
             };
         })
 
+        // filter to show + sign expressively for things like modifiers
+        .filter('dieaverage', function () {
+            return function (input) {
+                var dies = input.match(/[0-9]*d[0-9]+/ig);
+                for (var i=0; i<dies.length; i++) {
+                    var die = dies[i];
+                    console.log(die);
+                    if (die.length == 2)
+                        die = '1'+die;
+                    var parts = die.split('d');
+                    var average = Math.floor(parseInt(parts[0]) * (parseInt(parts[1])/2));
+                    console.log(die, average, input);
+                    input = input.replace(die, average);
+                    console.log(input);
+                }
+                if (input.match(/[0-9\+\- ]+/)) {
+                    console.log(input);
+                    eval("var t = " + input);
+                    return t;
+                }
+                return '';
+            };
+        })
+
         .directive('gmContainer', function () {
             return {
             };
@@ -112,6 +136,11 @@
                         NPCCollection.update(npc);
                     };
 
+                    this.addAttack = function (npc) {
+                        npc.attacks.push({name: 'New attack', bonus: 0, damage: '', special: ''});
+                        NPCCollection.update(npc);
+                    }
+
                     this.removeClass = function (npc, index) {
                         npc.classes.splice(index, 1);
                         NPCCollection.update(npc);
@@ -140,6 +169,23 @@
                         npc.in_panel = false;
                         NPCCollection.update(npc);
                     };
+
+                    this.isEditing = function (npc, section) {
+                        return $.inArray(section, npc.editing) > -1;
+                    };
+
+                    this.toggleEditing = function (npc, section) {
+                        console.log(npc.editing);
+                        console.log(section);
+                        var index = $.inArray(section, npc.editing);
+                        if (index > -1) {
+                            npc.editing.splice(index, 1);
+                        } else {
+                            console.log(section);
+                            npc.editing.push(section);
+                        }
+                        NPCCollection.update(npc);
+                    }
                 }],
                 'controllerAs': 'panelCtrl',
                 link: function (scope, element, attrs) {
