@@ -1,0 +1,11 @@
+<div>
+    <b>Armor</b>: {{ npc.armor.name }}
+    <input type="number" ng-model="npc.armor.ac" size="3">
+</div>
+<div>
+    <b>Shield</b>: {{ npc.shield.name }}
+    <input ng-change="panelCtrl.recalculate(npc);" type="number" ng-model="npc.shield.ac" size="3">
+</div>
+<div ng-repeat="weapon in npc.weapons">
+    <b class="text-capitalize">{{ weapon.type }}</b>: {{ weapon.name }}
+</div>

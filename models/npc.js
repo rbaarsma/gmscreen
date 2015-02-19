@@ -34,7 +34,7 @@ function shuffle(o){ //v1.0
 var StatSchema = new mongoose.Schema({
     name: String,
     stat:  { type: Number, min: 1 },
-    mod: { type: Number },
+    mod: { type: Number }
 });
 
 var AttackSchema = new mongoose.Schema({
@@ -67,7 +67,9 @@ var WeaponSchema = new mongoose.Schema({
 
 var SectionSchema = new mongoose.Schema({
     id: String,
-    show: Boolean
+    show: Boolean,
+    edit: Boolean,
+    group: Number
 });
 
 var NPCSchema = new mongoose.Schema({
@@ -99,6 +101,8 @@ var NPCSchema = new mongoose.Schema({
     sections: [SectionSchema]
 });
 
+var SECTIONS = ['image', 'base', 'stats', 'abilities', 'features', 'attacks', 'skills', 'equipment', 'background', 'notes'];
+
 /**
  * Calculate specific non-db property, such as level or proficency bonus
  *
@@ -111,6 +115,25 @@ NPCSchema.methods.calc = function (props) {
 
     for (var _i=0; _i<props.length; _i++) {
         switch (props[_i]) {
+            case 'sections':
+                for (var i=0; i<SECTIONS.length; i++) {
+                    var found=false;
+                    for (var j=0; j<this.sections.length; j++) {
+                        if (SECTIONS[i] == this.sections[j].id) {
+                            found=true;
+                        }
+                    }
+                    if (found == false) {
+                        this.sections.push({
+                            id: SECTIONS[i],
+                            show: true,
+                            edit: true,
+                            group: i%4
+                        });
+                    }
+                }
+                break;
+
             case 'saves':
                 this.saves = this.calced('config').classes[0].saves;
                 break;
@@ -307,8 +330,6 @@ NPCSchema.methods.calced = function (prop) {
 }
 
 NPCSchema.methods.recalculate = function () {
-    this.calced('features');
-    this.calced('attacks');
     this.calc(['ac','hp','it','prof','saves']);
 }
 
@@ -319,12 +340,15 @@ NPCSchema.methods.randomizeAll = function () {
     this.randomizeStats();
     this.randomizeSkills();
     this.randomizeEquipment();
+    this.calc(['features', 'attacks']);
 }
 
 NPCSchema.methods.randomizeBase = function () {
-    this.randomizeBackground();
     this.randomizeRace();
     this.randomizeClasses(true);
+    this.randomizeBackground();
+    this.randomizeGender();
+    this.randomizeName();
     this.randomizePath();
 };
 
@@ -483,6 +507,7 @@ NPCSchema.methods.randomizeStats = function () {
         stats.push(stat);
     }
 
+    // get primary stats
     var config = this.calced('config'),
         primary_stats = [];
     for (var i=0; i<this.classes.length; i++) {
@@ -492,21 +517,24 @@ NPCSchema.methods.randomizeStats = function () {
         }
     }
     primary_stats = primary_stats.unique();
+
+    // create full stat order
     var remaining = [0,1,2,3,4,5].diff(primary_stats);
     remaining = shuffle(remaining);
     var stat_order = primary_stats.concat(remaining);
     console.log(stat_order);
 
-    this.stats = [0,0,0,0,0,0];
+
+
+    // put correct order in randomized stats
+    this.stats = [{}, {}, {}, {}, {}, {}];
     var k;
     stats.sort(function(a, b){return b-a}); // sort descending
     for (var i=0; i<stats.length; i++) {
         k = stat_order.shift();
-        this.stats[k] = {
-            'name': DND.STATNAMES[k],
-            'stat': stats[i],
-            'mod': Math.floor(stats[i] / 2) - 5
-        } ;
+        this.stats[k].name = DND.STATNAMES[k];
+        this.stats[k].stat = stats[i];
+        this.stats[k].mod = Math.floor(stats[i] / 2) - 5;
     }
 
     console.log('------ stats -------')

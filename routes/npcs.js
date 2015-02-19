@@ -14,6 +14,15 @@ function recalculate(npc) {
 router.get('/', function(req, res, next) {
     NPC.find(function (err, npcs) {
         if (err) return next(err);
+
+        /*
+        for (var i=0; i<npcs.length; i++) {
+            npcs[i].sections = [];
+            npcs[i].calc(['sections']);
+            npcs[i].save();
+        }
+        */
+
         res.json(npcs);
     })
 });
@@ -34,13 +43,17 @@ router.post('/', function (req, res, next) {
         if (!npc.name)
             npc.randomizeName();
 
+        npc.randomizePath();
         npc.randomizeBackgroundStuff();
         npc.randomizeAlignment();
         npc.randomizeStats();
         npc.randomizeSkills();
         npc.randomizeEquipment();
 
+        npc.calc(['features', 'attacks', 'sections']);
+
         npc.recalculate();
+
         npc.save();
         res.json(npc);
     });

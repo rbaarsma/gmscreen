@@ -20,6 +20,11 @@ tag button.label {
   margin: 0;
 }
 
+npc-panel-body {
+  display: block;
+  .panel-body;
+}
+
 button {
   .btn;
   .btn-primary;
@@ -61,20 +66,18 @@ gm-side {
   border-left: 3px solid black;
 }
 
-.npc-panel-container {
-  .make-md-column(4);
+npc-section {
+  display: block;
 }
-.npc-panel-container.maximized {
-  .make-md-column(12);
+npc-panel-column {
+  display: block;
+  min-height: 100px !important;
 }
-
-.npc-panel-body {
-  padding:0 !important;
-}
-
-.npc-panel-container.maximized npc-section {
-  .make-md-column(4);
-  .make-sm-column(6);
+.section-placeholder {
+  display: block;
+  border: 1px dotted black;
+  margin: 0 1em 1em 0;
+  height: 50px;
 }
 
 gm-panels {

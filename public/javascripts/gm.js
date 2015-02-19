@@ -23,19 +23,18 @@
         .filter('dieaverage', function () {
             return function (input) {
                 var dies = input.match(/[0-9]*d[0-9]+/ig);
+                if (!dies || dies.length == 0)
+                    return input;
+
                 for (var i=0; i<dies.length; i++) {
                     var die = dies[i];
-                    console.log(die);
                     if (die.length == 2)
                         die = '1'+die;
                     var parts = die.split('d');
                     var average = Math.floor(parseInt(parts[0]) * (parseInt(parts[1])/2));
-                    console.log(die, average, input);
                     input = input.replace(die, average);
-                    console.log(input);
                 }
                 if (input.match(/[0-9\+\- ]+/)) {
-                    console.log(input);
                     eval("var t = " + input);
                     return t;
                 }
@@ -112,8 +111,11 @@
                         NPCCollection.update(npc);
                     };
 
-                    this.randomize = function (type, index) {
-                        NPCCollection.randomize(type, index);
+                    this.randomizeAll = function (index) {
+                        NPCCollection.randomize($rootScope.npcs[index], 'all')
+                            .success(function (data) {
+                                $rootScope.npcs[index] = data;
+                            })
                     };
 
                     this.changeSkill = function (npc) {
@@ -199,13 +201,35 @@
                         }
                         NPCCollection.update(npc);
                     }
+
+
                 }],
                 'controllerAs': 'panelCtrl',
                 link: function (scope, element, attrs) {
-                    $(element).sortable({
-                        'connectWith': "gm-npc"
-                    });
+                    //$(element).sortable({
+                    //    'connectWith': "gm-npc"
+                    //});
                 }
+            };
+        })
+
+        .directive('npcPanel', function () {
+            return {
+                restrict: 'E',
+                controller: ['$scope', function ($scope) {
+                    this.sectionGroups = function (npc) {
+                        if (!npc.sections)
+                            return;
+
+                        var groups = [[],[],[],[]];
+                        for (var i=0; i<npc.sections.length; i++) {
+                            var group_index = npc.sections[i].group;
+                            groups[group_index].push(npc.sections[i]);
+                        }
+                        return groups;
+                    }
+                }],
+                controllerAs: 'npcCtrl'
             };
         })
 
@@ -272,6 +296,78 @@
             }
         })
 
+        .directive('npcSection', function () {
+            return {
+                controller: ['$scope', 'NPCCollection', function ($scope, NPCCollection) {
+                    /**
+                     * show or hide panel body (and save in npc.sections)
+                     */
+                    this.toggleShow = function () {
+                        $scope.section.show = !$scope.section.show;
+                        NPCCollection.update($scope.npc);
+                    }
+
+                    /**
+                     * randomize/refresh specific section
+                     */
+                    this.randomize = function () {
+                        $scope.npc = NPCCollection.randomize($scope.npc, $scope.section.id)
+                            .success(function (data) {
+                                $scope.npc = data;
+                            })
+                        ;
+                    }
+
+                    /**
+                     * Toggle section editing
+                     */
+                    this.toggleEdit = function () {
+                        $scope.section.edit = !$scope.section.edit;
+                        NPCCollection.update($scope.npc);
+                    }
+                }],
+                controllerAs: 'sectionCtrl',
+                restrict: 'E'
+            }
+        })
+
+        .directive('npcPanelColumn', ['NPCCollection', function (NPCCollection) {
+            return {
+                restrict: 'E',
+                link: function (scope, elem, attrs) {
+                    $(elem).sortable({
+                        connectWith: "npc-panel-column",
+                        placeholder: "section-placeholder ui-corner-all",
+                        receive: function (event, ui) {
+                            var panel_body = elem.parent().parent().parent();
+                            var sections = [];
+
+                            $(panel_body).find('npc-section').each(function (index, elem) {
+                                var section_id = $(elem).data('section');
+
+                                for (var i=0; i<scope.npc.sections.length; i++) {
+                                    if (scope.npc.sections[i].id == section_id) {
+                                        var section = scope.npc.sections[i];
+                                        break;
+                                    }
+                                }
+
+                                sections.push({
+                                    id: section_id,
+                                    show: section.show,
+                                    edit: section.edit,
+                                    group: $(elem).parent().data('index')
+                                });
+                            });
+                            scope.npc.sections = sections;
+                            NPCCollection.update(scope.npc);
+                        }
+                    });
+                }
+            }
+        }])
+
+/*
         .directive('masonry', function($timeout) {
             return {
                 restrict: 'AC',
@@ -390,5 +486,6 @@
                 }
             };
         });
+*/
     ;
 })();

@@ -1,0 +1,21 @@
+<div><h4>{{ npc.background.name}}</h4></div>
+<div class="form-group row">
+    <label class="col-xs-12" for="npc-race">Speciality</label>
+    <input type="text" class="col-xs-12" rows="3" ng-model="npc.background.speciality" ng-change="panelCtrl.recalculate(npc);">
+</div>
+<div class="form-group row">
+    <label class="col-xs-12" for="npc-race">Personality</label>
+    <textarea class="col-xs-12" rows="3" ng-model="npc.background.personality" ng-change="panelCtrl.recalculate(npc);"></textarea>
+</div>
+<div class="form-group row">
+    <label class="col-xs-12" for="npc-race">Ideal</label>
+    <textarea class="col-xs-12" rows="3" ng-model="npc.background.ideal" ng-change="panelCtrl.recalculate(npc);"></textarea>
+</div>
+<div class="form-group row">
+    <label class="col-xs-12" for="npc-race">Bond</label>
+    <textarea class="col-xs-12" rows="3" ng-model="npc.background.bond" ng-change="panelCtrl.recalculate(npc);"></textarea>
+</div>
+<div class="form-group row">
+    <label class="col-xs-12" for="npc-race">Flaw</label>
+    <textarea class="col-xs-12" rows="3" ng-model="npc.background.flaw" ng-change="panelCtrl.recalculate(npc);"></textarea>
+</div>

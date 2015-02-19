@@ -1,0 +1,4 @@
+<div class="form-group">
+    <input type="file" ng-file-select ng-file-change="panelCtrl.onFileSelect(npc, $files)" accept="image/png, image/jpeg, image/gif">
+    <img class="img-responsive" ng-model="npc._picture_id" ng-show="npc._picture_id" ng-src="/npcs/{{ npc._id }}/picture?{{ npc._picture_id }}">
+</div>

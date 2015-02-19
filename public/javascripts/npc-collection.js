@@ -103,16 +103,11 @@ var NPCCollection = function ($http, $rootScope) {
         ;
     };
 
-    this.randomize = function (type, index) {
+    this.randomize = function (npc, section_id) {
         // clear for update
-        delete self.changed[$rootScope.npcs[index]._id];
+        delete self.changed[npc._id];
 
-        var npc = $rootScope.npcs[index];
-        return this.request('/npcs/' + npc._id+'/randomize?type='+type, 'POST', npc)
-            .success(function (data) {
-                $rootScope.npcs[index] = data;
-            });
-        ;
+        return this.request('/npcs/' + npc._id+'/randomize?type='+section_id, 'POST', npc);
     }
 
     // recalculate stats
