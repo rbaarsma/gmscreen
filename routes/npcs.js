@@ -23,8 +23,6 @@ router.post('/', function (req, res, next) {
     NPC.create(req.body, function (err, npc) {
         if (err) return next(err);
 
-        console.log(npc.background);
-
         if (!npc.race)
             npc.randomizeRace();
         if (!npc.classes[0].name || !npc.classes[0].level)

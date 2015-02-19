@@ -20,6 +20,17 @@ Array.prototype.contains = function(v) {
     return false;
 };
 
+Array.prototype.diff = function(a) {
+    return this.filter(function(i) {return a.indexOf(i) < 0;});
+};
+
+//+ Jonas Raoni Soares Silva
+//@ http://jsfromhell.com/array/shuffle [v1.0]
+function shuffle(o){ //v1.0
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
+
 var StatSchema = new mongoose.Schema({
     name: String,
     stat:  { type: Number, min: 1 },
@@ -469,14 +480,37 @@ NPCSchema.methods.randomizeStats = function () {
             stat += rolls[i]
         }
 
-        stats.push({
-            'name': DND.STATNAMES[j],
-            'stat': stat,
-            'mod': Math.floor(stat / 2) - 5
-        });
+        stats.push(stat);
     }
 
-    this.stats = stats;
+    var config = this.calced('config'),
+        primary_stats = [];
+    for (var i=0; i<this.classes.length; i++) {
+        var clsconfig = config.classes[i];
+        for (var j=0; j<clsconfig.primary_stats.length; j++) {
+            primary_stats.push(clsconfig.primary_stats[j]);
+        }
+    }
+    primary_stats = primary_stats.unique();
+    var remaining = [0,1,2,3,4,5].diff(primary_stats);
+    remaining = shuffle(remaining);
+    var stat_order = primary_stats.concat(remaining);
+    console.log(stat_order);
+
+    this.stats = [0,0,0,0,0,0];
+    var k;
+    stats.sort(function(a, b){return b-a}); // sort descending
+    for (var i=0; i<stats.length; i++) {
+        k = stat_order.shift();
+        this.stats[k] = {
+            'name': DND.STATNAMES[k],
+            'stat': stats[i],
+            'mod': Math.floor(stats[i] / 2) - 5
+        } ;
+    }
+
+    console.log('------ stats -------')
+    console.log(this.stats);
 }
 
 /**

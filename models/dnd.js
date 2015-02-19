@@ -132,6 +132,7 @@ DND.CLASSES = [
         armors: DND.ARMOR_GROUPS.lightmediumshield,
         alignments: ['NG','CG','N','CN','NE','CE'],
         saves: [0,2],
+        primary_stats: [0,2],
         features: [
             ['Rage', 'Unarmored Defense'],
             ['Reckless Attack', 'Danger Sense'],
@@ -168,6 +169,7 @@ DND.CLASSES = [
         armors: DND.ARMOR_GROUPS.light,
         alignments: ['NG','CG','N','CN','NE','CE'],
         saves: [1,5],
+        primary_stats: [5,1],
         spells: [
             ["Blade Ward","Dancing Lights","Friends","Light","Mage Hand","Mending","Message","Minor Illusion","Prestidigitation","True Strike","Vicious Mockery"],
             ["Animal Friendship","Bane","Charm Person","Comprehend Languages","Cure Wounds","Detect Magic","Disguise Self","Dissonant Whispers","Faerie Fire","Feather Fall","Healing Word","Heroism","Identify","Illusory Script","Longstrider","Silent Image","Sleep","Speak with Animals","Tasha's Hideous Laughter","Thunderwave","Unseen Servant"],
@@ -208,6 +210,7 @@ DND.CLASSES = [
         weapons: DND.WEAPON_GROUPS.simple,
         armors: DND.ARMOR_GROUPS.lightmediumshield,
         saves: [1,5],
+        primary_stats: [4],
         alignments: ['LG','NG','CG','LN','CN','LE','NE','CE'],
         spells: [
             ["Guidance","Light","Mending","Resistance","Sacred Flame","Spare the Dying","Thaumaturgy"],
@@ -251,6 +254,7 @@ DND.CLASSES = [
         tools: [0],
         armors: [0,1,2,3,12],
         saves: [3,4],
+        primary_stats: [4,2],
         alignments: ['NG','LN','N','CN','NE'],
         spells: [
             ["Druidcraft","Guidance","Mending","Poison Spray","Produce Flame","Resistance","Shillelagh","Thorn Whip"],
@@ -295,6 +299,7 @@ DND.CLASSES = [
         armors: DND.ARMOR_GROUPS.all,
         alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         saves: [0,2],
+        primary_stats: [],
         features: [
             /*  1 */ ['Fighting Style', 'Second Wind'],
             /*  2 */ ['Action Surge (one use)'],
@@ -331,6 +336,7 @@ DND.CLASSES = [
         armors: [],
         alignments: ['LG','LN','LE'],
         saves: [0,1],
+        primary_stats: [1,4],
         features: [
             /*  1 */ ['Unarmored Defense', 'Martial Arts'],
             /*  2 */ ['Ki', 'Unarmored Movement'],
@@ -365,6 +371,7 @@ DND.CLASSES = [
         tools: [],
         armors: DND.ARMOR_GROUPS.all,
         saves: [3,5],
+        primary_stats: [0,5],
         alignments: ['LG','NG','CG'],
         spells: [
             ["Bless","Command","Compelled Duel","Cure Wounds","Detect Evil and Good","Detect Magic","Detect Poison and Disease","Divine Favor","Heroism","Protection from Evil and Good","Purify Food and Drink","Searing Smite","Shield of Faith","Thunderous Smite","Wrathful Smite"],
@@ -406,6 +413,7 @@ DND.CLASSES = [
         tools: [],
         armors: DND.ARMOR_GROUPS.all,
         saves: [0,1],
+        primary_stats: [1,4],
         alignments: ['NG','LN','N','CN','NE'],
         spells: [
             ["Alarm","Animal Friendship","Cure Wounds","Detect Magic","Detect Poison and Disease","Ensnaring Strike","Fog Cloud","Goodberry","Hail of Thorns","Hunter's Mark","Jump","Longstrider","Speak with Animals"],
@@ -449,6 +457,7 @@ DND.CLASSES = [
         armors: DND.ARMOR_GROUPS.light,
         alignments: ['NG','CG','N','CN','NE','CE'],
         saves: [1,3],
+        primary_stats: [1],
         features: [
             /*  1 */ ['Expertise', 'Sneak Attack', "Thieves' Cant"],
             /*  2 */ ['Cunning Action'],
@@ -483,6 +492,7 @@ DND.CLASSES = [
         tools: [],
         armors: [],
         saves: [2,5],
+        primary_stats: [5,2],
         alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         spells: [
             ["Acid Splash","Blade Ward","Chill Touch","Dancing Lights","Fire Bolt","Friends","Light","Mage Hand","Mending","Message","Minor Illusion","Poison Spray","Prestidigitation","Ray of Frost","Shocking Grasp","True Strike"],
@@ -528,6 +538,7 @@ DND.CLASSES = [
         tools: [],
         armors: DND.ARMOR_GROUPS.light,
         saves: [3,5],
+        primary_stats: [5,2],
         alignments: ['LN','N','CN','LE','NE','CE'],
         spells: [
             ["Blade Ward","Chill Touch","Eldritch Blast","Friends","Mage Hand","Minor Illusion","Poison Spray","Prestidigitation","True Strike"],
@@ -574,6 +585,7 @@ DND.CLASSES = [
         tools: [],
         armors: [],
         saves: [3,4],
+        primary_stats: [3],
         alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         spells: [
             ["Acid Splash","Blade Ward","Chill Touch","Dancing Lights","Fire Bolt","Friends","Light","Mage Hand","Mending","Message","Minor Illusion","Poison Spray","Prestidigitation","Ray of Frost","Shocking Grasp","True Strike"],
