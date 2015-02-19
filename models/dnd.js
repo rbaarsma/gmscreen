@@ -24,7 +24,7 @@ var DND = {
         /*  4 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Javelin', cost: 0.5, damage: '1d6', dmgtype: 1, weight: 2, props: []},
         /*  5 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Light hammer', cost: 2, damage: '1d4', dmgtype: 0, weight: 2, props: []},
         /*  6 */ {pickchance: 3, complexity: 'simple', type: 'melee', hands: 1, name: 'Mace', cost: 5, damage: '1d6', dmgtype: 0, weight: 4, props: []},
-        /*  7 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 2, name: 'Quarterstaff', cost: 0.2, damage: '1d6', dmgtype: 0, weight: 4, props: []},
+        /*  7 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Quarterstaff', cost: 0.2, damage: '1d6', dmgtype: 0, weight: 4, props: []},
         /*  8 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Sickle', cost: 1, damage: '1d4', dmgtype: 2, weight: 2, props: []},
         /*  9 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Spear', cost: 1, damage: '1d6', dmgtype: 1, weight: 3, props: []},
         /* 10 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Unarmed strike', cost: 0, damage: '1', dmgtype: 0, weight: 0, props: []},

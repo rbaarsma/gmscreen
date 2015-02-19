@@ -141,6 +141,19 @@
                         NPCCollection.update(npc);
                     }
 
+                    this.hasSave = function (npc, index) {
+                        return $.inArray(index, npc.saves) > -1;
+                    }
+
+                    this.toggleSave = function (npc, index) {
+                        var k = $.inArray(index, npc.saves);
+                        if (k > -1) {
+                            npc.saves.splice(k, 1);
+                        } else {
+                            npc.saves.push(index);
+                        }
+                    }
+
                     this.removeClass = function (npc, index) {
                         npc.classes.splice(index, 1);
                         NPCCollection.update(npc);

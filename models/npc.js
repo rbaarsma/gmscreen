@@ -72,6 +72,7 @@ var NPCSchema = new mongoose.Schema({
     name: String,
     in_panel: Boolean,
     stats: [StatSchema],
+    saves: [{ type:Number, min: 0, max: 5}],
     editing: [String],
     attacks: [AttackSchema],
     classes: [ClassSchema],
@@ -99,6 +100,10 @@ NPCSchema.methods.calc = function (props) {
 
     for (var _i=0; _i<props.length; _i++) {
         switch (props[_i]) {
+            case 'saves':
+                this.saves = this.calced('config').classes[0].saves;
+                break;
+
             case 'attacks':
                 console.log('attacks');
                 var attacks = [],
@@ -293,7 +298,7 @@ NPCSchema.methods.calced = function (prop) {
 NPCSchema.methods.recalculate = function () {
     this.calced('features');
     this.calced('attacks');
-    this.calc(['ac','hp','it','prof']);
+    this.calc(['ac','hp','it','prof','saves']);
 }
 
 NPCSchema.methods.randomizeAll = function () {
@@ -571,7 +576,10 @@ NPCSchema.methods.randomizeSkills = function () {
 NPCSchema.methods.randomizeEquipment = function () {
     this.weapons = [];
     var armors = this.calced('config').armors,
-        weapons = this.calced('config').weapons;
+        weapons = this.calced('config').weapons,
+        features = this.calced('features');
+
+    var is_caster = features.contains('Spellcasting');
 
     armors.sort(function (a, b) {
         return a - b;
@@ -584,7 +592,7 @@ NPCSchema.methods.randomizeEquipment = function () {
     this.shield = {name: '-', ac: 0};
     if (index > 0) {
         // add shield?
-        if (Math.random() > .5)
+        if (Math.random() < .5)
             this.shield = DND.ARMORS[armors[index]];
         armors.splice(index, 1);
     }
@@ -673,19 +681,21 @@ NPCSchema.methods.randomizeEquipment = function () {
     this.weapons.push(DND.WEAPONS[choices[Math.floor(Math.random() * choices.length)]]);
 
     // pick melee
+    var choices = [];
     if (this.shield.ac == 0) {
-        if (Math.random() > .7) {
-            var choices = m2hmelee.length > 0 ? m2hmelee : s2hmelee;
+        if (Math.random() > .7 && !is_caster) {
+            choices = m2hmelee.length > 0 ? m2hmelee : s2hmelee;
         } else {
-            var choices = m1hmelee.length > 0 ? m1hmelee : s1hmelee;
+            choices = m1hmelee.length > 0 ? m1hmelee : s1hmelee;
             this.weapons.push(DND.WEAPONS[choices[Math.floor(Math.random() * choices.length)]]);
-            var choices = m1hmelee.length > 0 ? m1hmelee : s1hmelee;
+            choices = m1hmelee.length > 0 ? m1hmelee : s1hmelee;
         }
     } else {
-        var choices = m1hmelee.length > 0 ? m1hmelee : s1hmelee;
+        choices = m1hmelee.length > 0 ? m1hmelee : s1hmelee;
     }
-    this.weapons.push(DND.WEAPONS[choices[Math.floor(Math.random() * choices.length)]]);
-
+    if (choices.length > 0) {
+        this.weapons.push(DND.WEAPONS[choices[Math.floor(Math.random() * choices.length)]]);
+    }
 }
 
 module.exports = mongoose.model('NPC', NPCSchema);
