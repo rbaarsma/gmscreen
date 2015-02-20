@@ -1,5 +1,5 @@
 <div ng-repeat="attack in npc.attacks">
-    <div class="form-group" ng-show="section.edit">
+    <div class="form-group">
         <label class="col-sm-5" for="attack-name">Name</label>
         <input class="col-sm-7" id="attack-name" ng-model="attack.name" ng-change="panelCtrl.recalculate(npc);">
         <label class="col-sm-5" for="attack-bonus">Bonus</label>
@@ -8,10 +8,6 @@
         <input class="col-sm-7" id="attack-damage" ng-model="attack.damage" ng-change="panelCtrl.recalculate(npc);">
         <label class="col-sm-5" for="attack-special">Special</label>
         <input class="col-sm-7" id="attack-special" ng-model="attack.special" ng-change="panelCtrl.recalculate(npc);">
-    </div>
-    <div class="" ng-show="!section.edit">
-        {{ attack.name }} {{ attack.bonus|modifier }} {{ attack.damage }} ({{ attack.damage|dieaverage }})
-        <div ng-show="attack.special != ''">{{ attack.special }}</div>
     </div>
 </div>
 <button ng-show="section.edit" class="btn btn-success btn-sm" ng-click="panelCtrl.addAttack(npc)"><i class="glyphicon glyphicon-plus-sign"></i> Add Attack</button>

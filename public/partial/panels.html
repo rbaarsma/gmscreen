@@ -1,32 +1,30 @@
 <div class="row">
-    <div class="npc-panel-container" ng-class="{ loading: panelCtrl.npc.loading, maximized: npc.maximized }" ng-repeat="npc in npcs" ng-show="npc.in_panel">
-        <npc-panel class="npc-panel panel panel-primary">
+    <div class="npc-panel-container">
+        <npc-panel class="panel panel-primary" ng-class="{'maximized': npc.panel.maximized}" ng-repeat="npc in npcs">
             <div class="panel-heading">
-                <button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.remove(npc)"><i class="glyphicon glyphicon-remove"></i></button>
-                <button ng-hide="npc.maximized" class="btn btn-xs pull-right" ng-click="npc.maximized = true; panelCtrl.recalculate(npc);"><i class="glyphicon glyphicon-plus"></i></button>
-                <button ng-show="npc.maximized" class="btn btn-xs pull-right" ng-click="npc.maximized = false; panelCtrl.recalculate(npc);"><i class="glyphicon glyphicon-minus"></i></button>
-                <button class="pull-right btn btn-xs" ng-click="panelCtrl.randomizeAll($index)"><i class="glyphicon glyphicon-repeat"></i></button>
+                <!--<button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.toggleShow(npc)"><i class="glyphicon glyphicon-remove"></i></button>-->
+                <button ng-click="panelCtrl.toggleMaximize()" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-resize-small': npc.panel.maximized, 'glyphicon-resize-full': !npc.panel.maximized}" class="glyphicon"></i></button>
+                <button ng-click="panelCtrl.toggleShow()" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-minus': npc.panel.show, 'glyphicon-plus': !npc.panel.show}" class="glyphicon"></i></button>
+                <button ng-click="panelCtrl.randomizeAll()" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>
+                <button ng-click="panelCtrl.toggleEdit()" class="pull-right btn btn-xs" ng-class="{'btn-success': npc.panel.edit}" ><i class="glyphicon glyphicon-pencil"></i></button>
                 <h3 class="panel-title">{{ npc.name }}</h3>
             </div>
-            <npc-panel-body ng-init="section_groups = npcCtrl.sectionGroups(npc)">
-                <div masonry='{ "itemSelector" : "npc-section"}'>>
-                    <form class="form-horizontal">
-                            <npc-panel-column class="col-sm-3" ng-repeat="section_group in section_groups" data-index="{{ $index }}">
-                                <npc-section ng-repeat="section in section_group" data-section="{{ section.id }}">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            {{ section.id }}
-                                            <button ng-click="sectionCtrl.toggleShow()" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-minus': section.show, 'glyphicon-plus': !section.show}" class="glyphicon glyphicon-minus"></i></button>
-                                            <button ng-click="sectionCtrl.randomize()" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>
-                                            <button ng-click="sectionCtrl.toggleEdit()" class="pull-right btn btn-xs" ng-class="{'btn-success': section.edit}" ><i class="glyphicon glyphicon-pencil"></i></button>
-                                        </div>
-                                        <div ng-include="'partial/sections/section-'+section.id+'.html'" class="panel-body" ng-show="section.show"></div>
-                                    </div>
-                                </npc-section>
-                            </npc-panel-column>
-                            <div class="col-sm-3"></div>
-                    </form>
-                </div>
+            <npc-panel-body ng-init="section_groups = panelCtrl.sectionGroups(npc)" ng-show="npc.panel.show">
+                <form class="form-horizontal">
+                    <npc-panel-column ng-repeat="section_group in section_groups" data-index="{{ $index }}">
+                        <npc-section ng-repeat="section in section_group" data-section="{{ section.id }}">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    {{ section.id }}
+                                    <button ng-click="sectionCtrl.toggleShow()" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-minus': section.show, 'glyphicon-plus': !section.show}" class="glyphicon"></i></button>
+                                    <button ng-click="sectionCtrl.randomize()" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>
+                                    <button ng-click="sectionCtrl.toggleEdit()" class="pull-right btn btn-xs" ng-class="{'btn-success': section.edit}" ><i class="glyphicon glyphicon-pencil"></i></button>
+                                </div>
+                                <div ng-include="'partial/sections/'+section.id+'-'+(section.edit ? 'edit' : 'show')+'.html'" class="panel-body" ng-show="section.show"></div>
+                            </div>
+                        </npc-section>
+                    </npc-panel-column>
+                </form>
             </npc-panel-body>
         </npc-panel>
     </div>

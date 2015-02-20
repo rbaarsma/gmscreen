@@ -1,0 +1,9 @@
+<dl class="dl-horizontal">
+    <dt>Armor</dt>
+    <dd>{{ npc.armor.name }} <span ng-show="npc.armor.ac">AC {{ npc.armor.ac|modifier }}</span></dd>
+    <dt>Shield</dt>
+    <dd>{{ npc.shield.name }} <span ng-show="npc.shield.ac">AC {{ npc.shield.ac|modifier }}</span></dd>
+    <div ng-repeat="weapon in npc.weapons">
+        <dt>Weapon #{{ $index }}</dt>
+        <dd>{{ weapon.name }} ({{ weapon.type }}) {{ npc.weapon.damage}}</dd>
+</dl>

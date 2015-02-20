@@ -1,0 +1,14 @@
+<dl class="dl-horizontal">
+    <dt>Name</dt>
+    <dd>{{ npc.name }}</dd>
+    <dt>Race</dt>
+    <dd>{{ npc.race.name }}</dd>
+    <dt>Alignment</dt>
+    <dd>{{ npc.alignment}}</dd>
+    <dt>Class</dt>
+    <dd>
+        <div ng-repeat="class in npc.classes">
+            {{ class.name }} ({{ class.path }}) {{ class.level }} <span ng-show="$index != $end">/</span>
+        </div>
+    </dd>
+</dl>

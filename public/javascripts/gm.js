@@ -42,6 +42,14 @@
             };
         })
 
+        // filter to join array to string
+        .filter('join', function() {
+            return function(input, delim) {
+                // do some bounds checking here to ensure it has that index
+                return input.join(delim);
+            }
+        })
+
         .directive('gmContainer', function () {
             return {
             };
@@ -49,10 +57,10 @@
 
         .directive('gmPanels', function () {
             return {
-                'templateUrl': 'partial/panels.html',
-                'controller': ['$upload', '$http', '$scope', '$rootScope', 'NPCCollection', function ($upload, $http, $scope, $rootScope, NPCCollection) {
-                    var self = this;
-
+                restrict: 'E',
+                templateUrl: 'partial/panels.html',
+                controller: ['$http', '$rootScope', function ($http, $rootScope) {
+                    // load config
                     $rootScope.config = {};
                     $http.get('/config')
                         .success(function (data) {
@@ -60,6 +68,15 @@
                             console.log(data);
                         })
                     ;
+                }]
+            }
+        })
+
+        .directive('npcPanel', function () {
+            return {
+                restrict: 'E',
+                controller: ['$upload', '$http', '$scope', '$rootScope', 'NPCCollection', function ($upload, $http, $scope, $rootScope, NPCCollection) {
+                    var self = this;
 
                     this.removeTag = function (npc, index) {
                         npc.tags.splice(index, 1);
@@ -111,10 +128,10 @@
                         NPCCollection.update(npc);
                     };
 
-                    this.randomizeAll = function (index) {
-                        NPCCollection.randomize($rootScope.npcs[index], 'all')
+                    this.randomizeAll = function () {
+                        NPCCollection.randomize($scope.npc, 'all')
                             .success(function (data) {
-                                $rootScope.npcs[index] = data;
+                                $scope.npc = data;
                             })
                     };
 
@@ -180,29 +197,49 @@
                         NPCCollection.update(npc);
                     }
 
-                    this.remove = function (npc) {
-                        npc.in_panel = false;
-                        NPCCollection.update(npc);
+                    this.toggleMaximize = function () {
+                        $scope.npc.panel.maximized = !$scope.npc.panel.maximized;
+                        NPCCollection.update($scope.npc);
                     };
 
-                    this.isEditing = function (npc, section) {
-                        return $.inArray(section, npc.editing) > -1;
+                    this.toggleShow = function () {
+                        $scope.npc.panel.show = !$scope.npc.panel.show;
+                        NPCCollection.update($scope.npc);
                     };
 
-                    this.toggleEditing = function (npc, section) {
-                        console.log(npc.editing);
-                        console.log(section);
-                        var index = $.inArray(section, npc.editing);
-                        if (index > -1) {
-                            npc.editing.splice(index, 1);
-                        } else {
-                            console.log(section);
-                            npc.editing.push(section);
+                    this.toggleEdit = function () {
+                        $scope.npc.panel.edit = !$scope.npc.panel.edit;
+                        for (var i=0; i<$scope.npc.panel.sections.length; i++) {
+                            $scope.npc.panel.sections[i].edit = $scope.npc.panel.edit;
                         }
-                        NPCCollection.update(npc);
+                        NPCCollection.update($scope.npc);
+                    };
+
+                    this.sectionGroups = function (npc) {
+                        if (!npc.panel.sections)
+                            return;
+
+                        var groups = [[],[],[],[]];
+                        for (var i=0; i<npc.panel.sections.length; i++) {
+                            var group_index = npc.panel.sections[i].group;
+                            groups[group_index].push(npc.panel.sections[i]);
+                        }
+                        return groups;
                     }
 
+                    this.toggleLocked = function (type) {
+                        var k = $.inArray(type, $scope.npc.unlocked);
+                        if (k > -1) {
+                            $scope.npc.unlocked.splice(k, 1);
+                        } else {
+                            $scope.npc.unlocked.push(type);
+                        }
+                        NPCCollection.update($scope.npc);
+                    }
 
+                    this.isLocked = function (type) {
+                        return $.inArray(type, $scope.npc.unlocked) == -1;
+                    }
                 }],
                 'controllerAs': 'panelCtrl',
                 link: function (scope, element, attrs) {
@@ -213,53 +250,6 @@
             };
         })
 
-        .directive('npcPanel', function () {
-            return {
-                restrict: 'E',
-                controller: ['$scope', function ($scope) {
-                    this.sectionGroups = function (npc) {
-                        if (!npc.sections)
-                            return;
-
-                        var groups = [[],[],[],[]];
-                        for (var i=0; i<npc.sections.length; i++) {
-                            var group_index = npc.sections[i].group;
-                            groups[group_index].push(npc.sections[i]);
-                        }
-                        return groups;
-                    }
-                }],
-                controllerAs: 'npcCtrl'
-            };
-        })
-
-        .directive('gmSide', function () {
-            return {
-                'templateUrl': 'partial/side.html',
-                'controller': ['$http', '$rootScope', 'NPCCollection', function ($http, $rootScope, NPCCollection) {
-                    console.log('fetching npcs');
-                    var self = this;
-
-                    this.remove = function (index) {
-                        NPCCollection.remove(index);
-                    };
-
-                    this.add = function (data) {
-                        NPCCollection.add({name: self.name, classes: [{name: 'Barbarian', level: 1}]});
-                        self.name = "";
-                    };
-
-                    this.addToPanel = function (npc) {
-                        npc.in_panel = true;
-                        NPCCollection.update(npc);
-                        console.log($rootScope);
-
-                        $rootScope.$broadcast('masonry.update');
-                    }
-                }],
-                'controllerAs': 'sideCtrl'
-            };
-        })
         .directive('npcItem', function () {
             return {
                 link: function (scope, element, attrs) {
@@ -275,6 +265,7 @@
                 }
             };
         })
+        /*
         .directive('npcNew', function () {
             return {
                 'templateUrl': 'partial/npc-new.html',
@@ -295,12 +286,13 @@
                 'controllerAs': 'modalCtrl'
             }
         })
+        */
 
         .directive('npcSection', function () {
             return {
                 controller: ['$scope', 'NPCCollection', function ($scope, NPCCollection) {
                     /**
-                     * show or hide panel body (and save in npc.sections)
+                     * show or hide panel body (and save in npc.panel.sections)
                      */
                     this.toggleShow = function () {
                         $scope.section.show = !$scope.section.show;
@@ -345,9 +337,9 @@
                             $(panel_body).find('npc-section').each(function (index, elem) {
                                 var section_id = $(elem).data('section');
 
-                                for (var i=0; i<scope.npc.sections.length; i++) {
-                                    if (scope.npc.sections[i].id == section_id) {
-                                        var section = scope.npc.sections[i];
+                                for (var i=0; i<scope.npc.panel.sections.length; i++) {
+                                    if (scope.npc.panel.sections[i].id == section_id) {
+                                        var section = scope.npc.panel.sections[i];
                                         break;
                                     }
                                 }
@@ -359,7 +351,7 @@
                                     group: $(elem).parent().data('index')
                                 });
                             });
-                            scope.npc.sections = sections;
+                            scope.npc.panel.sections = sections;
                             NPCCollection.update(scope.npc);
                         }
                     });
@@ -373,11 +365,11 @@
                 restrict: 'AC',
                 link: function(scope, elem, attrs) {
                     console.log(elem);
-                    if (scope.npc.sections.length > 0) {
-                        for (var i=0; i<scope.npc.sections.length; i++) {
-                            //console.log(scope.npc.sections[key].show);
-                            if (scope.npc.sections[i].show === false) {
-                                var key = scope.npc.sections[i].id;
+                    if (scope.npc.panel.sections.length > 0) {
+                        for (var i=0; i<scope.npc.panel.sections.length; i++) {
+                            //console.log(scope.npc.panel.sections[key].show);
+                            if (scope.npc.panel.sections[i].show === false) {
+                                var key = scope.npc.panel.sections[i].id;
                                 console.log(key);
                                 //console.log(key);
                                 //console.log($('#' + key).find('.panel-body'));
@@ -462,18 +454,18 @@
                                 tg = $(tg).find('i.glyphicon');
                             }
 
-                            if (typeof scope.npc.sections == 'undefined')
-                                scope.npc.sections = [];
+                            if (typeof scope.npc.panel.sections == 'undefined')
+                                scope.npc.panel.sections = [];
 
                             var obj = null;
-                            for (var i=0; i<scope.npc.sections.length; i++) {
-                                if (scope.npc.sections[i].id == $(elem).attr('class')) {
-                                    obj = scope.npc.sections[i];
+                            for (var i=0; i<scope.npc.panel.sections.length; i++) {
+                                if (scope.npc.panel.sections[i].id == $(elem).attr('class')) {
+                                    obj = scope.npc.panel.sections[i];
                                 }
                             }
 
                             if (obj === null)
-                                obj = scope.npc.sections.push({'id': $(elem).attr('class'), 'show': true});
+                                obj = scope.npc.panel.sections.push({'id': $(elem).attr('class'), 'show': true});
 
                             obj.show = $(tg).hasClass('glyphicon-plus');
 

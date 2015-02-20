@@ -15,13 +15,10 @@ router.get('/', function(req, res, next) {
     NPC.find(function (err, npcs) {
         if (err) return next(err);
 
-        /*
         for (var i=0; i<npcs.length; i++) {
-            npcs[i].sections = [];
-            npcs[i].calc(['sections']);
+            npcs[i].locked = [];
             npcs[i].save();
         }
-        */
 
         res.json(npcs);
     })
@@ -118,9 +115,7 @@ router.post('/:id/randomize', function(req, res, next) {
                 break;
         }
         npc.recalculate();
-        console.log(npc.race);
         npc.save();
-        console.log(npc.race);
         res.json(npc);
     });
 });

@@ -1,0 +1,14 @@
+<table class="table table-condensed">
+    <tr>
+        <th></th>
+        <th>Stat</th>
+        <th>Mod</th>
+        <th>Saving Throw</th>
+    </tr>
+    <tr ng-repeat="stat in npc.stats">
+        <td>{{ stat.name }}</td>
+        <td>{{ stat.stat }}</td>
+        <td>({{ stat.mod|modifier }})</td>
+        <td>{{ (stat.mod + (panelCtrl.hasSave(npc, $index) ? npc.prof : 0))|modifier }}</td>
+    </tr>
+</table>

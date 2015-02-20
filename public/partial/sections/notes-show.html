@@ -1,0 +1,6 @@
+<dl>
+    <dt>Notes</dt>
+    <dd>{{ npc.notes }}</dd>
+    <dt ng-show="npc.tags.length > 0">Tags</dt>
+    <dd ng-show="npc.tags.length > 0">{{ npc.tags|join:', ' }}</dd>
+</dl>

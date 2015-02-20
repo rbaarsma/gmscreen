@@ -97,11 +97,18 @@ var NPCSchema = new mongoose.Schema({
     weapons: [WeaponSchema],
     updated_at: { type: Date, default: Date.now },
     notes: String,
-    maximized: Boolean, // show maximized in view
-    sections: [SectionSchema]
+    unlocked: [String],
+    // ui options
+    panel: {
+        sections: [SectionSchema],
+        maximized: {type: Boolean, default: true},
+        show: {type: Boolean, default: true},
+        edit: {type: Boolean, default: true}
+    }
 });
 
-var SECTIONS = ['image', 'base', 'stats', 'abilities', 'features', 'attacks', 'skills', 'equipment', 'background', 'notes'];
+// note the order is a bit strange because it is grouped with i % 4
+var SECTIONS = ['image', 'base','equipment','background','stats','attacks','features','notes','abilities','skills'];
 
 /**
  * Calculate specific non-db property, such as level or proficency bonus
@@ -114,17 +121,22 @@ NPCSchema.methods.calc = function (props) {
         props = [props];
 
     for (var _i=0; _i<props.length; _i++) {
+        if (this.unlocked.contains(props[_i])) {
+            console.log('skipped (re)calc for: '+props[_i]);
+            continue;
+        }
+
         switch (props[_i]) {
             case 'sections':
                 for (var i=0; i<SECTIONS.length; i++) {
                     var found=false;
-                    for (var j=0; j<this.sections.length; j++) {
-                        if (SECTIONS[i] == this.sections[j].id) {
+                    for (var j=0; j<this.panel.sections.length; j++) {
+                        if (SECTIONS[i] == this.panel.sections[j].id) {
                             found=true;
                         }
                     }
                     if (found == false) {
-                        this.sections.push({
+                        this.panel.sections.push({
                             id: SECTIONS[i],
                             show: true,
                             edit: true,
@@ -146,7 +158,7 @@ NPCSchema.methods.calc = function (props) {
                     var weapon = this.weapons[i];
                     attacks.push({
                         name: weapon.name,
-                        bonus: weapon.type == 'ranged' ? stats[1].mod : stats[0].mod,
+                        bonus: this.calced('prof')+(weapon.type == 'ranged' ? stats[1].mod : stats[0].mod),
                         damage: weapon.damage + (weapon.type == 'ranged' ? '' :  '+'+stats[0].mod),
                         special: ''
                     });

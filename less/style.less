@@ -13,6 +13,13 @@
 
 @padding: 20px;
 
+.dl-horizontal dt {
+  width: 70px;
+}
+.dl-horizontal dd {
+  margin-left: 80px;
+}
+
 tag {
   padding-right: 5px;
 }
@@ -53,8 +60,23 @@ npc-item {
   display:block;
 }
 
-.npc-panel {
+npc-panel {
   display: block;
+}
+npc-panel {
+  .make-md-column(4);
+  padding: 0;
+}
+npc-panel.maximized {
+  .make-md-column(12);
+  padding: 0;
+}
+
+npc-panel.maximized npc-panel-column {
+  .make-sm-column(3);
+}
+npc-panel-column {
+  .make-sm-column(6);
 }
 
 gm-side {
@@ -81,10 +103,8 @@ npc-panel-column {
 }
 
 gm-panels {
-  .make-md-column(9);
   background-color: @main-background;
   padding: @padding;
-  border:1px dotted black;
   display:block;
 }
 
