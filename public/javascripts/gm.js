@@ -265,7 +265,7 @@
                 }
             };
         })
-        /*
+
         .directive('npcNew', function () {
             return {
                 'templateUrl': 'partial/npc-new.html',
@@ -286,7 +286,6 @@
                 'controllerAs': 'modalCtrl'
             }
         })
-        */
 
         .directive('npcSection', function () {
             return {
