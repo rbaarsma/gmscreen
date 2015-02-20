@@ -10,7 +10,7 @@
                 <h3 class="panel-title">{{ npc.name }}</h3>
             </div>
             <npc-panel-body ng-init="section_groups = panelCtrl.sectionGroups(npc)" ng-show="npc.panel.show">
-                <form class="form-horizontal">
+                <form>
                     <npc-panel-column ng-repeat="section_group in section_groups" data-index="{{ $index }}">
                         <npc-section ng-repeat="section in section_group" data-section="{{ section.id }}">
                             <div class="panel panel-default">

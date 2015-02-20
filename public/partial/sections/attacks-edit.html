@@ -1,13 +1,19 @@
 <div ng-repeat="attack in npc.attacks">
-    <div class="form-group">
-        <label class="col-sm-5" for="attack-name">Name</label>
-        <input class="col-sm-7" id="attack-name" ng-model="attack.name" ng-change="panelCtrl.recalculate(npc);">
-        <label class="col-sm-5" for="attack-bonus">Bonus</label>
-        <input class="col-sm-7" id="attack-bonus" type="number" ng-model="attack.bonus" ng-change="panelCtrl.recalculate(npc);">
-        <label class="col-sm-5" for="attack-damage">Damage</label>
-        <input class="col-sm-7" id="attack-damage" ng-model="attack.damage" ng-change="panelCtrl.recalculate(npc);">
-        <label class="col-sm-5" for="attack-special">Special</label>
-        <input class="col-sm-7" id="attack-special" ng-model="attack.special" ng-change="panelCtrl.recalculate(npc);">
+    <button class="pull-right btn btn-xs btn-danger" ng-click="panelCtrl.removeClass(npc, $index)"><i class="glyphicon glyphicon-remove"></i></button>
+    <h5>Attack #{{$index+1}}</h5>
+    <div class="form-group-tight">
+        <label class="col-sm-3 control-label" for="attack-name">Name</label>
+        <div class="col-sm-9"><input class="form-control" id="attack-name" ng-model="attack.name" ng-change="panelCtrl.recalculate(npc);"></div>
+    </div>
+    <div class="form-group-tight">
+        <label class="col-sm-3 control-label" for="attack-bonus">Bonus</label>
+        <div class="col-sm-3"><input class="form-control" id="attack-bonus" type="number" ng-model="attack.bonus" ng-change="panelCtrl.recalculate(npc);"></div>
+        <label class="col-sm-3 control-label" for="attack-damage">Damage</label>
+        <div class="col-sm-3"><input class="form-control" id="attack-damage" ng-model="attack.damage" ng-change="panelCtrl.recalculate(npc);"></div>
+    </div>
+    <div class="form-group-tight">
+        <label class="col-sm-3 control-label" for="attack-special">Special</label>
+        <div class="col-sm-9"><input class="form-control" id="attack-special" ng-model="attack.special" ng-change="panelCtrl.recalculate(npc);"></div>
     </div>
 </div>
 <button ng-show="section.edit" class="btn btn-success btn-sm" ng-click="panelCtrl.addAttack(npc)"><i class="glyphicon glyphicon-plus-sign"></i> Add Attack</button>

@@ -1,34 +1,50 @@
-<div class="form-group row">
-    <label class="col-sm-5" for="npc-race">Name</label>
-    <input class="col-sm-7" type="text" ng-model="npc.name" ng-change="panelCtrl.recalculate(npc);">
+<div class="form-group-tight">
+    <label class="control-label col-sm-5" for="npc-race">Name</label>
+    <div class="col-sm-7">
+        <input class="form-control" type="text" ng-model="npc.name" ng-change="panelCtrl.recalculate(npc);">
+    </div>
 </div>
-<div class="form-group row">
-    <label class="col-sm-5" for="npc-race">Race</label>
-    <select ng-change="panelCtrl.changeRace(npc)" class="col-sm-7" id="npc-race" name="npc-race" ng-model="npc.race.name" ng-options="rc.name as rc.name group by rc.race for rc in config.RACES"></select>
+<div class="form-group-tight">
+    <label class="control-label col-sm-5" for="npc-race">Race</label>
+    <div class="col-sm-7">
+        <select class="form-control" ng-change="panelCtrl.changeRace(npc)" id="npc-race" name="npc-race" ng-model="npc.race.name" ng-options="rc.name as rc.name group by rc.race for rc in config.RACES"></select>
+    </div>
 </div>
-<div class="form-group row">
-    <label class="col-sm-5" for="npc-background">Background</label>
-    <select ng-change="panelCtrl.changeBackground(npc)" class="col-sm-7" id="npc-background" name="npc-background" ng-model="npc.background.name" ng-options="bg.name as bg.name for bg in config.BACKGROUNDS"></select>
+<div class="form-group-tight">
+    <label class="control-label col-sm-5" for="npc-background">Background</label>
+    <div class="col-sm-7">
+        <select class="form-control" ng-change="panelCtrl.changeBackground(npc)" id="npc-background" name="npc-background" ng-model="npc.background.name" ng-options="bg.name as bg.name for bg in config.BACKGROUNDS"></select>
+    </div>
 </div>
-<div class="form-group row">
-    <label class="col-sm-5" for="npc-alignment">Alignment</label>
-    <select ng-change="panelCtrl.changeBackground(npc)" class="col-sm-7" id="npc-alignment" name="npc-alignment" ng-model="npc.alignment" ng-options="al as al for al in config.ALIGNMENTS"></select>
+<div class="form-group-tight">
+    <label class="control-label col-sm-5" for="npc-alignment">Alignment</label>
+    <div class="col-sm-7">
+        <select class="form-control" ng-change="panelCtrl.changeBackground(npc)" id="npc-alignment" name="npc-alignment" ng-model="npc.alignment" ng-options="al as al for al in config.ALIGNMENTS"></select>
+    </div>
 </div>
 <hr>
 <div ng-repeat="class in npc.classes">
     <button class="pull-right btn btn-xs btn-danger" ng-click="panelCtrl.removeClass(npc, $index)"><i class="glyphicon glyphicon-remove"></i></button>
-    <h4>Class #{{$index+1}}</h4>
-    <div class="form-group row">
-        <label class="col-sm-3" for="npc-class{{ $index }}">Name</label>
-        <select ng-change="panelCtrl.recalculate(npc)" class="col-sm-3" id="npc-class{{ $index }}" name="npc-class{{ $index }}" ng-model="class.name" ng-options="cls.name as cls.name for cls in config.CLASSES"></select>
-        <label class="col-sm-3" for="npc-class-level{{ $index }}">Level</label>
-        <input ng-change="panelCtrl.changeLevel(npc)" class="col-sm-3" id="npc-class-level{{ $index }}" type="number" min="1" max="20" ng-model="class.level">
+    <h5>Class #{{$index+1}}</h5>
+    <div class="form-group-tight">
+        <label class="control-label col-sm-2" for="npc-class{{ $index }}">Name</label>
+        <div class="col-sm-4">
+            <select class="form-control" ng-change="panelCtrl.recalculate(npc)" id="npc-class{{ $index }}" name="npc-class{{ $index }}" ng-model="class.name" ng-options="cls.name as cls.name for cls in config.CLASSES"></select>
+        </div>
+        <label class="control-label col-sm-2" for="npc-class-level{{ $index }}">Level</label>
+        <div class="col-sm-4">
+            <input class="form-control" ng-change="panelCtrl.changeLevel(npc)" id="npc-class-level{{ $index }}" type="number" min="1" max="20" ng-model="class.level">
+        </div>
     </div>
-    <div class="form-group row">
-        <label class="col-sm-3" for="npc-class-feature{{ $index }}">Feature</label>
-        <select ng-change="panelCtrl.recalculate(npc)" class="col-sm-3" id="npc-class-feature{{ $index }}" name="npc-feature{{ $index }}" ng-model="class.path" ng-options="path as path for path in config.CLASSES[class.index].paths"></select>
-        <label ng-show="config.CLASSES[class.index].fighting_styles.length > 0" class="col-sm-3" for="npc-class-style{{ $index }}">F. Style</label>
-        <select ng-show="config.CLASSES[class.index].fighting_styles.length > 0" ng-change="panelCtrl.recalculate(npc)" class="col-sm-3" id="npc-class-style[$index]" name="npc-fighting-style[$index]" ng-model="class.fighting_style" ng-options="style as style for style in config.CLASSES[class.index].fighting_styles"></select>
+    <div class="form-group-tight">
+        <label class="control-label col-sm-2" for="npc-class-feature{{ $index }}">Path</label>
+        <div class="col-sm-4">
+            <select class="form-control" ng-change="panelCtrl.recalculate(npc)" id="npc-class-feature{{ $index }}" name="npc-feature{{ $index }}" ng-model="class.path" ng-options="path as path for path in config.CLASSES[class.index].paths"></select>
+        </div>
+        <label ng-show="config.CLASSES[class.index].fighting_styles.length > 0" class="col-sm-2" for="npc-class-style{{ $index }}">Style</label>
+        <div class="col-sm-4">
+            <select class="form-control" ng-show="config.CLASSES[class.index].fighting_styles.length > 0" ng-change="panelCtrl.recalculate(npc)" id="npc-class-style[$index]" name="npc-fighting-style[$index]" ng-model="class.fighting_style" ng-options="style as style for style in config.CLASSES[class.index].fighting_styles"></select>
+        </div>
     </div>
 </div>
 <button class="btn btn-success btn-sm" ng-click="panelCtrl.addClass(npc)"><i class="glyphicon glyphicon-plus-sign"></i> Add Class</button>
