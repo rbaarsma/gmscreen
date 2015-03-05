@@ -12,6 +12,8 @@
 @main-background: white;
 
 @padding: 20px;
+@side-width: 200px;
+@side-width-min: 0;
 
 .form-group-tight {
   .row;
@@ -23,6 +25,46 @@
     padding-right: 2px !important;
   }
 
+}
+
+gm-container {
+  display: block;
+  transition: all 0.5s ease;
+  padding-left: @side-width;
+}
+
+gm-panels {
+  display: block;
+  position: relative;
+  padding: 20px;
+  width: 100%;
+  background-color: @main-background;
+  padding: @padding;
+}
+
+gm-side {
+  display: block;
+  width: @side-width;
+  z-index: 10000;
+  position: fixed;
+  left: @side-width;
+  margin-left: -@side-width;
+  height: 100%;
+  overflow-y: auto;
+  float: right;
+  transition: all 0.5s ease;
+  background-color: @side-background;
+  padding: @padding;
+  color: white;
+  border-left: 3px solid black;
+}
+
+gm-container.collapsed gm-side {
+  width: @side-width-min;
+  padding: 0;
+}
+gm-container.collapsed {
+  padding-left: @side-width-min;
 }
 
 .row-tight {
@@ -110,16 +152,15 @@ npc-panel.maximized npc-panel-column {
   .make-sm-column(3);
 }
 npc-panel-column {
-  .make-sm-column(6);
+  .make-sm-column(12);
 }
 
-gm-side {
-  display:block;
-  .make-md-column(3);
-  background-color: @side-background;
-  padding: @padding;
-  color: white;
-  border-left: 3px solid black;
+npc-panel-body {
+  padding-left: 0;
+}
+
+npc-panel npc-panel-column {
+  padding-right: 0 !important;
 }
 
 npc-section {
@@ -134,24 +175,6 @@ npc-panel-column {
   border: 1px dotted black;
   margin: 0 1em 1em 0;
   height: 50px;
-}
-
-gm-panels {
-  background-color: @main-background;
-  padding: @padding;
-  display:block;
-}
-
-gm-container {
-  .container-fluid;
-  height: 100%;
-  min-height: 100%;
-}
-
-gm-container-row {
-  .row;
-  height: 100%;
-  background-color: green;
 }
 
 .ui-draggable-dragging {

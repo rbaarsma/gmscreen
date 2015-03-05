@@ -52,23 +52,93 @@
 
         .directive('gmContainer', function () {
             return {
+                controller: ['$http', '$rootScope', 'NPCCollection', function ($http, $rootScope, NPCCollection) {
+                    var self = this;
+
+                    self.loaded = 0;
+                    self.total_to_load = 3;
+
+                    // load config
+                    $rootScope.config = {};
+                    $http.get('/config')
+                        .success(function (data) {
+                            $rootScope.config = data;
+                            self.loaded++;
+                        })
+                    ;
+
+                    // load user
+                    $rootScope.user = {};
+                    $http.get('/me')
+                        .success(function (data) {
+                            $rootScope.user = data;
+                            self.loaded++;
+                        })
+                    ;
+
+                    // load npcs
+                    $http.get('/npcs')
+                        .success(function (data) {
+                            $rootScope.npcs = data;
+                            self.loaded++;
+                        })
+                    ;
+                }],
+                controllerAs: 'gmCtrl'
             };
+        })
+
+        .directive('gmSide', function () {
+            return {
+                restrict: 'E',
+                templateUrl: 'partial/side.html',
+                controller: ['$rootScope', '$scope', 'NPCCollection', function ($rootScope, $scope, NPCCollection) {
+                    this.search = '';
+
+                    this.addToPanel = function (npc) {
+                        npc.panel.show = true;
+                        NPCCollection.update(npc);
+                    }
+
+                    this.toggleCollapsed = function () {
+                        $rootScope.user.side_collapsed = !$rootScope.user.side_collapsed;
+                    }
+
+                    $scope.$watch(angular.bind(this, function () {
+                        return this.search; // `this` IS the `this` above!!
+                    }), function (newVal, oldVal) {
+                        newVal = newVal.toLowerCase();
+                        if (newVal == '')
+                            return;
+
+                        search:
+                        for (var i=0; i<$rootScope.npcs.length; i++) {
+                            if ($rootScope.npcs[i].name.toLowerCase().indexOf(newVal) > -1) {
+                                $rootScope.npcs[i].panel.filtered = true;
+                                continue;
+                            }
+
+                            // check tags
+                            var tags = $rootScope.npcs[i].tags;
+                            for (var j=0; j<tags.length; j++) {
+                                if (tags[j] == newVal) {
+                                    $rootScope.npcs[i].panel.filtered = true;
+                                    continue search;
+                                }
+                            }
+
+                            $rootScope.npcs[i].panel.filtered = false;
+                        }
+                    });
+                }],
+                controllerAs: 'sideCtrl'
+            }
         })
 
         .directive('gmPanels', function () {
             return {
                 restrict: 'E',
                 templateUrl: 'partial/panels.html',
-                controller: ['$http', '$rootScope', function ($http, $rootScope) {
-                    // load config
-                    $rootScope.config = {};
-                    $http.get('/config')
-                        .success(function (data) {
-                            $rootScope.config = data;
-                            console.log(data);
-                        })
-                    ;
-                }]
             }
         })
 

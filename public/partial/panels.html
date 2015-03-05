@@ -1,6 +1,6 @@
 <div class="row">
     <div class="npc-panel-container">
-        <npc-panel class="panel panel-primary" ng-class="{'maximized': npc.panel.maximized}" ng-repeat="npc in npcs">
+        <npc-panel class="panel panel-primary" ng-class="{'maximized': npc.panel.maximized}" ng-repeat="npc in npcs" ng-show="npc.panel.show">
             <div class="panel-heading">
                 <!--<button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.toggleShow(npc)"><i class="glyphicon glyphicon-remove"></i></button>-->
                 <button ng-click="panelCtrl.toggleMaximize()" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-resize-small': npc.panel.maximized, 'glyphicon-resize-full': !npc.panel.maximized}" class="glyphicon"></i></button>
@@ -9,7 +9,7 @@
                 <button ng-click="panelCtrl.toggleEdit()" class="pull-right btn btn-xs" ng-class="{'btn-success': npc.panel.edit}" ><i class="glyphicon glyphicon-pencil"></i></button>
                 <h3 class="panel-title">{{ npc.name }}</h3>
             </div>
-            <npc-panel-body ng-init="section_groups = panelCtrl.sectionGroups(npc)" ng-show="npc.panel.show">
+            <npc-panel-body ng-init="section_groups = panelCtrl.sectionGroups(npc)">
                 <form>
                     <npc-panel-column ng-repeat="section_group in section_groups" data-index="{{ $index }}">
                         <npc-section ng-repeat="section in section_group" data-section="{{ section.id }}">

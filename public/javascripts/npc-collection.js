@@ -37,23 +37,7 @@ var NPCCollection = function ($http, $rootScope) {
         }).error(function (data, status) {
             // TODO: show error flash or something
             console.log(data, status);
-        })
-            ;
-    };
-
-    // load ALL npcs from /npcs
-    this.load = function () {
-        this.request('/npcs', 'GET')
-            .success(function (data) {
-                $rootScope.npcs = data;
-                console.log(data);
-                for (i in $rootScope.npcs) {
-                    self.recalculate($rootScope.npcs[i]);
-                }
-
-                $rootScope.$broadcast('npcs.loaded');
-            })
-        ;
+        });
     };
 
     // update single NPC after 1000 ms. Refresh timer on new update.
@@ -114,8 +98,4 @@ var NPCCollection = function ($http, $rootScope) {
     this.recalculate = function (npc) {
         return; // recalculation now happends onUpdate at server level
     };
-
-    window.setTimeout(function () {
-        self.load();
-    }, 100)
 };

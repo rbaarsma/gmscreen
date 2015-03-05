@@ -12,9 +12,14 @@
     <script src="/bower_components/ng-file-upload/angular-file-upload.js"></script>
 </head>
 <body>
-    <npc-new></npc-new>
-    <gm-container>
-        <gm-panels></gm-panels>
+    <gm-container ng-class="{'collapsed': user.side_collapsed}">
+        <div ng-show="gmCtrl.loaded == gmCtrl.total_to_load">
+            <gm-side></gm-side>
+            <button class="btn-primary" ng-click="sideCtrl.toggleCollapsed()"><i class="glyphicon glyphicon-menu-hamburger"></i></button>
+            <npc-new></npc-new>
+            <gm-panels></gm-panels>
+        </div>
+        <progress ng-hide="gmCtrl.loaded == gmCtrl.total_to_load" value="{{ gmCtrl.loaded }}" max="{{ gmCtrl.total_to_load }}"></progress>
     </gm-container>
 
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
