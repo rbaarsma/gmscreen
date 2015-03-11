@@ -124,6 +124,7 @@ router.post('/:id/randomize', function(req, res, next) {
                 npc.randomizeEquipment();
                 var changed = npc.recalculate();
                 changed.armor = npc.armor;
+                changed.shield = npc.shield;
                 changed.weapons = npc.weapons;
                 npc.calc('attacks');
                 changed.attacks = npc.attacks;

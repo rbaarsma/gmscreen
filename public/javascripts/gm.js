@@ -103,7 +103,7 @@
 
                     this.addToPanel = function (npc) {
                         npc.panel.show = true;
-                        NPCCollection.update(npc);
+                        NPCCollection.patch($scope.npc, 'panel');
                     }
 
                     this.toggleCollapsed = function () {
@@ -166,6 +166,7 @@
                      * @param key in $scope.npc (only first level!)
                      */
                     this.npcChange = function (key) {
+                        console.log(key);
                         if (typeof $scope.npc[key] == 'undefined')
                             throw Error('key '+key+' is not in $scope.npc: '+$scope.npc);
                         NPCCollection.patch($scope.npc, key);
@@ -249,30 +250,12 @@
 
                     this.removeClass = function (npc, index) {
                         npc.classes.splice(index, 1);
-                        NPCCollection.update(npc);
+                        self.npcChange('classes');
                     }
 
                     this.changeStat = function (npc, stat) {
                         stat.mod = Math.floor(stat.stat / 2) - 5;
                         self.npcChange('stats');
-                    };
-
-                    this.toggleMaximize = function () {
-                        $scope.npc.panel.maximized = !$scope.npc.panel.maximized;
-                        self.npcChange('panel');
-                    };
-
-                    this.toggleShow = function () {
-                        $scope.npc.panel.show = !$scope.npc.panel.show;
-                        self.npcChange('panel');
-                    };
-
-                    this.toggleEdit = function () {
-                        $scope.npc.panel.edit = !$scope.npc.panel.edit;
-                        for (var i=0; i<$scope.npc.panel.sections.length; i++) {
-                            $scope.npc.panel.sections[i].edit = $scope.npc.panel.edit;
-                        }
-                        self.npcChange('panel');
                     };
 
                     this.sectionGroups = function (npc) {
@@ -319,7 +302,6 @@
                         revert: false,
                         stop: function (event, ui) {
                             scope.$parent.sideCtrl.addToPanel(scope.$index);
-                            //ui.helper[0].innerHTML = npc;
                         }
                     });
                 }
@@ -355,7 +337,7 @@
                      */
                     this.toggleShow = function () {
                         $scope.section.show = !$scope.section.show;
-                        NPCCollection.update($scope.npc);
+                        NPCCollection.patch($scope.npc, 'panel');
                     }
 
                     /**
@@ -364,9 +346,7 @@
                     this.randomize = function () {
                         NPCCollection.randomize($scope.npc, $scope.section.id)
                             .success(function (data) {
-                                console.log($scope.npc);
                                 $scope.npc = angular.extend($scope.npc, data);
-                                console.log($scope.npc);
                             })
                         ;
                     }
@@ -376,7 +356,7 @@
                      */
                     this.toggleEdit = function () {
                         $scope.section.edit = !$scope.section.edit;
-                        NPCCollection.update($scope.npc);
+                        NPCCollection.patch($scope.npc, 'panel');
                     }
                 }],
                 controllerAs: 'sectionCtrl',
@@ -413,132 +393,11 @@
                                 });
                             });
                             scope.npc.panel.sections = sections;
-                            NPCCollection.update(scope.npc);
+                            NPCCollection.patch(scope.npc, 'panel');
                         }
                     });
                 }
             }
         }])
-
-/*
-        .directive('masonry', function($timeout) {
-            return {
-                restrict: 'AC',
-                link: function(scope, elem, attrs) {
-                    console.log(elem);
-                    if (scope.npc.panel.sections.length > 0) {
-                        for (var i=0; i<scope.npc.panel.sections.length; i++) {
-                            //console.log(scope.npc.panel.sections[key].show);
-                            if (scope.npc.panel.sections[i].show === false) {
-                                var key = scope.npc.panel.sections[i].id;
-                                console.log(key);
-                                //console.log(key);
-                                //console.log($('#' + key).find('.panel-body'));
-                                $(elem).find('.'+key).find('.panel-body').toggleClass('hide');
-                                var tg = $(elem).find('.'+key).find('.panel-heading .glyphicon');
-                                $(tg).toggleClass('glyphicon-minus').toggleClass('glyphicon-plus');
-                            }
-                        }
-                    }
-
-                    var container = elem[0];
-                    var options = angular.extend({
-                        itemSelector: '.item'
-                    }, angular.fromJson(attrs.masonry));
-
-                    var masonry = scope.masonry = scope.$root.masonry = new Masonry(container, options);
-
-                    var debounceTimeout = 0;
-                    scope.update = function() {
-                        if (debounceTimeout) {
-                            $timeout.cancel(debounceTimeout);
-                        }
-                        debounceTimeout = $timeout(function() {
-                            debounceTimeout = 0;
-
-                            masonry.reloadItems();
-                            masonry.layout();
-
-                            elem.children(options.itemSelector).css('visibility', 'visible');
-                        }, 120);
-                    };
-
-                    scope.$root.$on('masonry.update', scope.update);
-
-                    scope.removeBrick = function() {
-                        $timeout(function() {
-                            masonry.reloadItems();
-                            masonry.layout();
-                        }, 500);
-                    };
-
-                    scope.appendBricks = function(ele) {
-                        masonry.appended(ele);
-                    };
-
-                    scope.$on('masonry.layout', function() {
-                        masonry.layout();
-                    });
-
-                    scope.update();
-                }
-            };
-        })
-
-        .directive('masonryTile', function(NPCCollection) {
-            return {
-                restrict: 'AC',
-                link: function(scope, elem) {
-                    window.setTimeout(function () {
-                        var master = elem.parent('*[masonry]:first').scope(),
-                            update = master.update,
-                            removeBrick = master.removeBrick,
-                            appendBricks = master.appendBricks;
-
-                        if (update) {
-                            //imagesLoaded( elem.get(0), update);
-                            elem.ready(update);
-                        }
-                        if (appendBricks) {
-                            //imagesLoaded( elem.get(0), appendBricks(elem));
-                        }
-                        scope.$on('$destroy', function() {
-                            if (removeBrick) {
-                                removeBrick();
-                            }
-                        });
-
-                        $(elem).find('.resizable').on('click', function (event) {
-                            $(elem).find('.panel-body').toggleClass('hide');
-                            var tg = event.target;
-                            if (tg.tagName != 'I') {
-                                tg = $(tg).find('i.glyphicon');
-                            }
-
-                            if (typeof scope.npc.panel.sections == 'undefined')
-                                scope.npc.panel.sections = [];
-
-                            var obj = null;
-                            for (var i=0; i<scope.npc.panel.sections.length; i++) {
-                                if (scope.npc.panel.sections[i].id == $(elem).attr('class')) {
-                                    obj = scope.npc.panel.sections[i];
-                                }
-                            }
-
-                            if (obj === null)
-                                obj = scope.npc.panel.sections.push({'id': $(elem).attr('class'), 'show': true});
-
-                            obj.show = $(tg).hasClass('glyphicon-plus');
-
-                            NPCCollection.update(scope.npc);
-
-                            $(tg).toggleClass('glyphicon-minus').toggleClass('glyphicon-plus');
-                            update();
-                        });
-                    },0 );
-                }
-            };
-        });
-*/
     ;
 })();
