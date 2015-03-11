@@ -3,5 +3,6 @@
     <div ng-show="npc.panel.filtered || !sideCtrl.search">
         {{ npc.name }}
         <button class="btn-success btn-xs" ng-click="sideCtrl.addToPanel(npc)"><i class="glyphicon glyphicon-plus-sign"></i></button>
+        <button onclick="return confirm('Are you sure you want to permanently delete this NPC?');" class="btn-danger btn-xs" ng-click="sideCtrl.remove($index)"><i class="glyphicon glyphicon-remove"></i></button>
     </div>
 </npc-item>

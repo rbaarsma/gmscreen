@@ -13,6 +13,7 @@ var MongoStore = require('connect-mongo')(session);
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var npcs = require('./routes/npcs');
+var spells = require('./routes/spells');
 
 // connect to mongodb
 mongoose.connect('mongodb://localhost/gm', function(err, next) {
@@ -45,6 +46,7 @@ app.use('/fonts',  express.static(path.join(__dirname, '/bower_components/bootst
 app.use('/', routes);
 app.use('/users', users);
 app.use('/npcs', npcs);
+app.use('/spells', spells);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

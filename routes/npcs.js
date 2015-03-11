@@ -4,11 +4,8 @@ var fs = require('fs');
 var multiparty = require('multiparty');
 var mongoose = require('mongoose');
 var NPC = require('../models/npc.js');
+var spell = require('../models/spell.js');
 var Picture = require('../models/picture.js');
-
-function recalculate(npc) {
-
-}
 
 /* GET NPC listing. */
 router.get('/', function(req, res, next) {
@@ -16,7 +13,6 @@ router.get('/', function(req, res, next) {
         if (err) return next(err);
 
         for (var i=0; i<npcs.length; i++) {
-            npcs[i].locked = [];
             npcs[i].save();
         }
 
@@ -68,9 +64,9 @@ router.get('/:id', function(req, res, next) {
 router.patch('/:id', function (req, res, next) {
     NPC.findByIdAndUpdate(req.params.id, req.body, function (err, npc) {
         if (err) return next(err);
-        npc.recalculate();
+        var changes = npc.recalculate();
         npc.save();
-        res.json(npc);
+        res.json(changes);
     });
 });
 
@@ -87,36 +83,73 @@ router.post('/:id/randomize', function(req, res, next) {
     var npc = NPC.findByIdAndUpdate(req.params.id, req.body, function (err, npc) {
         if (err) return next(err);
 
-        npc.calc('config');
+        var changed = {};
+        //npc.calc('config');
         switch (req.query.type) {
             case 'all':
                 npc.randomizeAll();
+                changed = npc;
                 break;
             case 'base':
+                console.log('randomize base');
                 npc.randomizeBase();
+                npc.calc('config');
+                npc.randomizeSpells();
+                npc.randomizeSkills();
+                npc.calc(['features']);
+                var changed = npc.recalculate();
+                changed.classes = npc.classes;
+                changed.features = npc.features;
+                changed.race = npc.race;
+                changed.spells_day = npc.spells_day;
+                changed.path = npc.path;
+                changed.level = npc.level;
+                break;
+            case 'name':
+                npc.randomizeName();
+                npc.randomizeGender();
+                // npc.randomizeAppearance
+                changed = {name: npc.name, gender: npc.gender};
                 break;
             case 'stats':
                 npc.randomizeStats();
+                var changed = npc.recalculate();
+                changed.stats = npc.stats;
                 break;
             case 'skills':
                 npc.randomizeSkills();
+                changed = {skills: npc.skills};
                 break;
             case 'equipment':
                 npc.randomizeEquipment();
+                var changed = npc.recalculate();
+                changed.armor = npc.armor;
+                changed.weapons = npc.weapons;
+                npc.calc('attacks');
+                changed.attacks = npc.attacks;
                 break;
             case 'background':
                 npc.randomizeBackgroundStuff();
+                changed = {background: npc.background};
+                break;
+            case 'spells':
+                npc.randomizeSpells();
+                changed = {classes: npc.classes, race: npc.race, spells_day: npc.spells_day};
                 break;
             case 'features':
                 npc.calc('features');
+                changed = {features: npc.features};
                 break;
             case 'attacks':
                 npc.calc('attacks');
+                changed = {attacks: npc.attacks};
                 break;
         }
-        npc.recalculate();
+
+        console.log(changed);
+
         npc.save();
-        res.json(npc);
+        res.json(changed);
     });
 });
 

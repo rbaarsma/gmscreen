@@ -50,6 +50,9 @@ var ClassSchema = new mongoose.Schema({
     path: String,
     fighting_style: String,
     level: { type: Number, min: 1, max: 20 },
+    spells: [String],
+    cantrips: [String],
+    spelldc: Number
 });
 
 var SkillSchema = new mongoose.Schema({
@@ -98,6 +101,7 @@ var NPCSchema = new mongoose.Schema({
     updated_at: { type: Date, default: Date.now },
     notes: String,
     unlocked: [String],
+    spells_day: [Number],
     // ui options
     panel: {
         sections: [SectionSchema],
@@ -108,7 +112,7 @@ var NPCSchema = new mongoose.Schema({
 });
 
 // note the order is a bit strange because it is grouped with i % 4
-var SECTIONS = ['image', 'base','equipment','background','stats','attacks','features','notes','abilities','skills'];
+var SECTIONS = ['image', 'base','equipment','background','stats','attacks','features','notes','abilities','skills','spells'];
 
 /**
  * Calculate specific non-db property, such as level or proficency bonus
@@ -342,7 +346,36 @@ NPCSchema.methods.calced = function (prop) {
 }
 
 NPCSchema.methods.recalculate = function () {
+    // define properties for performance reasons (instead of iterating all)
+    var b = {
+        'ac': this.ac,
+        'hp': this.hp,
+        'it': this.it,
+        'prof': this.prof,
+        'saves': this.saves.slice()
+    };
     this.calc(['ac','hp','it','prof','saves']);
+
+    // remove properties that haven't changed
+    for (var prop in b) {
+        if (b[prop] instanceof Array) {
+            var changed=false;
+            for (var i=0; i<b[prop].length; i++) {
+                if (b[prop][i] != this[prop][i]) {
+                    changed=true;
+                }
+            }
+            if (changed === false) {
+                delete b[prop];
+            }
+        }
+
+        if (b[prop] == this[prop]) {
+            delete b[prop];
+        }
+    }
+
+    return b;
 }
 
 NPCSchema.methods.randomizeAll = function () {
@@ -351,6 +384,7 @@ NPCSchema.methods.randomizeAll = function () {
     this.randomizeAlignment();
     this.randomizeStats();
     this.randomizeSkills();
+    this.randomizeSpells();
     this.randomizeEquipment();
     this.calc(['features', 'attacks']);
 }
@@ -358,9 +392,9 @@ NPCSchema.methods.randomizeAll = function () {
 NPCSchema.methods.randomizeBase = function () {
     this.randomizeRace();
     this.randomizeClasses(true);
-    this.randomizeBackground();
-    this.randomizeGender();
-    this.randomizeName();
+    //this.randomizeBackground();
+    //this.randomizeGender();
+    //this.randomizeName();
     this.randomizePath();
 };
 
@@ -371,6 +405,156 @@ NPCSchema.methods.randomizeName = function () {
     this.name = firstnames[Math.floor(Math.random() * firstnames.length)];
     if (lastnames.length > 0) {
         this.name += ' ' + lastnames[Math.floor(Math.random() * lastnames.length)];
+    }
+}
+
+NPCSchema.methods.randomizeSpells = function () {
+    var casting_classes = 0,
+        caster_cls_key,
+        config = this.calced('config'),
+        stats = this.calced('stats');
+
+    // add racial spells
+    var racespells = [];
+    this.race.spells = [];
+    console.log(config.race.spells );
+    if (typeof config.race.spells != 'undefined') {
+        racespells = JSON.parse(JSON.stringify(config.race.spells));
+        console.log(racespells);
+        if (racespells.length > 1) {
+            racespells.splice(Math.floor(this.level / 2) + 2);
+        }
+        console.log(racespells);
+        for (var j = 0; j < racespells.length; j++) {
+            for (var k = 0; k < racespells[j].length; k++) {
+                if (racespells[j][k] == '*wizard*') {
+                    var choices = DND.CLASSES[11].spells;
+                    var random = Math.floor(Math.random() * choices.length - 1);
+                    racespells[j][k] = choices[random];
+                }
+                console.log(racespells[j][k]);
+                this.race.spells.push(racespells[j][k]);
+            }
+        }
+        console.log(this.race.spells);
+        this.race.spelldc = stats[this.config.race.spellstat].mod + 8;
+    }
+
+    // init some class stuff
+    console.log(this.classes);
+    for (var i=0; i<this.classes.length; i++) {
+        var n = this.classes[i].name,
+            p = this.classes[i].path,
+            clsconfig = config.classes[i];
+        if (n == 'Bard' || n == 'Cleric' || n == 'Druid' || n == 'Sorcerer' || n == 'Wizard' || n == 'Paladin' || n == 'Ranger' || (n == 'Fighter' && p == 'Eldritch Knight') || (n == 'Rogue' && p == 'Arcane Trickster')) {
+            casting_classes++;
+            caster_cls_key = i;
+            this.classes[i].spelldc = 8+stats[clsconfig.spellstat].mod;
+        }
+        this.classes[i].spells = [];
+    }
+
+    this.spells_day = [];
+
+    if (casting_classes == 0)
+        return;
+
+    // determine spells / day
+    if (casting_classes == 1) {
+        console.log('only 1 caster');
+        var n = this.classes[caster_cls_key].name,
+            p = this.classes[caster_cls_key].path,
+            lvl = this.classes[caster_cls_key].level;
+        console.log(n);
+        if (n == 'Bard' || n == 'Cleric' || n == 'Druid' || n == 'Sorcerer' || n == 'Wizard') {
+            this.spells_day = DND.spells_day_full[lvl];
+        }
+        if ((n == 'Paladin' && lvl > 1)|| (n == 'Ranger' && lvl > 1) || (n == 'Fighter' && p == 'Eldritch Knight' && lvl > 2) || (n == 'Rogue' && p == 'Arcane Trickster' && lvl > 2)) {
+            this.spells_day = DND.spells_day_half[lvl];
+        }
+    } else {
+        console.log('multiclass caster');
+        var slvl = 0;
+        for (var i=0; i<this.classes.length; i++) {
+            var n = this.classes[i].name,
+                p = this.classes[i].path,
+                lvl = this.classes[i].level;
+            if (n == 'Bard' || n == 'Cleric' || n == 'Druid' || n == 'Sorcerer' || n == 'Wizard') {
+                slvl += lvl;
+            }
+            if (n == 'Paladin' || n == 'Ranger') {
+                slvl += Math.floor(lvl / 2);
+            }
+            if ((n == 'Fighter' && p == 'Eldritch Knight') || (n == 'Rogue' && p == 'Arcane Trickster')) {
+                slvl += Math.floor(lvl / 3);
+            }
+        }
+        this.spells_day = DND.spells_day_full[slvl];
+    }
+
+    // determine spells known/prepared
+    for (var i=0; i<this.classes.length; i++) {
+        var n = this.classes[i].name,
+            p = this.classes[i].path,
+            lvl = this.classes[i].level,
+            clsconfig = config.classes[i],
+            spells = [],
+            total_spells,
+            maxhighest,
+            spells_day = [];
+        this.classes[i].spells = [];
+
+        if (n == 'Bard' || n == 'Cleric' || n == 'Druid' || n == 'Sorcerer' || n == 'Wizard') {
+            spells_day = DND.spells_day_full[lvl];
+            maxhighest = lvl/2 == Math.floor(lvl/2) ? 4 : 2;
+            total_spells = stats[clsconfig.spellstat].mod + lvl;
+        } else if ((n == 'Paladin' && lvl > 1)|| (n == 'Ranger' && lvl > 1) || (n == 'Fighter' && p == 'Eldritch Knight' && lvl > 2) || (n == 'Rogue' && p == 'Arcane Trickster' && lvl > 2)) {
+            maxhighest = 2 + (((lvl-1) % 4) * 2);
+            total_spells = stats[clsconfig.spellstat].mod + Math.floor(lvl/2);
+            spells_day = DND.spells_day_half[lvl];
+        } else {
+            continue;
+        }
+
+        if (clsconfig.spells_known && clsconfig.spells_known.length > 0) {
+            total_spells = clsconfig.spells_known[lvl];
+        }
+
+        if (total_spells < 1)
+            total_spells = 1;
+
+        var choices = JSON.parse(JSON.stringify(clsconfig.spells)); // note: using JSON trick to deep-copy array.
+        choices = choices.splice(1); // remove cantrips
+        console.log(choices);
+
+        for (var j=0; j<total_spells; j++) {
+            //console.log(choices);
+            if (j < maxhighest) {
+                console.log(spells_day.length);
+                this.classes[i].spells.push(choices[spells_day.length-1].splice(Math.floor(Math.random() * choices[spells_day.length-1].length), 1));
+            } else {
+                var max = spells_day.length - 2;
+                if (max < 0) { max = 0; }
+                var splvl = Math.floor(Math.random() * max);
+                // try again in case we already chose ALL spells from this level
+                while (choices[splvl].length == 0) {
+                    var splvl = Math.floor(Math.random() * max);
+                }
+                this.classes[i].spells.push(choices[splvl].splice(Math.floor(Math.random()*choices[splvl].length), 1));
+            }
+        }
+
+        // choose cantrips
+        this.classes[i].cantrips = [];
+        if (clsconfig.cantrips.length > 0) {
+            var total = clsconfig.cantrips[lvl];
+            var choices = clsconfig.spells[0].slice(); // copy array
+            for (var j=0; j<total; j++) {
+                var random = Math.floor(Math.random() * choices.length-1);
+
+                this.classes[i].cantrips.push( choices.splice(random, 1) );
+            }
+        }
     }
 }
 

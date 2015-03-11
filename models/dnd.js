@@ -121,6 +121,8 @@ var DND = {
         /*  7 */ {name: "Water vehicles"},
     ],
 };
+DND.SPELLS = [[{"name":"Blade Ward","school":"Abjuration","components":"V,S","classes":"Bard, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Chill Touch","school":"Necromancy","components":"V,S","classes":"Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Druidcraft","school":"Transmutation","components":"V,S","classes":"Druid","casting_time":"1 action"},{"name":"Eldritch Blast","school":"Evocation","components":"V,S","classes":"Warlock","casting_time":"1 action"},{"name":"Fire Bolt","school":"Evocation","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Light","school":"Evocation","components":"V,M","classes":"Bard, Cleric, Sorcerer, Wizard","casting_time":"1 action"},{"name":"Mage Hand","school":"Conjuration","components":"V,S","classes":"Bard, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Mending","school":"Transmutation","components":"V,S,M","classes":"Bard, Cleric, Druid, Sorcerer, Wizard","casting_time":"1 minute"},{"name":"Message","school":"Transmutation","components":"V,S,M","classes":"Bard, Sorcerer, Wizard","casting_time":"1 action"},{"name":"Minor Illusion","school":"Illusion","components":"S,M","classes":"Bard, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Poison Spray","school":"Conjuration","components":"V,S","classes":"Druid, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Prestidigitation","school":"Transmutation","components":"V,S","classes":"Bard, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Produce Flame","school":"Conjuration","components":"V,S","classes":"Druid","casting_time":"1 action"},{"name":"Ray of Frost","school":"Evocation","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Sacred Flame","school":"Evocation","components":"V,S","classes":"Cleric","casting_time":"1 action"},{"name":"Shillelagh","school":"Transmutation","components":"V,S,M","classes":"Druid","casting_time":"1 bonus action"},{"name":"Shocking Grasp","school":"Evocation","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Spare the Dying","school":"Necromancy","components":"V,S","classes":"Cleric","casting_time":"1 action"},{"name":"Thaumaturgy","school":"Transmutation","components":"V","classes":"Cleric","casting_time":"1 action"},{"name":"Thorn Whip","school":"Transmutation","components":"V,S,M","classes":"Druid","casting_time":"1 action"},{"name":"Vicious Mockery","school":"Enchantment","components":"V","classes":"Bard","casting_time":"1 action"}],[{"name":"Animal Friendship","school":"Enchantment","components":"V,S,M","classes":"Bard, Druid, Ranger","casting_time":"1 action"},{"name":"Armor of Agathys","school":"Abjuration","components":"V,S,M","classes":"Warlock","casting_time":"1 action"},{"name":"Arms of Hadar","school":"Conjuration","components":"V,S","classes":"Warlock","casting_time":"1 action"},{"name":"Burning Hands","school":"Evocation","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Charm Person","school":"Enchantment","components":"V,S","classes":"Bard, Druid, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Color Spray","school":"Illusion","components":"V,S,M","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Command","school":"Enchantment","components":"V","classes":"Cleric, Paladin","casting_time":"1 action"},{"name":"Create or Destroy Water","school":"Transmutation","components":"V,S,M","classes":"Cleric, Druid","casting_time":"1 action"},{"name":"Cure Wounds","school":"Evocation","components":"V,S","classes":"Bard, Cleric, Druid, Paladin, Ranger","casting_time":"1 action"},{"name":"Detect Evil and Good","school":"Divination","components":"V,S","classes":"Cleric, Paladin","casting_time":"1 action"},{"name":"Disguise Self","school":"Illusion","components":"V,S","classes":"Bard, Sorcerer, Wizard","casting_time":"1 action"},{"name":"Dissonant Whispers","school":"Enchantment","components":"V","classes":"Bard","casting_time":"1 action"},{"name":"False Life","school":"Necromancy","components":"V,S,M","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Feather Fall","school":"Transmutation","components":"V,M","classes":"Bard, Sorcerer, Wizard","casting_time":"1 reaction"},{"name":"Goodberry","school":"Transmutation","components":"V,S,M","classes":"Druid, Ranger","casting_time":"1 action"},{"name":"Grease","school":"Conjuration","components":"V,S,M","classes":"Wizard","casting_time":"1 action"},{"name":"Guiding Bolt","school":"Evocation","components":"V,S","classes":"Cleric","casting_time":"1 action"},{"name":"Hail of Thorns","school":"Conjuration","components":"V","classes":"Ranger","casting_time":"1 bonus action"},{"name":"Healing Word","school":"Evocation","components":"V","classes":"Bard, Cleric, Druid","casting_time":"1 bonus action"},{"name":"Hellish Rebuke","school":"Evocation","components":"V,S","classes":"Warlock","casting_time":"1 reaction"},{"name":"Inflict Wounds","school":"Necromancy","components":"V,S","classes":"Cleric","casting_time":"1 action"},{"name":"Jump","school":"Transmutation","components":"V,S,M","classes":"Druid, Ranger, Sorcerer, Wizard","casting_time":"1 action"},{"name":"Longstrider","school":"Transmutation","components":"V,S,M","classes":"Bard, Druid, Ranger, Wizard","casting_time":"1 action"},{"name":"Mage Armor","school":"Abjuration","components":"V,S,M","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Magic Missile","school":"Evocation","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Ray of Sickness","school":"Necromancy","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Sanctuary","school":"Abjuration","components":"V,S,M","classes":"Cleric","casting_time":"1 bonus action"},{"name":"Shield","school":"Abjuration","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 reaction"},{"name":"Sleep","school":"Enchantment","components":"V,S,M","classes":"Bard, Sorcerer, Wizard","casting_time":"1 action"},{"name":"Thunderwave","school":"Evocation","components":"V,S","classes":"Bard, Druid, Sorcerer, Wizard","casting_time":"1 action"}],[{"name":"Cordon of Arrows","school":"Transmutation","components":"V,S,M","classes":"Ranger","casting_time":"1 action"},{"name":"Darkvision","school":"Transmutation","components":"V,S,M","classes":"Druid, Ranger, Sorcerer, Wizard","casting_time":"1 action"},{"name":"Enthrall","school":"Enchantment","components":"V,S","classes":"Bard, Warlock","casting_time":"1 action"},{"name":"Find Steed","school":"Conjuration","components":"V,S","classes":"Paladin","casting_time":"10 minutes"},{"name":"Find Traps","school":"Divination","components":"V,S","classes":"Cleric, Druid, Ranger","casting_time":"1 action"},{"name":"Knock","school":"Transmutation","components":"V","classes":"Bard, Sorcerer, Wizard","casting_time":"1 action"},{"name":"Lesser Restoration","school":"Abjuration","components":"V,S","classes":"Bard, Cleric, Druid, Paladin, Ranger","casting_time":"1 action"},{"name":"Mirror Image","school":"Illusion","components":"V,S","classes":"Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Misty Step","school":"Conjuration","components":"V","classes":"Sorcerer, Warlock, Wizard","casting_time":"1 bonus action"},{"name":"Prayer of Healing","school":"Evocation","components":"V","classes":"Cleric","casting_time":"10 minutes"},{"name":"Protection from Poison","school":"Abjuration","components":"V,S","classes":"Cleric, Druid, Paladin, Ranger","casting_time":"1 action"},{"name":"Rope Trick","school":"Transmutation","components":"V,S,M","classes":"Wizard","casting_time":"1 action"},{"name":"Scorching Ray","school":"Evocation","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"See invisibility","school":"Divination","components":"V,S,M","classes":"Bard, Sorcerer, Wizard","casting_time":"1 action"},{"name":"Shatter","school":"Evocation","components":"V,S,M","classes":"Bard, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Spiritual Weapon","school":"Evocation","components":"V,S","classes":"Cleric","casting_time":"1 bonus action"},{"name":"Zone of Truth","school":"Enchantment","components":"V,S","classes":"Bard, Cleric, Paladin","casting_time":"1 action"}],[{"name":"Blink","school":"Transmutation","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Conjure Barrage","school":"Conjuration","components":"V,S,M","classes":"Ranger","casting_time":"1 action"},{"name":"Counterspell","school":"Abjuration","components":"S","classes":"Sorcerer, Warlock, Wizard","casting_time":"1 reaction"},{"name":"Create Food and Water","school":"Conjuration","components":"V,S","classes":"Cleric, Paladin","casting_time":"1 action"},{"name":"Daylight","school":"Evocation","components":"V,S","classes":"Cleric, Druid, Paladin, Ranger, Sorcerer","casting_time":"1 action"},{"name":"Dispel Magic","school":"Abjuration","components":"V,S","classes":"Bard, Cleric, Druid, Paladin, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Fireball","school":"Evocation","components":"V,S,M","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Lightning Bolt","school":"Evocation","components":"V,S,M","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Mass Healing Word","school":"Evocation","components":"V","classes":"Cleric","casting_time":"1 bonus action"},{"name":"Plant Growth","school":"Transmutation","components":"V,S","classes":"Bard, Druid, Ranger","casting_time":"1 action OR 8 hours"},{"name":"Remove Curse","school":"Abjuration","components":"V,S","classes":"Cleric, Paladin, Warlock, Wizard","casting_time":"1 action"},{"name":"Sending","school":"Evocation","components":"V,S,M","classes":"Bard, Cleric, Wizard","casting_time":"1 action"},{"name":"Speak with Dead","school":"Necromancy","components":"V,S,M","classes":"Bard, Cleric","casting_time":"1 action"},{"name":"Speak with Plants","school":"Transmutation","components":"V,S","classes":"Bard, Druid, Ranger","casting_time":"1 action"},{"name":"Tongues","school":"Divination","components":"V,M","classes":"Bard, Cleric, Sorcerer, Warlock, Wizard","casting_time":"1 action"}],[{"name":"Blight","school":"Necromancy","components":"V,S","classes":"Druid, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Death Ward","school":"Abjuration","components":"V,S","classes":"Cleric, Paladin","casting_time":"1 action"},{"name":"Dimension Door","school":"Conjuration","components":"V","classes":"Bard, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Fabricate","school":"Transmutation","components":"V,S","classes":"Wizard","casting_time":"10 minutes"},{"name":"Fire Shield","school":"Evocation","components":"V,S,M","classes":"Wizard","casting_time":"1 action"},{"name":"Freedom of Movement","school":"Abjuration","components":"V,S,M","classes":"Bard, Cleric, Druid, Ranger","casting_time":"1 action"},{"name":"Guardian of Faith","school":"Conjuration","components":"V","classes":"Cleric","casting_time":"1 action"},{"name":"Hallucinatory Terrain","school":"Illusion","components":"V,S,M","classes":"Bard, Druid, Warlock, Wizard","casting_time":"10 minutes"},{"name":"Ice Storm","school":"Evocation","components":"V,S,M","classes":"Druid, Sorcerer, Wizard","casting_time":"1 action"},{"name":"Stone Shape","school":"Transmutation","components":"V,S,M","classes":"Cleric, Druid, Wizard","casting_time":"1 action"}],[{"name":"Cone of Cold","school":"Evocation","components":"V,S,M","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Conjure Volley","school":"Conjuration","components":"V,S,M","classes":"Ranger","casting_time":"1 action"},{"name":"Contagion","school":"Necromancy","components":"V,S","classes":"Cleric, Druid","casting_time":"1 action"},{"name":"Creation","school":"Illusion","components":"V,S,M","classes":"Sorcerer, Wizard","casting_time":"1 minute"},{"name":"Destructive Wave","school":"Evocation","components":"V","classes":"Paladin","casting_time":"1 action"},{"name":"Dispel Evil and Good","school":"Abjuration","components":"V,S,M","classes":"Cleric, Paladin","casting_time":"1 action"},{"name":"Dream","school":"Illusion","components":"V,S,M","classes":"Bard, Warlock, Wizard","casting_time":"1 minute"},{"name":"Flame Strike","school":"Evocation","components":"V,S,M","classes":"Cleric","casting_time":"1 action"},{"name":"Geas","school":"Enchantment","components":"V","classes":"Bard, Cleric, Druid, Paladin, Wizard","casting_time":"1 minute"},{"name":"Mass Cure Wounds","school":"Conjuration","components":"V,S","classes":"Bard, Cleric, Druid","casting_time":"1 action"},{"name":"Passwall","school":"Transmutation","components":"V,S,M","classes":"Wizard","casting_time":"1 action"},{"name":"Seeming","school":"Illusion","components":"V,S","classes":"Bard, Sorcerer, Wizard","casting_time":"1 action"}],[{"name":"Chain Lightning","school":"Evocation","components":"V,S,M","classes":"Wizard","casting_time":"1 action"},{"name":"Disintegrate","school":"Transmutation","components":"V,S,M","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Harm","school":"Necromancy","components":"V,S","classes":"Cleric","casting_time":"1 action"},{"name":"Heal","school":"Evocation","components":"V,S","classes":"Cleric, Druid","casting_time":"1 action"},{"name":"Mass Suggestion","school":"Enchantment","components":"V,M","classes":"Bard, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Planar Ally","school":"Conjuration","components":"V,S","classes":"Cleric","casting_time":"10 minutes"},{"name":"Transport via Plants","school":"Conjuration","components":"V,S","classes":"Druid","casting_time":"1 action"},{"name":"Wind Walk","school":"Transmutation","components":"V,S,M","classes":"Druid","casting_time":"1 minute"},{"name":"Word of Recall","school":"Conjuration","components":"V","classes":"Cleric","casting_time":"1 action"}],[{"name":"Divine Word","school":"Evocation","components":"V","classes":"Cleric","casting_time":"1 bonus action"},{"name":"Etherealness","school":"Transmutation","components":"V,S","classes":"Bard, Cleric, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Finger of Death","school":"Necromancy","components":"V,S","classes":"Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Fire Storm","school":"Evocation","components":"V,S","classes":"Cleric, Druid, Sorcerer","casting_time":"1 action"},{"name":"Mirage Arcane","school":"Illusion","components":"V,S","classes":"Bard, Druid, Wizard","casting_time":"10 minutes"},{"name":"Prismatic Spray","school":"Evocation","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Regenerate","school":"Transmutation","components":"V,S,M","classes":"Bard, Cleric, Druid","casting_time":"1 minute"},{"name":"Teleport","school":"Conjuration","components":"V","classes":"Bard, Sorcerer, Wizard","casting_time":"1 action"}],[{"name":"Demiplane","school":"Conjuration","components":"S","classes":"Warlock, Wizard","casting_time":"1 action"},{"name":"Feeblemind","school":"Enchantment","components":"V,S,M","classes":"Bard, Druid, Warlock, Wizard","casting_time":"1 action"},{"name":"Glibness","school":"Transmutation","components":"V","classes":"Bard, Warlock","casting_time":"1 action"},{"name":"Mind Blank","school":"Abjuration","components":"V,S","classes":"Bard, Wizard","casting_time":"1 action"},{"name":"Power Word Stun","school":"Enchantment","components":"V","classes":"Bard, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Sunburst","school":"Evocation","components":"V,S,M","classes":"Druid, Sorcerer, Wizard","casting_time":"1 action"},{"name":"Telepathy","school":"Evocation","components":"V,S,M","classes":"Wizard","casting_time":"1 action"}],[{"name":"Foresight","school":"Divination","components":"V,S,M","classes":"Bard, Druid, Warlock, Wizard","casting_time":"1 minute"},{"name":"Mass Heal","school":"Conjuration","components":"V,S","classes":"Cleric","casting_time":"1 action"},{"name":"Meteor Swarm","school":"Evocation","components":"V,S","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Power Word Heal","school":"Evocation","components":"V,S","classes":"Bard","casting_time":"1 action"},{"name":"Power Word Kill","school":"Enchantment","components":"V","classes":"Bard, Sorcerer, Warlock, Wizard","casting_time":"1 action"},{"name":"Prismatic Wall","school":"Abjuration","components":"V,S","classes":"Wizard","casting_time":"1 action"},{"name":"Time Stop","school":"Transmutation","components":"V","classes":"Sorcerer, Wizard","casting_time":"1 action"},{"name":"Wish","school":"Conjuration","components":"V","classes":"Sorcerer, Wizard","casting_time":"1 action"}]];
+
 DND.CLASSES = [
     {
         name: 'Barbarian',
@@ -157,7 +159,8 @@ DND.CLASSES = [
         ],
         paths: ['Path of the Berserker', 'Path of the Totem Warrior'],
         rages: [2,2,3,3,3,3,4,4,4,4,4,4,5,5,5,5,5,6,6,6,9],
-        rage_damage: [2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,4]
+        rage_damage: [2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,4],
+        cantrips: []
     },
     {
         name: 'Bard',
@@ -170,6 +173,7 @@ DND.CLASSES = [
         alignments: ['NG','CG','N','CN','NE','CE'],
         saves: [1,5],
         primary_stats: [5,1],
+        spellstat: 5,
         spells: [
             ["Blade Ward","Dancing Lights","Friends","Light","Mage Hand","Mending","Message","Minor Illusion","Prestidigitation","True Strike","Vicious Mockery"],
             ["Animal Friendship","Bane","Charm Person","Comprehend Languages","Cure Wounds","Detect Magic","Disguise Self","Dissonant Whispers","Faerie Fire","Feather Fall","Healing Word","Heroism","Identify","Illusory Script","Longstrider","Silent Image","Sleep","Speak with Animals","Tasha's Hideous Laughter","Thunderwave","Unseen Servant"],
@@ -211,6 +215,7 @@ DND.CLASSES = [
         armors: DND.ARMOR_GROUPS.lightmediumshield,
         saves: [1,5],
         primary_stats: [4],
+        spellstat: 4,
         alignments: ['LG','NG','CG','LN','CN','LE','NE','CE'],
         spells: [
             ["Guidance","Light","Mending","Resistance","Sacred Flame","Spare the Dying","Thaumaturgy"],
@@ -220,6 +225,7 @@ DND.CLASSES = [
             ["Banishment","Control Water","Death Ward","Divination","Freedom of Movement","Guardian of Faith","Locate Creature","Stone Shape"],
             ["Commune","Contagion","Dispel Evil and Good","Flame Strike","Geas","Greater Restoration","Hallow","Insect Plague","Legend Lore","Mass Cure Wounds","Planar Binding","Raise Dead","Scrying"]
         ],
+        cantrips: [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
         features: [
             /*  1 */ ['Spellcasting', 'Path'],
             /*  2 */ ['Channel Divinity (1/rest)', 'Divine Domain feature'],
@@ -255,6 +261,7 @@ DND.CLASSES = [
         armors: [0,1,2,3,12],
         saves: [3,4],
         primary_stats: [4,2],
+        spellstat: 4,
         alignments: ['NG','LN','N','CN','NE'],
         spells: [
             ["Druidcraft","Guidance","Mending","Poison Spray","Produce Flame","Resistance","Shillelagh","Thorn Whip"],
@@ -264,6 +271,7 @@ DND.CLASSES = [
             ["Blight","Confusion","Conjure Minor Elementals","Conjure Woodland Beings","Control Water","Dominate Beast","Freedom of Movement","Giant Insect","Grasping Vine","Hallucinatory Terrain","Ice Storm","Locate Creature","Polymorph","Stone Shape","Stoneskin","Wall of Fire"],
             ["Antilife Shell","Awaken","Commune with Nature","Conjure Elemental","Contagion","Geas","Greater Restoration","Insect Plague","Mass Cure Wounds","Planar Binding","Reincarnate","Scrying","Tree Stride","Wall of Stone"]
         ],
+        cantrips: [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
         features: [
             /*  1 */ ['Spellcasting', 'Druidic'],
             /*  2 */ ['Wild Shape', 'Path'],
@@ -294,12 +302,15 @@ DND.CLASSES = [
         skills: [1,9,1,5,10,15,12,13],
         skillsno: 2,
         weapons: DND.WEAPON_GROUPS.all,
-        languages: ['druidic'],
+        languages: [],
         tools: [0],
         armors: DND.ARMOR_GROUPS.all,
         alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         saves: [0,2],
         primary_stats: [],
+        spellstat: 3,
+        spells_known: [0,0,3,4,4,4,5,6,6,7,8,8,9,10,10,11,11,11,12,13],
+        cantrips: [0,0,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
         features: [
             /*  1 */ ['Fighting Style', 'Second Wind'],
             /*  2 */ ['Action Surge (one use)'],
@@ -359,7 +370,8 @@ DND.CLASSES = [
             /* 19 */ ['Ability Score Improvement'],
             /* 20 */ ['Perfect Self'],
         ],
-        paths: ['Way of the Open Hand', 'Way of Shadow', 'Way of the Four Elements']
+        paths: ['Way of the Open Hand', 'Way of Shadow', 'Way of the Four Elements'],
+        cantrips: []
     },
     {
         name: 'Paladin',
@@ -373,6 +385,7 @@ DND.CLASSES = [
         saves: [3,5],
         primary_stats: [0,5],
         alignments: ['LG','NG','CG'],
+        spellstat: 5,
         spells: [
             ["Bless","Command","Compelled Duel","Cure Wounds","Detect Evil and Good","Detect Magic","Detect Poison and Disease","Divine Favor","Heroism","Protection from Evil and Good","Purify Food and Drink","Searing Smite","Shield of Faith","Thunderous Smite","Wrathful Smite"],
             ["Aid","Branding Smite","Find Steed","Lesser Restoration","Locate Object","Magic Weapon","Protection from Poison","Zone of Truth"],
@@ -401,7 +414,8 @@ DND.CLASSES = [
             /* 20 */ ['Sacred Oath feature'],
         ],
         paths: ['Oath of Vengance', 'Oath of Devotion', 'Oath of the Ancients'],
-        fighting_styles: ['Defense', 'Dueling', 'Great Weapon Fighting', 'Protection']
+        fighting_styles: ['Defense', 'Dueling', 'Great Weapon Fighting', 'Protection'],
+        cantrips: []
     },
     {
         name: 'Ranger',
@@ -414,6 +428,7 @@ DND.CLASSES = [
         armors: DND.ARMOR_GROUPS.all,
         saves: [0,1],
         primary_stats: [1,4],
+        spellstat: 4,
         alignments: ['NG','LN','N','CN','NE'],
         spells: [
             ["Alarm","Animal Friendship","Cure Wounds","Detect Magic","Detect Poison and Disease","Ensnaring Strike","Fog Cloud","Goodberry","Hail of Thorns","Hunter's Mark","Jump","Longstrider","Speak with Animals"],
@@ -444,7 +459,8 @@ DND.CLASSES = [
         ],
         paths: ['Hunter', 'Beast Master'],
         spells_known: [0,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11],
-        fighting_styles: ['Archery', 'Defense', 'Dueling', 'Protection']
+        fighting_styles: ['Archery', 'Defense', 'Dueling', 'Protection'],
+        cantrips: []
     },
     {
         name: 'Rogue',
@@ -458,6 +474,9 @@ DND.CLASSES = [
         alignments: ['NG','CG','N','CN','NE','CE'],
         saves: [1,3],
         primary_stats: [1],
+        spellstat: 3,
+        spells_known: [0,0,3,4,4,4,5,6,6,7,8,8,9,10,10,11,11,11,12,13],
+        cantrips: [0,0,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
         features: [
             /*  1 */ ['Expertise', 'Sneak Attack', "Thieves' Cant"],
             /*  2 */ ['Cunning Action'],
@@ -493,6 +512,7 @@ DND.CLASSES = [
         armors: [],
         saves: [2,5],
         primary_stats: [5,2],
+        spellstat: 5,
         alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         spells: [
             ["Acid Splash","Blade Ward","Chill Touch","Dancing Lights","Fire Bolt","Friends","Light","Mage Hand","Mending","Message","Minor Illusion","Poison Spray","Prestidigitation","Ray of Frost","Shocking Grasp","True Strike"],
@@ -500,7 +520,11 @@ DND.CLASSES = [
             ["Alter Self","Blindness/Deafness","Blur","Cloud of Daggers","Crown of Madness","Darkness","Darkvision","Detect Thoughts","Enhance Ability","Enlarge/Reduce","Gust of Wind","Hold Person","Invisibility","Knock","Levitate","Mirror Image","Misty Step","Phantasmal Force","Scorching Ray","See Invisibility","Shatter","Spider Climb","Suggestion","Web"],
             ["Blink","Clairvoyance","Counterspell","Daylight","Dispel Magic","Fear","Fireball","Fly","Gaseous Form","Haste","Hypnotic Pattern","Lightning Bolt","Major Image","Protection from Energy","Sleet Storm","Slow","Stinking Cloud","Tongues","Water Breathing","Water Walk"],
             ["Banishment","Blight","Confusion","Dimension Door","Dominate Beast","Greater Invisibility","Ice Storm","Polymorph","Stoneskin","Wall of Fire"],
-            ["Animate Objects","Cloudkill","Cone of Cold","Creation","Dominate Person","Hold Monster","Insect Plague","Seeming","Telekinesis","Teleportation Circle","Wall of Stone"]
+            ["Animate Objects","Cloudkill","Cone of Cold","Creation","Dominate Person","Hold Monster","Insect Plague","Seeming","Telekinesis","Teleportation Circle","Wall of Stone"],
+            ["Arcane Gate","Chain Lightning","Circle of Death","Disintergrate","Eyebite","Glove of Invulnerability","Mass Suggestion","Move Earth","Sunbeam","True Seeing"],
+            ["Delayed Blast Fireball","Etherealness","Finger of Death","Fire Storm","Plane Shift","Prismatic Spray","Reverse Gravity","Teleport"],
+            ["Dominate Monster","Earthquake","Incendiary Cloud","Power Word Stun"],
+            ["Gate","Meteor Swarm","Power Word Kill","Time Stop","Wish"]
         ],
         features: [
             /*  1 */ ['Spellcasting', 'Path'],
@@ -539,6 +563,7 @@ DND.CLASSES = [
         armors: DND.ARMOR_GROUPS.light,
         saves: [3,5],
         primary_stats: [5,2],
+        spellstat: 5,
         alignments: ['LN','N','CN','LE','NE','CE'],
         spells: [
             ["Blade Ward","Chill Touch","Eldritch Blast","Friends","Mage Hand","Minor Illusion","Poison Spray","Prestidigitation","True Strike"],
@@ -546,7 +571,11 @@ DND.CLASSES = [
             ["Cloud of Daggers","Crown of Madness","Darkness","Enthrall","Hold Person","Invisibility","Mirror Image","Misty Step","Ray of Enfeeblement","Shatter","Spider Climb","Suggestion"],
             ["Counterspell","Dispel Magic","Fear","Fly","Gaseous Form","Hunger of Hadar","Hypnotic Pattern","Magic Circle","Major Image","Remove Curse","Tongues","Vampiric Touch"],
             ["Banishment","Blight","Dimension Door","Hallucinatory Terrain"],
-            ["Contact Other Plane","Dream","Hold Monster","Scrying"]
+            ["Contact Other Plane","Dream","Hold Monster","Scrying"],
+            ["Arcane Gate","Circle of Death","Conjure Fey","Create Undead","Eyebite","Flesh to Stone","Mass Suggestion","True Seeing"],
+            ["Etherealness","Finger of Death","Forcecage","Plane Shift"],
+            ["Demiplane","Dominate Monster","Feeblemind","Glibness","Power Word Stun"],
+            ["Astral Projection","Foresight","Imprisonment","Power Word Kill","True Polymorph"]
         ],
         rituals: ["Illusory Script","Identify","Identify","Identify","Find Familiar","Detect Disease and Poison","Detect Magic","Detect Magic","Detect Magic","Comprehend Languages","Unseen Servant","Tenser's Floating Disk","Speak with Animals","Speak with Animals","Purify Food and Drink","Alarm","Alarm"],
         features: [
@@ -586,6 +615,7 @@ DND.CLASSES = [
         armors: [],
         saves: [3,4],
         primary_stats: [3],
+        spellstat: 3,
         alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         spells: [
             ["Acid Splash","Blade Ward","Chill Touch","Dancing Lights","Fire Bolt","Friends","Light","Mage Hand","Mending","Message","Minor Illusion","Poison Spray","Prestidigitation","Ray of Frost","Shocking Grasp","True Strike"],
@@ -593,7 +623,11 @@ DND.CLASSES = [
             ["Alter Self","Arcane Lock","Blindness/Deafness","Blur","Cloud of Daggers","Continual Flame","Crown of Madness","Darkness","Darkvision","Detect Thoughts","Enlarge/Reduce","Flaming Sphere","Gentle Repose","Gust of Wind","Hold Person","Invisibility","Knock","Levitate","Locate Object","Magic Mouth","Magic Weapon","Melf's Acid Arrow","Mirror Image","Misty Step","Nystul's Magic Aura","Phantasmal Force","Ray of Enfeeblement","Rope Trick","Scorching Ray","See Invisibility","Shatter","Spider Climb","Suggestion","Web"],
             ["Animate Dead","Bestow Curse","Blink","Clairvoyance","Counterspell","Dispel Magic","Fear","Feign Death","Fireball","Fly","Gaseous Form","Glyph of Warding","Haste","Hypnotic Pattern","Leomund's Tiny Hut","Lightning Bolt","Magic Circle","Major Image","Nondetection","Phantom Steed","Protection from Energy","Remove Curse","Sending","Sleet Storm","Slow","Stinking Cloud","Tongues","Vampiric Touch","Water Breathing"],
             ["Arcane Eye","Banishment","Blight","Confusion","Conjure Minor Elementals","Control Water","Dimension Door","Evard's Black Tentacles","Fabricate","Fire Shield","Greater Invisibility","Hallucinatory Terrain","Ice Storm","Leomund's Secret Chest","Locate Creature","Mordenkainen's Faithful Hound","Mordenkainen's Private Sanctum","Otiluke's Resilient Sphere","Phantasmal Killer","Polymorph","Stone Shape","Stoneskin","Wall of Fire"],
-            ["Animate Objects","Bigby's Hand","CloudkilI","Cone of Cold","Conjure Elemental","Contact Other Plane","Creation","Dominate Person","Dream","Geas","Hold Monster","Legend Lore","Mislead","Modify Memory","Passwall","Planar Binding","Rary's Telepathic Bond","Scrying","Seeming","Telekinesis","Teleportation Circle","Wall of Force","Wall of Stone"]
+            ["Animate Objects","Bigby's Hand","CloudkilI","Cone of Cold","Conjure Elemental","Contact Other Plane","Creation","Dominate Person","Dream","Geas","Hold Monster","Legend Lore","Mislead","Modify Memory","Passwall","Planar Binding","Rary's Telepathic Bond","Scrying","Seeming","Telekinesis","Teleportation Circle","Wall of Force","Wall of Stone"],
+            ["Arcane Gate","Chain Lightning","Circle of Death","Contingency","Create Undead","Disintergrate","Drawmij's Instant Summons","Eyebite","Flesh to Stone","Glove of Invulnerability","Guards and Wards","Magic Jar","Mass Suggestion","Move Earth","Otiluke's Freezing Sphere","Otto's Irresistable Dance","Programmed Illusion","Sunbeam","True Seeing","Wall of Ice"],
+            ["Delayed Blast Fireball","Etherealness","Finger of Death","Forcecage","Mirage Arcana","Mordenkainen's Magnificent Mansion","Mordenkainen's Sword","Plane Shift","Prismatic Spray","Project Image","Reverse Gravity","Sequester","Simulacrum","Symbol","Teleport"],
+            ["Antimagic Field","Antipathy/Sympathy","Clone","Control Weather","Demiplane","Dominate Monster","Feeblemind","Incendiary Cloud","Maze","Mind Blank","Power Word Stun","Sunburst","Telepathy","Trap the Soul"],
+            ["Astral Projection","Foresight","Gate","Imprisonment","Meteor Swarm","Power Word Kill","Prismatic Wall","Shapechange","Time Stop","True Polymorph","Weird","Wish"]
         ],
         features: [
             /*  1 */ ['Spellcasting', 'Arcane Recovery'],
@@ -621,6 +655,8 @@ DND.CLASSES = [
         cantrips: [3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5]
     }
 ];
+DND.CLASSES[4].spells = DND.CLASSES[11].spells.slice();
+DND.CLASSES[8].spells = DND.CLASSES[11].spells.slice();
 DND.RACES = [
     {
         name: 'Human',
@@ -648,6 +684,7 @@ DND.RACES = [
             {'name': 'Forest Gnome', stats: [{index: 1, bonus: 1}], spells: [['Minor Illusion']], abils: ['Natural Illusionist','Speak with Small Beasts']},
             {'name': 'Rock Gnome', abils: ["Artificer's Lore",'Tinker']}
         ],
+        spellstat: 3,
         names: {
             male: ["Alston","Alvyn","Boddynock","Brocc","Burgell","Dimble","Eldon","Erky","Fonkin","Frug","Gerbo","Gimble","Glim","Jebeddo","Kellen","Namfoodle","Orryn","Roondar","Seebo","Sindri","Warryn","Wrenn","Zook"],
             female: ["Bimpnottin","Breena","Caramip","Carlin","Donella","Duvamil","Ella","Ellyjobell","Ellywick","Lilli","Loopmottin","Lorilla","Mardnab","Nissa","Nyx","Oda","Orla","Roywyn","Shamil","Tana","Waywocket","Zanna"],
@@ -678,6 +715,7 @@ DND.RACES = [
         alignments: ['LE','NE','CE'],
         abils: ['Darkvision','Hellish Resistance','Infernal Legacy'],
         spells: [['Thaumaturgy'],[],['Hellish Rebuke'],['Darkness']],
+        spellstat: 5,
         languages: ['Common', 'Infernal'],
         subraces: [],
         names: {
@@ -745,10 +783,11 @@ DND.RACES = [
         skills: [12],
         languages: ['Common', 'Elvish'],
         subraces: [
-            {name: 'High Elf', stats: [{index: 4, bonus: 1}], abils: ['Elf Weapon Training','Cantrip', 'Extra Language'], weapons: [13,28,26,36], spells: [DND.CLASSES[11].spells[0]], languages: ['*']},
+                {name: 'High Elf', stats: [{index: 4, bonus: 1}], abils: ['Elf Weapon Training','Cantrip', 'Extra Language'], weapons: [13,28,26,36], spells: [['*wizard*']], languages: ['*']},
             {name: 'Wood Elf', stats: [{index: 3, bonus: 1}], abils: ['Elf Weapon Trianing', 'Mask of the Wild'], weapons: [13,28,26,36], speed: 35},
             {name: 'Drow', stats: [{index: 5, bonus: 1}], abils: ['Superior Darkvision', 'Sunlight Sensitivity', 'Drow Magic', 'Drow Weapon Training'], weapons: [26,28,34]}
         ],
+        spellstat: 3,
         names: {
             male: ["Adran","Aelar","Aramil","Arannis","Aust","Beiro","Berrian","Carric","Enialis","Erdan","Erevan","Galinndan","Hadarai","Heian","Himo","Immeral","Ivellios","Laucian","Mindartis","Paelias","Peren","Quarion","Riardon","Rolen","Soveliss","Thamior","Tharivol","Theren","Varis"],
             female: ["Adrie","Althaea","Anastrianna","Andraste","Antinua","Bethrynna","Birel","Caelynn","Drusilia","Enna","Felosial","Ielenia","Jelenneth","Keyleth","Leshanna","Lia","Meriele","Mialee","Naivara","Quelenna","Quillathe","Sariel","Shanairra","Shava","Silaqui","Theirastra","Thia","Vadania","Valanthe","Xanaphia"],
@@ -1339,6 +1378,51 @@ DND.BACKGROUNDS = [
     "It's not stealing if I need it more than someone else.",
     "People who can't take care of themselves get what they deserve.",
 ]}
+];
+
+DND.spells_day_full = [
+    /*  1 */ [2],
+    /*  2 */ [3],
+    /*  3 */ [4,2],
+    /*  4 */ [4,3],
+    /*  5 */ [4,3,2],
+    /*  6 */ [4,3,3],
+    /*  7 */ [4,3,3,1],
+    /*  8 */ [4,3,3,2],
+    /*  9 */ [4,3,3,3,1],
+    /* 10 */ [4,3,3,3,2],
+    /* 11 */ [4,3,3,3,2,1],
+    /* 12 */ [4,3,3,3,2,1],
+    /* 13 */ [4,3,3,3,2,1,1],
+    /* 14 */ [4,3,3,3,2,1,1],
+    /* 15 */ [4,3,3,3,2,1,1,1],
+    /* 16 */ [4,3,3,3,2,1,1,1],
+    /* 17 */ [4,3,3,3,2,1,1,1,1],
+    /* 18 */ [4,3,3,3,3,1,1,1,1],
+    /* 19 */ [4,3,3,3,3,2,1,1,1],
+    /* 20 */ [4,3,3,3,3,2,2,1,1]
+];
+DND.spells_day_half = [
+    /*  1 */ [],
+    /*  2 */ [2],
+    /*  3 */ [3],
+    /*  4 */ [3],
+    /*  5 */ [4,2],
+    /*  6 */ [4,2],
+    /*  7 */ [4,3],
+    /*  8 */ [4,3],
+    /*  9 */ [4,3,2],
+    /* 10 */ [4,3,2],
+    /* 11 */ [4,3,3],
+    /* 12 */ [4,3,3],
+    /* 13 */ [4,3,3,1],
+    /* 14 */ [4,3,3,1],
+    /* 15 */ [4,3,3,2],
+    /* 16 */ [4,3,3,2],
+    /* 17 */ [4,3,3,3,1],
+    /* 18 */ [4,3,3,3,1],
+    /* 19 */ [4,3,3,3,2],
+    /* 20 */ [4,3,3,3,2]
 ];
 
 module.exports = DND;

@@ -3,7 +3,7 @@
         <div class="form-group-tight">
             <label class="col-sm-3 control-label" for="npc-armor">Armor</label>
             <div class="col-sm-9">
-                <input class="form-control" type="text" id="npc-armor" ng-model="npc.armor.name" ng-change="panelCtrl.recalculate(npc);">
+                <input class="form-control" type="text" id="npc-armor" ng-model="npc.armor.name" ng-change="panelCtrl.npcChange('armor')">
             </div>
         </div>
     </div>
@@ -11,7 +11,7 @@
         <div class="form-group-tight">
             <label class="col-sm-5 control-label" for="npc-armor-ac">AC</label>
             <div class="col-sm-7">
-                <input class="form-control" type="number" id="npc-armor-ac" ng-model="npc.armor.ac" ng-change="panelCtrl.recalculate(npc);">
+                <input class="form-control" type="number" id="npc-armor-ac" ng-model="npc.armor.ac" ng-change="panelCtrl.npcChange('armor')">
             </div>
         </div>
     </div>
@@ -21,7 +21,7 @@
         <div class="form-group-tight">
             <label class="col-sm-3 control-label" for="npc-shield">Shield</label>
             <div class="col-sm-9">
-                <input class="form-control" type="text" id="npc-shield" ng-model="npc.shield.name" ng-change="panelCtrl.recalculate(npc);">
+                <input class="form-control" type="text" id="npc-shield" ng-model="npc.shield.name" ng-change="panelCtrl.npcChange('shield')">
             </div>
         </div>
     </div>
@@ -29,20 +29,20 @@
         <div class="form-group-tight">
             <label class="col-sm-5 control-label" for="npc-shield-ac">AC</label>
             <div class="col-sm-7">
-                <input class="form-control" type="number" id="npc-shield-ac" ng-model="npc.shield.ac" ng-change="panelCtrl.recalculate(npc);">
+                <input class="form-control" type="number" id="npc-shield-ac" ng-model="npc.shield.ac" ng-change="panelCtrl.npcChange('shield')">
             </div>
         </div>
     </div>
 </div>
 <div class="form-group-tight" ng-repeat="weapon in npc.weapons track by $index">
     <div class="col-sm-4 col-md-5">
-        <input class="form-control" type="text" ng-model="npc.weapons[$index].name" ng-change="panelCtrl.recalculate(npc);" placeholder="..name">
+        <input class="form-control" type="text" ng-model="npc.weapons[$index].name" ng-change="panelCtrl.npcChange('weapons')" placeholder="..name">
     </div>
     <div class="col-sm-3">
         <select class="form-control" ng-model="npc.weapons[$index].type" ng-options="tp for tp in ['melee','ranged']" ng-change="panelCtrl.recalculate(npc)"></select>
     </div>
     <div class="col-sm-3">
-        <input class="form-control" type="text" ng-model="npc.weapons[$index].damage" ng-change="panelCtrl.recalculate(npc);" placeholder="1d8">
+        <input class="form-control" type="text" ng-model="npc.weapons[$index].damage" ng-change="panelCtrl.npcChange('weapons')" placeholder="1d8">
     </div>
     <button class="col-sm-2 col-md-1 btn btn-xs btn-danger" ng-click="npc.weapons.splice($index, 1); NPCCollection.update(npc);"><i class="glyphicon glyphicon-remove"></i></button>
 </div>

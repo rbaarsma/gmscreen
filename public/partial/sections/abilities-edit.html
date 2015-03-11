@@ -1,28 +1,28 @@
 <div class="form-group-tight">
     <label class="col-sm-5 control-label" for="hp">HP</label>
     <div class="col-sm-6">
-        <input class="form-control" id="hp" type="number" ng-disabled="panelCtrl.isLocked('hp')" ng-model="npc.hp" ng-change="panelCtrl.recalculate(npc);">
+        <input class="form-control" id="hp" type="number" ng-disabled="panelCtrl.isLocked('hp')" ng-model="npc.hp" ng-change="panelCtrl.npcChange('hp')">
     </div>
     <button class="col-sm-1 btn btn-xs {{ panelCtrl.isLocked('hp') ? 'btn-warning' : 'btn-default'}}" ng-click="panelCtrl.toggleLocked('hp')"><i class="glyphicon glyphicon-lock"></i></button>
 </div>
 <div class="form-group-tight">
     <label class="col-sm-5 control-label" for="ac">AC</label>
     <div class="col-sm-6">
-        <input class="form-control" id="ac" type="number" ng-disabled="panelCtrl.isLocked('ac')" ng-model="npc.ac" ng-change="panelCtrl.recalculate(npc);">
+        <input class="form-control" id="ac" type="number" ng-disabled="panelCtrl.isLocked('ac')" ng-model="npc.ac" ng-change="panelCtrl.npcChange('ac')">
     </div>
     <button class="col-sm-1 btn btn-xs {{ panelCtrl.isLocked('ac') ? 'btn-warning' : 'btn-default'}}" ng-click="panelCtrl.toggleLocked('ac')"><i class="glyphicon glyphicon-lock"></i></button>
 </div>
 <div class="form-group-tight">
     <label class="col-sm-5 control-label" for="it">IT</label>
     <div class="col-sm-6">
-        <input class="form-control" id="it" type="number" ng-disabled="panelCtrl.isLocked('it')" ng-model="npc.it" ng-change="panelCtrl.recalculate(npc);">
+        <input class="form-control" id="it" type="number" ng-disabled="panelCtrl.isLocked('it')" ng-model="npc.it" ng-change="panelCtrl.npcChange('it')">
     </div>
     <button class="col-sm-1 btn btn-xs {{ panelCtrl.isLocked('it') ? 'btn-warning' : 'btn-default'}}" ng-click="panelCtrl.toggleLocked('it')"><i class="glyphicon glyphicon-lock"></i></button>
 </div>
 <div class="form-group-tight">
     <label class="col-sm-5 control-label" for="prof">Prof. Bonus</label>
     <div class="col-sm-6">
-        <input class="form-control" id="prof" type="number" ng-disabled="panelCtrl.isLocked('prof')" ng-model="npc.prof" ng-change="panelCtrl.recalculate(npc);">
+        <input class="form-control" id="prof" type="number" ng-disabled="panelCtrl.isLocked('prof')" ng-model="npc.prof" ng-change="panelCtrl.npcChange('prof')">
     </div>
     <button class="col-sm-1 btn btn-xs {{ panelCtrl.isLocked('prof') ? 'btn-warning' : 'btn-default'}}" ng-click="panelCtrl.toggleLocked('prof')"><i class="glyphicon glyphicon-lock"></i></button>
 </div>
