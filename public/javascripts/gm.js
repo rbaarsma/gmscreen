@@ -258,6 +258,25 @@
                         self.npcChange('stats');
                     };
 
+                    this.toggleMaximize = function () {
+                        $scope.npc.panel.maximized = !$scope.npc.panel.maximized;
+                        self.npcChange('panel');
+                    };
+
+                    this.toggleShow = function () {
+                        $scope.npc.panel.show = !$scope.npc.panel.show;
+                        self.npcChange('panel');
+                    };
+
+                    this.toggleEdit = function () {
+                        console.log('test');
+                        $scope.npc.panel.edit = !$scope.npc.panel.edit;
+                        for (var i=0; i<$scope.npc.panel.sections.length; i++) {
+                            $scope.npc.panel.sections[i].edit = $scope.npc.panel.edit;
+                        }
+                        self.npcChange('panel');
+                    };
+
                     this.sectionGroups = function (npc) {
                         if (!npc.panel.sections)
                             return;
@@ -302,6 +321,7 @@
                         revert: false,
                         stop: function (event, ui) {
                             scope.$parent.sideCtrl.addToPanel(scope.$index);
+                            //ui.helper[0].innerHTML = npc;
                         }
                     });
                 }
