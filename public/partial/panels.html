@@ -1,30 +1,33 @@
+<modals>
+    <npc-show></npc-show>
+    <npc-edit></npc-edit>
+</modals>
+
 <div class="row">
     <div class="npc-panel-container">
-        <npc-panel class="panel panel-primary" ng-class="{'maximized': npc.panel.maximized}" ng-repeat="npc in npcs" ng-show="npc.panel.show">
+        <npc-panel class="panel panel-primary" ng-repeat="npc in npcs" ng-show="npc.panel.show">
             <div class="panel-heading">
                 <!--<button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.toggleShow(npc)"><i class="glyphicon glyphicon-remove"></i></button>-->
-                <button ng-click="panelCtrl.toggleMaximize()" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-resize-small': npc.panel.maximized, 'glyphicon-resize-full': !npc.panel.maximized}" class="glyphicon"></i></button>
+                <!--<button ng-click="panelCtrl.randomizeAll()" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>-->
+                <button ng-click="npcShowCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-fullscreen"></i></button>
+                <button ng-click="npcEditCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-pencil"></i></button>
                 <button ng-click="panelCtrl.toggleShow()" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-minus': npc.panel.show, 'glyphicon-plus': !npc.panel.show}" class="glyphicon"></i></button>
-                <button ng-click="panelCtrl.randomizeAll()" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>
-                <button ng-click="panelCtrl.toggleEdit()" class="pull-right btn btn-xs" ng-class="{'btn-success': npc.panel.edit}" ><i class="glyphicon glyphicon-pencil"></i></button>
                 <h3 class="panel-title">{{ npc.name }}</h3>
             </div>
             <npc-panel-body ng-init="section_groups = panelCtrl.sectionGroups(npc)">
-                <form>
-                    <npc-panel-column ng-repeat="section_group in section_groups" data-index="{{ $index }}">
-                        <npc-section ng-repeat="section in section_group" data-section="{{ section.id }}">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    {{ section.id }}
-                                    <button ng-click="sectionCtrl.toggleShow()" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-minus': section.show, 'glyphicon-plus': !section.show}" class="glyphicon"></i></button>
-                                    <button ng-click="sectionCtrl.randomize()" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>
-                                    <button ng-click="sectionCtrl.toggleEdit()" class="pull-right btn btn-xs" ng-class="{'btn-success': section.edit}" ><i class="glyphicon glyphicon-pencil"></i></button>
-                                </div>
-                                <div ng-include="'partial/sections/'+section.id+'-'+(section.edit ? 'edit' : 'show')+'.html'" class="panel-body" ng-show="section.show"></div>
-                            </div>
-                        </npc-section>
-                    </npc-panel-column>
-                </form>
+                <dl class="dl-horizontal">
+                    <dt>AC</dt>
+                    <dd>{{ npc.ac }}</dd>
+                    <dt>HP</dt>
+                    <dd>{{ npc.hp }}</dd>
+                    <dt>Speed</dt>
+                    <dd>{{ npc.speed }}</dd>
+                    <dt>Stats</dt>
+                    <dd><span ng-repeat="stat in npc.stats"><b>{{ stat.name }}</b>: {{ stat.stat }} ({{ stat.mod|modifier }})</span></dd>
+                    <dt>Saving Throws</dt>
+                    <dd><span ng-repeat="save in npc.saves" ng-show="NPC.hasSave(npc, $index)">{{ npc.stats[$index].name }} {{ (npc.stats[$index].mod + npc.prof)|modifier }}</span></dd>
+                </dl>
+
             </npc-panel-body>
         </npc-panel>
     </div>

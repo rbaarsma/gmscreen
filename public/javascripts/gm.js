@@ -11,6 +11,15 @@
             return new NPCCollection($http, $rootScope);
         }])
 
+        .factory('NPC', ['$http', function ($http) {
+            return {
+                hasSave: function (npc, index) {
+                    console.log('test');
+                    return $.inArray(index, npc.saves) > -1;
+                }
+            }
+        }])
+
         // filter to show + sign expressively for things like modifiers
         .filter('modifier', function () {
             return function (input) {
@@ -53,8 +62,10 @@
 
         .directive('gmContainer', function () {
             return {
-                controller: ['$http', '$rootScope', 'NPCCollection', function ($http, $rootScope, NPCCollection) {
+                controller: ['$http', '$scope', '$rootScope', 'NPCCollection', 'NPC', function ($http, $scope, $rootScope, NPCCollection, NPC) {
                     var self = this;
+
+                    $scope.NPC = NPC;
 
                     self.loaded = 0;
                     self.total_to_load = 3;
@@ -158,6 +169,72 @@
         .directive('npcPanel', function () {
             return {
                 restrict: 'E',
+                controller: ['NPC', function (NPC) {
+                    //console.log('test');
+                    //console.log(NPC.hasSave);
+                }],
+                link: function (scope, element, attrs) {
+
+                }
+            };
+        })
+
+        .directive('npcItem', function () {
+            return {
+                link: function (scope, element, attrs) {
+                    $(element).draggable({
+                        connectToSortable: 'gm-main',
+                        helper: 'clone',
+                        revert: false,
+                        stop: function (event, ui) {
+                            scope.$parent.sideCtrl.addToPanel(scope.$index);
+                            //ui.helper[0].innerHTML = npc;
+                        }
+                    });
+                }
+            };
+        })
+
+        .directive('npcNew', function () {
+            return {
+                'templateUrl': 'partial/npc-new.html',
+                'controller': ['$http', '$scope', 'NPCCollection', function ($http, $scope, NPCCollection) {
+                    this.show = false;
+                    $scope.npc = {
+                        classes: [{name: '', level: ''}],
+                        multiclass: true,
+                        in_panel: true,
+                        maximized: true
+                    };
+
+                    this.generate = function () {
+                        NPCCollection.create($scope.npc);
+                        this.show=false;
+                    }
+                }],
+                'controllerAs': 'modalCtrl'
+            }
+        })
+
+        .directive('npcShow', function () {
+            return {
+                'templateUrl': 'partial/npc-show.html',
+                'controller': ['$http', '$scope', 'NPCCollection', function ($http, $scope, NPCCollection) {
+                    var self=this;
+
+                    this.show = function (npc) {
+                        $scope.npc = npc;
+                        this.visible = true;
+                    }
+                }],
+                'controllerAs': 'npcShowCtrl'
+            }
+        })
+
+        .directive('npcEdit', function () {
+            return {
+                restrict: 'E',
+                templateUrl: 'partial/npc-edit.html',
                 controller: ['$upload', '$http', '$scope', '$rootScope', 'NPCCollection', function ($upload, $http, $scope, $rootScope, NPCCollection) {
                     var self = this;
 
@@ -285,7 +362,6 @@
                     };
 
                     this.toggleEdit = function () {
-                        console.log('test');
                         $scope.npc.panel.edit = !$scope.npc.panel.edit;
                         for (var i=0; i<$scope.npc.panel.sections.length; i++) {
                             $scope.npc.panel.sections[i].edit = $scope.npc.panel.edit;
@@ -312,138 +388,74 @@
                         } else {
                             $scope.npc.unlocked.push(type);
                         }
-                        self.npcChange('locked');
+                        self.npcChange('unlocked');
                     }
 
                     this.isLocked = function (type) {
                         return $.inArray(type, $scope.npc.unlocked) == -1;
                     }
-                }],
-                'controllerAs': 'panelCtrl',
-                link: function (scope, element, attrs) {
 
-
-
-                }
-            };
-        })
-
-        .directive('npcItem', function () {
-            return {
-                link: function (scope, element, attrs) {
-                    $(element).draggable({
-                        connectToSortable: 'gm-main',
-                        helper: 'clone',
-                        revert: false,
-                        stop: function (event, ui) {
-                            scope.$parent.sideCtrl.addToPanel(scope.$index);
-                            //ui.helper[0].innerHTML = npc;
-                        }
-                    });
-                }
-            };
-        })
-
-        .directive('npcNew', function () {
-            return {
-                'templateUrl': 'partial/npc-new.html',
-                'controller': ['$http', '$scope', 'NPCCollection', function ($http, $scope, NPCCollection) {
-                    this.show = false;
-                    $scope.npc = {
-                        classes: [{name: '', level: ''}],
-                        multiclass: true,
-                        in_panel: true,
-                        maximized: true
-                    };
-
-                    this.generate = function () {
-                        NPCCollection.create($scope.npc);
-                        this.show=false;
+                    this.show = function (npc) {
+                        $scope.npc = npc;
+                        this.visible = true;
                     }
                 }],
-                'controllerAs': 'modalCtrl'
+                'controllerAs': 'npcEditCtrl'
             }
         })
 
-        .directive('npcShow', function () {
+        .directive('panel', function () {
             return {
-                'templateUrl': 'partial/npc-new.html',
-                'controller': ['$http', '$scope', 'NPCCollection', function ($http, $scope, NPCCollection) {
-
-                }],
-                'controllerAs': 'modalCtrl'
-            }
-        })
-
-        .directive('npcSection', function () {
-            return {
+                restrict: 'E',
+                transclude: true,
+                scope: {
+                    'title': '@',
+                    'npc': '='
+                },
                 controller: ['$scope', 'NPCCollection', function ($scope, NPCCollection) {
                     /**
                      * show or hide panel body (and save in npc.panel.sections)
                      */
                     this.toggleShow = function () {
-                        $scope.section.show = !$scope.section.show;
-                        NPCCollection.patch($scope.npc, 'panel');
+                        if (typeof $scope.npc.closed_panels == 'undefined') {
+                            $scope.npc.closed_panels = [];
+                        }
+
+                        var index = $scope.npc.closed_panels.indexOf($scope.title);
+                        if (index == -1) {
+                            $scope.npc.closed_panels.push($scope.title);
+                        } else {
+                            delete $scope.npc.closed_panels[index];
+                        }
+                        NPCCollection.patch($scope.npc, 'closed_panels');
                     }
 
                     /**
                      * randomize/refresh specific section
                      */
                     this.randomize = function () {
-                        NPCCollection.randomize($scope.npc, $scope.section.id)
+                        NPCCollection.randomize($scope.npc, $scope.title.toLowerCase())
                             .success(function (data) {
                                 $scope.npc = angular.extend($scope.npc, data);
                             })
                         ;
                     }
-
-                    /**
-                     * Toggle section editing
-                     */
-                    this.toggleEdit = function () {
-                        $scope.section.edit = !$scope.section.edit;
-                        NPCCollection.patch($scope.npc, 'panel');
-                    }
                 }],
-                controllerAs: 'sectionCtrl',
-                restrict: 'E'
-            }
-        })
-
-        .directive('npcPanelColumn', ['NPCCollection', function (NPCCollection) {
-            return {
-                restrict: 'E',
+                controllerAs: 'panelCtrl',
+                template: '\
+                    <div class="panel panel-primary">\
+                        <div class="panel-heading">\
+                            <button ng-click="panelCtrl.toggleShow(npc)" class="pull-right btn btn-xs"><i ng-class="{\'glyphicon-minus\': npc.closed_panels.indexOf(title) > -1, \'glyphicon-plus\': npc.closed_panels.indexOf(title) == -1}" class="glyphicon"></i></button>\
+                            <button ng-click="panelCtrl.randomize(npc)" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>\
+                            {{ title }}\
+                        </div>\
+                        <div class="panel-body" ng-transclude ng-show="npc.closed_panels.indexOf(title) == -1"></div>\
+                    </div>',
                 link: function (scope, elem, attrs) {
-                    $(elem).sortable({
-                        connectWith: "npc-panel-column",
-                        placeholder: "section-placeholder ui-corner-all",
-                        receive: function (event, ui) {
-                            var panel_body = elem.parent().parent().parent();
-                            var sections = [];
-
-                            $(panel_body).find('npc-section').each(function (index, elem) {
-                                var section_id = $(elem).data('section');
-
-                                for (var i=0; i<scope.npc.panel.sections.length; i++) {
-                                    if (scope.npc.panel.sections[i].id == section_id) {
-                                        var section = scope.npc.panel.sections[i];
-                                        break;
-                                    }
-                                }
-
-                                sections.push({
-                                    id: section_id,
-                                    show: section.show,
-                                    edit: section.edit,
-                                    group: $(elem).parent().data('index')
-                                });
-                            });
-                            scope.npc.panel.sections = sections;
-                            NPCCollection.patch(scope.npc, 'panel');
-                        }
-                    });
+                    scope.title = attrs.title;
+                    elem.parent().parent().parent().css('max-height', 'calc(100vh - 120px)');
                 }
             }
-        }])
+        })
     ;
 })();

@@ -6,7 +6,7 @@
     <title>GM Screen</title>
     <link href="/bower_components/jquery-ui/themes/smoothness/jquery-ui.css" rel="stylesheet">
     <link href="/less/style.css" rel="stylesheet">
-    
+
     <script src="/bower_components/angularjs/angular.js"></script>
     <script src="/bower_components/ng-file-upload/angular-file-upload.js"></script>
 </head>
@@ -20,10 +20,6 @@
         </div>
         <progress ng-hide="gmCtrl.loaded == gmCtrl.total_to_load" value="{{ gmCtrl.loaded }}" max="{{ gmCtrl.total_to_load }}"></progress>
     </gm-container>
-
-    <modals>
-        <npc-show></npc-show>
-    </modals>
 
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/bower_components/jquery-ui/jquery-ui.js"></script>

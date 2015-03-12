@@ -27,6 +27,15 @@
 
 }
 
+.modal-dialog-wide {
+  width: 95%;
+}
+
+.modal-body {
+
+  overflow-y: auto;
+}
+
 gm-container {
   display: block;
   transition: all 0.5s ease;
@@ -45,7 +54,7 @@ gm-panels {
 gm-side {
   display: block;
   width: @side-width;
-  z-index: 10000;
+  z-index: 10;
   position: fixed;
   left: @side-width;
   margin-left: -@side-width;

@@ -103,12 +103,8 @@ var NPCSchema = new mongoose.Schema({
     unlocked: [String],
     spells_day: [Number],
     // ui options
-    panel: {
-        sections: [SectionSchema],
-        maximized: {type: Boolean, default: true},
-        show: {type: Boolean, default: true},
-        edit: {type: Boolean, default: true}
-    }
+    closed_panels: [String]
+
 });
 
 // note the order is a bit strange because it is grouped with i % 4

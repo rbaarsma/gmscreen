@@ -1,21 +1,146 @@
-<div class="modal" ng-show="npcShowCtrl.show" ng-init="npcShowCtrl.show = false">
-    <div class="modal-backdrop" ng-show="npcShowCtrl.show"></div>
-    <div class="modal-dialog">
+<div class="modal modal-overflow" ng-show="npcShowCtrl.visible" ng-init="npcShowCtrl.visible = false">
+    <div class="modal-backdrop" ng-show="npcShowCtrl.visible"></div>
+    <div class="modal-dialog modal-dialog-wide">
         <div class="modal-content">
             <div class="modal-header">
-                <button ng-click="npcShowCtrl.show = false" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                <h4 class="modal-title">Modal title</h4>
+                <button ng-click="npcShowCtrl.visible = false" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">{{ npc.name }}</h4>
             </div>
             <div class="modal-body">
-                <panel>
-                    <div class="form-group">
-                        <img class="img-responsive" ng-model="npc._picture_id" ng-show="npc._picture_id" ng-src="/npcs/{{ npc._id }}/picture?{{ npc._picture_id }}">
+                <div class="row">
+                    <div class="col-md-3">
+                        <panel npc="npc" title="Image">
+                            <img class="img-responsive" ng-model="npc._picture_id" ng-show="npc._picture_id" ng-src="/npcs/{{ npc._id }}/picture?{{ npc._picture_id }}">
+                        </panel>
+                        <panel npc="npc" title="stats">
+                            <table class="table table-condensed">
+                                <tr>
+                                    <th></th>
+                                    <th>Stat</th>
+                                    <th>Mod</th>
+                                    <th>Saving Throw</th>
+                                </tr>
+                                <tr ng-repeat="stat in npc.stats">
+                                    <td>{{ stat.name }}</td>
+                                    <td>{{ stat.stat }}</td>
+                                    <td>({{ stat.mod|modifier }})</td>
+                                    <td>{{ (stat.mod + (panelCtrl.hasSave(npc, $index) ? npc.prof : 0))|modifier }}</td>
+                                </tr>
+                            </table>
+                        </panel>
+                        <panel npc="npc" title="Attacks">
+                            <div ng-repeat="attack in npc.attacks">
+                                <div class="" ng-show="!section.edit">
+                                    {{ attack.name }} {{ attack.bonus|modifier }} {{ attack.damage }} ({{ attack.damage|dieaverage }})
+                                    <div ng-show="attack.special != ''">{{ attack.special }}</div>
+                                </div>
+                            </div>
+                        </panel>
                     </div>
-                </panel>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="npcShowCtrl.show = false">Close</button>
-                <button type="button" class="btn btn-primary" ng-click="npcShowCtrl.generate()">Generate</button>
+                    <div class="col-md-3">
+                        <panel npc="npc" title="Base">
+                            <dl class="dl-horizontal">
+                                <dt>Name</dt>
+                                <dd>{{ npc.name }}</dd>
+                                <dt>Alignment</dt>
+                                <dd>{{ npc.alignment}}</dd>
+                                <dt>HP</dt>
+                                <dd>{{ npc.hp }}</dd>
+                                <dt>AC</dt>
+                                <dd>{{ npc.ac }}</dd>
+                                <dt>IT</dt>
+                                <dd>{{ npc.it }}</dd>
+                                <dt>Prof. Bonus</dt>
+                                <dd>{{ npc.prof }}</dd>
+                                <dt>Race</dt>
+                                <dd>{{ npc.race.name }}</dd>
+                                <dt>Class</dt>
+                                <dd>
+                                    <div ng-repeat="class in npc.classes">
+                                        {{ class.name }} ({{ class.path }}<span ng-show="class.fighting_style">, {{ class.fighting_style}}</span>) {{ class.level }} <span ng-show="$index != $last">/</span>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </panel>
+                        <panel npc="npc" title="Equipment">
+                            <dl class="dl-horizontal">
+                                <dt>Armor</dt>
+                                <dd>{{ npc.armor.name }} <span ng-show="npc.armor.ac">AC {{ npc.armor.ac|modifier }}</span></dd>
+                                <dt>Shield</dt>
+                                <dd>{{ npc.shield.name }} <span ng-show="npc.shield.ac">AC {{ npc.shield.ac|modifier }}</span></dd>
+                                <div ng-repeat="weapon in npc.weapons">
+                                    <dt>Weapon #{{ $index }}</dt>
+                                    <dd>{{ weapon.name }} ({{ weapon.type }}) {{ npc.weapon.damage}}</dd>
+                            </dl>
+                        </panel>
+                        <panel npc="npc" title="Features">
+                            <div ng-repeat="feature in npc.features">
+                                <div>{{ feature }}</div>
+                            </div>
+                        </panel>
+                    </div>
+                    <div class="col-md-3">
+                        <panel npc="npc" title="Skills">
+                            <table class="table table-condensed">
+                                <tr ng-repeat="skill in npc.skills">
+                                    <td>{{ skill.name }}</td>
+                                    <td>{{ skill.mod|modifier }}</td>
+                                </tr>
+                            </table>
+                        </panel>
+                        <panel npc="npc" title="Spells">
+                            <dl class="dl-horizontal" ng-show="npc.spells_day.length > 0">
+                                <dt>Spells/day</dt>
+                                <dd>{{ npc.spells_day|join:'/' }}</dd>
+                            </dl>
+                            <div ng-repeat="class in npc.classes" ng-show="class.spells.length > 0">
+                                <h5>{{ class.name }}</h5>
+                                <dl class="dl-horizontal">
+                                    <dt>Spell DC</dt>
+                                    <dd>{{ class.spelldc }} + spell level</dd>
+                                    <dt>Cantrips</dt>
+                                    <dd>{{ class.cantrips|join:', ' }}</dd>
+                                    <dt>Spells</dt>
+                                    <dd>{{ class.spells|join:', ' }}</dd>
+                                </dl>
+                            </div>
+                            <div ng-show="npc.race.spells.length > 0">
+                                <h5>Race</h5>
+                                <dl class="dl-horizontal">
+                                    <dt>Spell DC</dt>
+                                    <dd>{{ npc.race.spelldc }} + spell level</dd>
+                                    <dt>Spells</dt>
+                                    <dd>{{ npc.race.spells|join:', ' }}</dd>
+                                </dl>
+                            </div>
+                        </panel>
+                    </div>
+                    <div class="col-md-3">
+                        <panel npc="npc" title="Background">
+                            <h4>{{ npc.background.name}}</h4>
+                            <dl>
+                                <dt ng-show="npc.background.speciality">Speciality</dt>
+                                <dd ng-show="npc.background.speciality">{{ npc.background.speciality }}</dd>
+                                <dt>Personality</dt>
+                                <dd>{{ npc.background.personality }}</dd>
+                                <dt>Ideal</dt>
+                                <dd>{{ npc.background.ideal }}</dd>
+                                <dt>Bond</dt>
+                                <dd>{{ npc.background.bond}}</dd>
+                                <dt>Flaw</dt>
+                                <dd>{{ npc.background.flaw}}</dd>
+                            </dl>
+                        </panel>
+                        <panel npc="npc" title="Notes">
+                            <dl>
+                                <dt>Notes</dt>
+                                <dd>{{ npc.notes }}</dd>
+                                <dt ng-show="npc.tags.length > 0">Tags</dt>
+                                <dd ng-show="npc.tags.length > 0">{{ npc.tags|join:', ' }}</dd>
+                            </dl>
+                        </panel>
+                    </div>
+                </div>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
