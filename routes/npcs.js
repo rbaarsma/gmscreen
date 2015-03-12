@@ -147,8 +147,6 @@ router.post('/:id/randomize', function(req, res, next) {
                 break;
         }
 
-        console.log(changed);
-
         npc.save();
         res.json(changed);
     });

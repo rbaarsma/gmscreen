@@ -8,9 +8,21 @@
         <dt>Spell DC</dt>
         <dd>{{ class.spelldc }} + spell level</dd>
         <dt>Cantrips</dt>
-        <dd>{{ class.cantrips|join:', ' }}</dd>
+        <dd>
+            <div ng-repeat="cantrip in class.cantrips" ng-init="">
+                {{ cantrip }}
+                <button ng-click="class.cantrips.splice($index,1); panelCtrl.npcChange('classes');" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+            </div>
+            <select class="form-control" ng-model="panelCtrl.cantrip_to_add" ng-change="panelCtrl.addCantrip(class.cantrips)" ng-options="cantrip as cantrip for cantrip in config.CLASSES[class.index].cantrips"><option value="">.. add a cantrip</option></select>
+        </dd>
         <dt>Spells</dt>
-        <dd>{{ class.spells|join:', ' }}</dd>
+        <dd>
+            <div ng-repeat="spell in class.spells" ng-init="">
+                {{ spell }}
+                <button ng-click="class.spells.splice($index,1); panelCtrl.npcChange('classes');" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></button>
+            </div>
+            <select class="form-control" ng-model="panelCtrl.spell_to_add" ng-change="panelCtrl.addSpell(class.spells)" ng-options="rc.name as rc.name group by rc.lvl for rc in config.CLASSES[class.index].spells"><option value="">.. add a spell</option></select>
+        </dd>
     </dl>
 </div>
 <div ng-show="npc.race.spells.length > 0">

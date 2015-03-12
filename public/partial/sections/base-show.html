@@ -8,7 +8,7 @@
     <dt>Class</dt>
     <dd>
         <div ng-repeat="class in npc.classes">
-            {{ class.name }} ({{ class.path }}) {{ class.level }} <span ng-show="$index != $end">/</span>
+            {{ class.name }} ({{ class.path }}<span ng-show="class.fighting_style">, {{ class.fighting_style}}</span>) {{ class.level }} <span ng-show="$index != $last">/</span>
         </div>
     </dd>
 </dl>

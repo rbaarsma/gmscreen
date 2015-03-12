@@ -16,6 +16,7 @@ var NPCCollection = function ($http, $rootScope) {
 
     // on unload do synchronious ajax to save last changes.
     $(window).unload(function () {
+        console.log('onunload');
         for (id in self.to_patch) {
             // use plain old ajax to be able to make async: false request.
             $.ajax('/npcs/' + id, {
@@ -47,6 +48,7 @@ var NPCCollection = function ($http, $rootScope) {
     };
 
     this.patch = function (npc, key) {
+        console.log('to patch: '+npc._id+' key: '+key);
         self.to_patch[npc._id] = self.to_patch[npc._id] || {};
         self.to_patch[npc._id][key] = npc[key];
 
@@ -54,6 +56,8 @@ var NPCCollection = function ($http, $rootScope) {
             window.clearTimeout(self.timeout);
 
         self.timeout = window.setTimeout(function () {
+            console.log('patching');
+            console.log(self.to_patch);
             for (id in self.to_patch) {
                 self.request('/npcs/' + npc._id, 'PATCH', self.to_patch[npc._id])
                     .success(function (data) {

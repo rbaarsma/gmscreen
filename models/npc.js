@@ -467,10 +467,10 @@ NPCSchema.methods.randomizeSpells = function () {
             lvl = this.classes[caster_cls_key].level;
         console.log(n);
         if (n == 'Bard' || n == 'Cleric' || n == 'Druid' || n == 'Sorcerer' || n == 'Wizard') {
-            this.spells_day = DND.spells_day_full[lvl];
+            this.spells_day = DND.spells_day_full[lvl-1];
         }
         if ((n == 'Paladin' && lvl > 1)|| (n == 'Ranger' && lvl > 1) || (n == 'Fighter' && p == 'Eldritch Knight' && lvl > 2) || (n == 'Rogue' && p == 'Arcane Trickster' && lvl > 2)) {
-            this.spells_day = DND.spells_day_half[lvl];
+            this.spells_day = DND.spells_day_half[lvl-1];
         }
     } else {
         console.log('multiclass caster');
@@ -489,7 +489,7 @@ NPCSchema.methods.randomizeSpells = function () {
                 slvl += Math.floor(lvl / 3);
             }
         }
-        this.spells_day = DND.spells_day_full[slvl];
+        this.spells_day = DND.spells_day_full[slvl-1];
     }
 
     // determine spells known/prepared
@@ -498,11 +498,9 @@ NPCSchema.methods.randomizeSpells = function () {
             p = this.classes[i].path,
             lvl = this.classes[i].level,
             clsconfig = config.classes[i],
-            spells = [],
             total_spells,
             maxhighest,
             spells_day = [];
-        this.classes[i].spells = [];
 
         if (n == 'Bard' || n == 'Cleric' || n == 'Druid' || n == 'Sorcerer' || n == 'Wizard') {
             spells_day = DND.spells_day_full[lvl];
@@ -525,7 +523,7 @@ NPCSchema.methods.randomizeSpells = function () {
 
         var choices = JSON.parse(JSON.stringify(clsconfig.spells)); // note: using JSON trick to deep-copy array.
         choices = choices.splice(1); // remove cantrips
-        console.log(choices);
+        //console.log(choices);
 
         for (var j=0; j<total_spells; j++) {
             //console.log(choices);
@@ -534,12 +532,23 @@ NPCSchema.methods.randomizeSpells = function () {
                 this.classes[i].spells.push(choices[spells_day.length-1].splice(Math.floor(Math.random() * choices[spells_day.length-1].length), 1));
             } else {
                 var max = spells_day.length - 2;
+                console.log('max:'+max);
                 if (max < 0) { max = 0; }
                 var splvl = Math.floor(Math.random() * max);
                 // try again in case we already chose ALL spells from this level
+                console.log(splvl);
+                while (true) {
+                    if (choices[splvl].length > 0) {
+                        break;
+                    }
+                    splvl = Math.floor(Math.random() * max);
+                    console.log('in while');
+                }
+                /*
                 while (choices[splvl].length == 0) {
                     var splvl = Math.floor(Math.random() * max);
                 }
+                */
                 this.classes[i].spells.push(choices[splvl].splice(Math.floor(Math.random()*choices[splvl].length), 1));
             }
         }

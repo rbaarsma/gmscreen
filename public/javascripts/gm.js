@@ -103,7 +103,7 @@
 
                     this.addToPanel = function (npc) {
                         npc.panel.show = true;
-                        NPCCollection.patch($scope.npc, 'panel');
+                        NPCCollection.patch(npc, 'panel');
                     }
 
                     this.toggleCollapsed = function () {
@@ -205,6 +205,22 @@
                             console.log('Error uploading file: ' + err.message || err);
                         });
                     };
+
+                    this.addCantrip = function (cantrips) {
+                        if (cantrips.indexOf(this.cantrip_to_add) == -1) {
+                            cantrips.push(this.cantrip_to_add);
+                            self.npcChange('classes');
+                        }
+                        self.cantrip_to_add = '';
+                    }
+
+                    this.addSpell = function (spells) {
+                        if (spells.indexOf(this.spell_to_add) == -1) {
+                            spells.push(this.spell_to_add);
+                            self.npcChange('classes');
+                        }
+                        self.spell_to_add = '';
+                    }
 
                     this.randomizeAll = function () {
                         NPCCollection.randomize($scope.npc, 'all')
@@ -344,6 +360,16 @@
                         NPCCollection.create($scope.npc);
                         this.show=false;
                     }
+                }],
+                'controllerAs': 'modalCtrl'
+            }
+        })
+
+        .directive('npcShow', function () {
+            return {
+                'templateUrl': 'partial/npc-new.html',
+                'controller': ['$http', '$scope', 'NPCCollection', function ($http, $scope, NPCCollection) {
+
                 }],
                 'controllerAs': 'modalCtrl'
             }

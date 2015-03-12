@@ -18,10 +18,21 @@ router.get('/config', function(req, res, next) {
     };
 
     for (var i=0; i<DND.CLASSES.length; i++) {
+        var spells = [];
+        if (typeof DND.CLASSES[i].spells != 'undefined' && DND.CLASSES[i].spells.length > 0) {
+            for (var j=1;j<DND.CLASSES[i].spells.length; j++) {
+                for (var k=0; k<DND.CLASSES[i].spells[j].length; k++) {
+                    spells.push({lvl: j, name: DND.CLASSES[i].spells[j][k]});
+                }
+            }
+        }
+
         config.CLASSES.push({
             name: DND.CLASSES[i].name,
             hd: DND.CLASSES[i].hd,
             paths: DND.CLASSES[i].paths,
+            cantrips: spells.length>0 ? DND.CLASSES[i].spells[0] : [],
+            spells: spells.length>0 ? spells : [],
             fighting_styles: DND.CLASSES[i].fighting_styles ? DND.CLASSES[i].fighting_styles : []
         });
     }
