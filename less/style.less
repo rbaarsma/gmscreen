@@ -36,13 +36,13 @@
   overflow-y: auto;
 }
 
-gm-container {
+npc-container {
   display: block;
   transition: all 0.5s ease;
   padding-left: @side-width;
 }
 
-gm-panels {
+npc-panels {
   display: block;
   position: relative;
   padding: 20px;
@@ -51,7 +51,7 @@ gm-panels {
   padding: @padding;
 }
 
-gm-side {
+npc-side {
   display: block;
   width: @side-width;
   z-index: 10;
@@ -68,11 +68,11 @@ gm-side {
   border-left: 3px solid black;
 }
 
-gm-container.collapsed gm-side {
+npc-container.collapsed npc-side {
   width: @side-width-min;
   padding: 0;
 }
-gm-container.collapsed {
+npc-container.collapsed {
   padding-left: @side-width-min;
 }
 

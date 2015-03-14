@@ -1,8 +1,3 @@
-<modals>
-    <npc-show></npc-show>
-    <npc-edit></npc-edit>
-</modals>
-
 <div class="row">
     <div class="npc-panel-container">
         <npc-panel class="panel panel-primary" ng-repeat="npc in npcs" ng-show="npc.panel.show">
@@ -11,10 +6,10 @@
                 <!--<button ng-click="panelCtrl.randomizeAll()" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>-->
                 <button ng-click="npcShowCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-fullscreen"></i></button>
                 <button ng-click="npcEditCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-pencil"></i></button>
-                <button ng-click="panelCtrl.toggleShow()" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-minus': npc.panel.show, 'glyphicon-plus': !npc.panel.show}" class="glyphicon"></i></button>
+                <button ng-click="npc.set('panel.show', false)" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-minus': npc.panel.show, 'glyphicon-plus': !npc.panel.show}" class="glyphicon"></i></button>
                 <h3 class="panel-title">{{ npc.name }}</h3>
             </div>
-            <npc-panel-body ng-init="section_groups = panelCtrl.sectionGroups(npc)">
+            <npc-panel-body>
                 <dl class="dl-horizontal">
                     <dt>AC</dt>
                     <dd>{{ npc.ac }}</dd>
@@ -24,8 +19,8 @@
                     <dd>{{ npc.speed }}</dd>
                     <dt>Stats</dt>
                     <dd><span ng-repeat="stat in npc.stats"><b>{{ stat.name }}</b>: {{ stat.stat }} ({{ stat.mod|modifier }})</span></dd>
-                    <dt>Saving Throws</dt>
-                    <dd><span ng-repeat="save in npc.saves" ng-show="NPC.hasSave(npc, $index)">{{ npc.stats[$index].name }} {{ (npc.stats[$index].mod + npc.prof)|modifier }}</span></dd>
+                    <dt>Saves</dt>
+                    <dd><span ng-repeat="save in npc.saves" ng-show="npc.hasSave(npc, $index)">{{ npc.stats[$index].name }} {{ (npc.stats[$index].mod + npc.prof)|modifier }}</span></dd>
                 </dl>
 
             </npc-panel-body>

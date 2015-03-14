@@ -11,15 +11,27 @@
     <script src="/bower_components/ng-file-upload/angular-file-upload.js"></script>
 </head>
 <body>
-    <gm-container ng-class="{'collapsed': user.side_collapsed}">
-        <div ng-show="gmCtrl.loaded == gmCtrl.total_to_load">
-            <gm-side></gm-side>
-            <button class="btn-primary" ng-click="sideCtrl.toggleCollapsed()"><i class="glyphicon glyphicon-menu-hamburger"></i></button>
-            <npc-new></npc-new>
-            <gm-panels></gm-panels>
+    <npc-container ng-controller="npcController" ng-class="{'collapsed': user.side_collapsed}">
+        <div ng-show="loaded == total_to_load">
+            <npc-side npcs="npcs" user="user"></npc-side>
+
+            <npc-main>
+                <npc-header>
+                    <button class="btn-primary" ng-click="toggleSide()"><i class="glyphicon glyphicon-menu-hamburger"></i></button>
+                    <button ng-click="npcNewCtrl.show = true">Create NPC</button>
+                </npc-header>
+
+                <npc-panels npcs="npcs"></npc-panels>
+            </npc-main>
+
+            <npc-modals>
+                <npc-show></npc-show>
+                <npc-edit></npc-edit>
+                <npc-new></npc-new>
+            </npc-modals>
         </div>
-        <progress ng-hide="gmCtrl.loaded == gmCtrl.total_to_load" value="{{ gmCtrl.loaded }}" max="{{ gmCtrl.total_to_load }}"></progress>
-    </gm-container>
+        <progress ng-hide="loaded == total_to_load" value="{{ loaded }}" max="{{ total_to_load }}"></progress>
+    </npc-container>
 
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/bower_components/jquery-ui/jquery-ui.js"></script>

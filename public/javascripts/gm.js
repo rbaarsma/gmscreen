@@ -6,18 +6,135 @@
 (function () {
     angular.module('gm', ['angularFileUpload'])
 
-        // Service
-        .factory('NPCCollection', ['$http', '$rootScope', function ($http, $rootScope) {
-            return new NPCCollection($http, $rootScope);
-        }])
+        // TODO: should live in it's own class
+        .factory('NPCCollection', ['$http', 'NPC', function ($http, NPC) {
+            var npcs = [];
+            var timeout = null;
+            var to_patch = {};
 
-        .factory('NPC', ['$http', function ($http) {
-            return {
-                hasSave: function (npc, index) {
-                    console.log('test');
-                    return $.inArray(index, npc.saves) > -1;
+            // on unload do synchronious ajax to save last changes.
+            // TODO: this has a jQuery dependency for a syncrhonius request..
+            $(window).unload(function () {
+                console.log('onunload');
+                for (id in to_patch) {
+                    // use plain old ajax to be able to make async: false request.
+                    $.ajax('/npcs/' + id, {
+                        'method': 'PATCH',
+                        // unlike JSON.stringify, this also removes the angular stuff that otherwise
+                        // bothers MongoDB in the backend
+                        'data': angular.toJson(to_patch[id]),
+                        'contentType': 'application/json',
+                        'async': false // otherwise doesn't work on unload
+                    })
+                }
+            })
+            
+            var self = {
+                get: function () {
+                    $http.get('/npcs')
+                        .success(function (data) {
+                            for (var i=0; i<data.length; i++) {
+                                var npc = new NPC(data[i]);
+                                npcs.push( npc );
+                                /*
+                                Object.defineProperty(npc, '__changed', {
+                                    'set': function (val) {
+                                        console.log('SETTER CALLED');
+                                        console.log(val);
+                                    }
+                                });
+                                */
+                            }
+
+                            // sort alphabetically
+                            npcs.sort(function(a, b){
+                                if(a.name < b.name) return -1;
+                                if(a.name > b.name) return 1;
+                                return 0;
+                            })
+                        })
+                    ;
+                    return npcs;
+                },
+
+                update: function (npc) {
+                    to_patch[npc._id] = npc;
+
+                    if (timeout != null)
+                        window.clearTimeout(self.timeout);
+
+                    timeout = window.setTimeout(function () {
+                        console.log('updating');
+                        console.log(to_patch);
+                        for (id in to_patch) {
+                            $http.patch('/npcs/' + npc._id, npc.__changed)
+                                .success(function (data) {
+                                    for (var i=0; i<npcs.length; i++) {
+                                        if (npcs[i]._id == npc._id) {
+                                            angular.extend(npcs[i], data);
+                                        }
+                                    }
+                                    npc.__changed = {};
+                                    delete to_patch[npc._id];
+                                })
+                            ;
+                        }
+                    }, 5000);
+                },
+
+                create: function (data) {
+                    data.loading = true;
+                    var index = npcs.push(data);
+                    return $http.post('/npcs', data)
+                        .success(function (data) {
+                            data.loading = false;
+                            npcs[index-1] = data;
+                            console.log('npc added');
+                        })
+                        ;
+                },
+
+                remove: function (index) {
+                    npcs[index].loading = true;
+                    var id = npcs[index]._id;
+                    delete to_patch[id];
+                    return $http.delete('/npcs/' + id)
+                        .success(function (data) {
+                            npcs.splice(index, 1);
+                            console.log('npc removed');
+                        });
+                    ;
+                },
+
+                randomize: function (npc, section_id) {
+                    var changed = to_patch[npc._id];
+
+                    // clear for update
+                    delete to_patch[npc._id];
+
+                    // do randomize request
+                    return $http.post('/npcs/' + npc._id+'/randomize?type='+section_id, changed);
                 }
             }
+
+            return self;
+        }])
+
+        // TODO: NPC has a hard dependency on the (NPC)collection, so it automatically updates when the NPC does. This is not very nice..
+        .factory('NPC', ['$parse', function ($parse) {
+            return function (data, collection) {
+                for (var prop in data) {
+                    this[prop] = data[prop];
+                }
+                this.__changed = {};
+
+                this.set = function (key, val) {
+                    var setter = $parse(key).assign;
+                    setter(this, val);
+                    this.__changed[key.split('.')[0]] = val;
+                    //collection.update(this);
+                }
+            };
         }])
 
         // filter to show + sign expressively for things like modifiers
@@ -60,65 +177,57 @@
             }
         })
 
-        .directive('gmContainer', function () {
-            return {
-                controller: ['$http', '$scope', '$rootScope', 'NPCCollection', 'NPC', function ($http, $scope, $rootScope, NPCCollection, NPC) {
-                    var self = this;
+        .controller('npcController', ['$http', '$scope', 'NPCCollection', 'NPC', function ($http, $scope, NPCCollection, NPC) {
+            var self = this;
 
-                    $scope.NPC = NPC;
+            $scope.NPC = NPC;
 
-                    self.loaded = 0;
-                    self.total_to_load = 3;
+            console.log(NPC);
 
-                    // load config
-                    $rootScope.config = {};
-                    $http.get('/config')
-                        .success(function (data) {
-                            $rootScope.config = data;
-                            self.loaded++;
-                        })
-                    ;
 
-                    // load user
-                    $rootScope.user = {};
-                    $http.get('/me')
-                        .success(function (data) {
-                            $rootScope.user = data;
-                            self.loaded++;
-                        })
-                    ;
+            self.loaded = 0;
+            self.total_to_load = 3;
 
-                    // load npcs
-                    $http.get('/npcs')
-                        .success(function (data) {
-                            $rootScope.npcs = data;
-                            $rootScope.npcs.sort(function(a, b){
-                                if(a.name < b.name) return -1;
-                                if(a.name > b.name) return 1;
-                                return 0;
-                            })
-                            self.loaded++;
-                        })
-                    ;
-                }],
-                controllerAs: 'gmCtrl'
-            };
-        })
+            // load config
+            $scope.config = {};
+            $http.get('/config')
+                .success(function (data) {
+                    $scope.config = data;
+                    self.loaded++;
+                })
+            ;
 
-        .directive('gmSide', function () {
+            // load user
+            $scope.user = {};
+            $http.get('/me')
+                .success(function (data) {
+                    $scope.user = data;
+                    self.loaded++;
+                })
+            ;
+
+            $scope.npcs = NPCCollection.get();
+
+            // toggle side menu
+            $scope.toggleSide = function () {
+                $scope.user.side_collapsed = !$scope.user.side_collapsed;
+            }
+        }])
+
+        .directive('npcSide', function () {
             return {
                 restrict: 'E',
+                scope: {
+                    'npcs': '=',
+                    'user': '='
+                },
                 templateUrl: 'partial/side.html',
-                controller: ['$rootScope', '$scope', 'NPCCollection', function ($rootScope, $scope, NPCCollection) {
+                controller: ['$scope', 'NPCCollection', function ($scope, NPCCollection) {
                     this.search = '';
 
                     this.addToPanel = function (npc) {
                         npc.panel.show = true;
                         NPCCollection.patch(npc, 'panel');
-                    }
-
-                    this.toggleCollapsed = function () {
-                        $rootScope.user.side_collapsed = !$rootScope.user.side_collapsed;
                     }
 
                     this.remove = function (index) {
@@ -136,22 +245,22 @@
                             return;
 
                         search:
-                        for (var i=0; i<$rootScope.npcs.length; i++) {
-                            if ($rootScope.npcs[i].name.toLowerCase().indexOf(newVal) > -1) {
-                                $rootScope.npcs[i].panel.filtered = true;
+                        for (var i=0; i<$scope.npcs.length; i++) {
+                            if ($scope.npcs[i].name.toLowerCase().indexOf(newVal) > -1) {
+                                $scope.npcs[i].panel.filtered = true;
                                 continue;
                             }
 
                             // check tags
-                            var tags = $rootScope.npcs[i].tags;
+                            var tags = $scope.npcs[i].tags;
                             for (var j=0; j<tags.length; j++) {
                                 if (tags[j] == newVal) {
-                                    $rootScope.npcs[i].panel.filtered = true;
+                                    $scope.npcs[i].panel.filtered = true;
                                     continue search;
                                 }
                             }
 
-                            $rootScope.npcs[i].panel.filtered = false;
+                            $scope.npcs[i].panel.filtered = false;
                         }
                     });
                 }],
@@ -159,26 +268,20 @@
             }
         })
 
-        .directive('gmPanels', function () {
+        .directive('npcPanels', function () {
             return {
                 restrict: 'E',
-                templateUrl: 'partial/panels.html',
+                /*
+                require: ['^npcShowCtrl'],
+                scope: {
+                    npcs: '='
+                },
+                */
+                templateUrl: 'partial/panels.html'
             }
         })
 
-        .directive('npcPanel', function () {
-            return {
-                restrict: 'E',
-                controller: ['NPC', function (NPC) {
-                    //console.log('test');
-                    //console.log(NPC.hasSave);
-                }],
-                link: function (scope, element, attrs) {
-
-                }
-            };
-        })
-
+        /*
         .directive('npcItem', function () {
             return {
                 link: function (scope, element, attrs) {
@@ -194,6 +297,7 @@
                 }
             };
         })
+        */
 
         .directive('npcNew', function () {
             return {
@@ -212,7 +316,7 @@
                         this.show=false;
                     }
                 }],
-                'controllerAs': 'modalCtrl'
+                'controllerAs': 'npcNewCtrl'
             }
         })
 
@@ -223,6 +327,7 @@
                     var self=this;
 
                     this.show = function (npc) {
+                        console.log('showing');
                         $scope.npc = npc;
                         this.visible = true;
                     }
@@ -231,17 +336,13 @@
             }
         })
 
-        .directive('npcEdit', function () {
+         .directive('npcEdit', function () {
             return {
                 restrict: 'E',
                 templateUrl: 'partial/npc-edit.html',
-                controller: ['$upload', '$http', '$scope', '$rootScope', 'NPCCollection', function ($upload, $http, $scope, $rootScope, NPCCollection) {
+                controller: ['$upload', '$http', '$scope', 'NPCCollection', function ($upload, $http, $scope, NPCCollection) {
                     var self = this;
 
-                    /**
-                     *
-                     * @param key in $scope.npc (only first level!)
-                     */
                     this.npcChange = function (key) {
                         console.log(key);
                         if (typeof $scope.npc[key] == 'undefined')
@@ -308,9 +409,9 @@
 
                     this.changeSkill = function (npc) {
                         for (var i = 0; i < npc.skills.length; i++) {
-                            for (var j = 0; j < $rootScope.config.SKILLS.length; j++) {
-                                if (npc.skills[i].name == $rootScope.config.SKILLS[j].name) {
-                                    npc.skills[i].stat = $rootScope.config.SKILLS[j].stat;
+                            for (var j = 0; j < config.SKILLS.length; j++) {
+                                if (npc.skills[i].name == config.SKILLS[j].name) {
+                                    npc.skills[i].stat = config.SKILLS[j].stat;
                                 }
                             }
                         }
@@ -369,18 +470,6 @@
                         self.npcChange('panel');
                     };
 
-                    this.sectionGroups = function (npc) {
-                        if (!npc.panel.sections)
-                            return;
-
-                        var groups = [[],[],[],[]];
-                        for (var i=0; i<npc.panel.sections.length; i++) {
-                            var group_index = npc.panel.sections[i].group;
-                            groups[group_index].push(npc.panel.sections[i]);
-                        }
-                        return groups;
-                    }
-
                     this.toggleLocked = function (type) {
                         var k = $.inArray(type, $scope.npc.unlocked);
                         if (k > -1) {
@@ -392,6 +481,8 @@
                     }
 
                     this.isLocked = function (type) {
+                        if (typeof $scope.npc == 'undefined')
+                            return;
                         return $.inArray(type, $scope.npc.unlocked) == -1;
                     }
 
@@ -404,6 +495,7 @@
             }
         })
 
+
         .directive('panel', function () {
             return {
                 restrict: 'E',
@@ -413,9 +505,7 @@
                     'npc': '='
                 },
                 controller: ['$scope', 'NPCCollection', function ($scope, NPCCollection) {
-                    /**
-                     * show or hide panel body (and save in npc.panel.sections)
-                     */
+                    // show or hide panel body (and save in npc.panel.sections)
                     this.toggleShow = function () {
                         if (typeof $scope.npc.closed_panels == 'undefined') {
                             $scope.npc.closed_panels = [];
@@ -430,9 +520,7 @@
                         NPCCollection.patch($scope.npc, 'closed_panels');
                     }
 
-                    /**
-                     * randomize/refresh specific section
-                     */
+                    // randomize/refresh specific section
                     this.randomize = function () {
                         NPCCollection.randomize($scope.npc, $scope.title.toLowerCase())
                             .success(function (data) {
