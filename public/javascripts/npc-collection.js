@@ -2,14 +2,14 @@
  * Keeps track of a global npcs object
  *
  * @param $http
- * @param $rootScope
+ * @param self
  * @constructor
  */
 
-var NPCCollection = function ($http, $rootScope) {
-    var self=this;
+var NPCManager = function ($http) {
+    var self = this;
 
-    $rootScope.npcs = [];
+    self.npcs = [];
     self.timeout = null;
     self.changed = {};
     self.to_patch = {};
@@ -42,13 +42,35 @@ var NPCCollection = function ($http, $rootScope) {
         });
     };
 
+    this.get = function () {
+        this.request('/npcs', 'GET')
+            .success(function (data) {
+                // funny enough when simply doing self.npcs=data, the scope doens't get updated
+                // but when updated with a proper push, it does.
+                for (var i=0; i<data.length; i++) {
+                    self.npcs.push(data[i]);
+                }
+
+                // sort alphabetically
+                self.npcs.sort(function(a, b){
+                    if(a.name < b.name) return -1;
+                    if(a.name > b.name) return 1;
+                    return 0;
+                })
+            })
+        ;
+
+        // note first returns empty npcs array that gets loaded asynchroniously
+        return self.npcs;
+    },
+
     // update single NPC after 1000 ms. Refresh timer on new update.
     this.update = function (npc) {
         return; // no longer used
     };
 
     this.patch = function (npc, key) {
-        console.log('to patch: '+npc._id+' key: '+key);
+        console.log('to patch: ' + npc._id + ' key: ' + key);
         self.to_patch[npc._id] = self.to_patch[npc._id] || {};
         self.to_patch[npc._id][key] = npc[key];
 
@@ -61,10 +83,10 @@ var NPCCollection = function ($http, $rootScope) {
             for (id in self.to_patch) {
                 self.request('/npcs/' + npc._id, 'PATCH', self.to_patch[npc._id])
                     .success(function (data) {
-                        for (var i=0; i<$rootScope.npcs.length; i++) {
-                            if ($rootScope.npcs[i]._id == npc._id) {
-                                angular.extend($rootScope.npcs[i], data);
-                                //jQuery.extend(true, $rootScope.npcs[i], data);
+                        for (var i = 0; i < self.npcs.length; i++) {
+                            if (self.npcs[i]._id == npc._id) {
+                                angular.extend(self.npcs[i], data);
+                                //jQuery.extend(true, self.npcs[i], data);
                             }
                         }
                         delete self.to_patch[npc._id];
@@ -77,24 +99,24 @@ var NPCCollection = function ($http, $rootScope) {
     // create new single NPC
     this.create = function (data) {
         data.loading = true;
-        var index = $rootScope.npcs.push(data);
+        var index = self.npcs.push(data);
         return this.request('/npcs', 'POST', data)
             .success(function (data) {
                 data.loading = false;
-                $rootScope.npcs[index-1] = data;
+                self.npcs[index - 1] = data;
                 console.log('npc added');
             })
-        ;
+            ;
     };
 
     // remove single NPC
     this.remove = function (index) {
-        $rootScope.npcs[index].loading = true;
-        var id = $rootScope.npcs[index]._id;
+        self.npcs[index].loading = true;
+        var id = self.npcs[index]._id;
         delete self.changed[id];
         return this.request('/npcs/' + id, 'DELETE')
             .success(function (data) {
-                $rootScope.npcs.splice(index, 1);
+                self.npcs.splice(index, 1);
                 console.log('npc removed');
             });
         ;
@@ -107,7 +129,7 @@ var NPCCollection = function ($http, $rootScope) {
         delete self.to_patch[npc._id];
 
         // do randomize request
-        return this.request('/npcs/' + npc._id+'/randomize?type='+section_id, 'POST', changed);
+        return this.request('/npcs/' + npc._id + '/randomize?type=' + section_id, 'POST', changed);
     }
 
     // recalculate stats

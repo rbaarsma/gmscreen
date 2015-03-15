@@ -668,6 +668,7 @@ DND.RACES = [
         alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         languages: ['Common','*'],
         subraces: [],
+        skills: ['*'],
         names: {
             male: ["Ander","Blath","Bran","Frath","Geth","Lander","Luth","Malcer","Stor","Taman","Urth","Aseir","Bardeid","Haseid","Khemed","Mehmen","Sudeiman","Zasheir","Bor","Fodel","Glar","Grigor","Igan","Ivor","Kosef","Mival","Orel","Pavel","Sergor"],
             female: ["Amafrey","Betha","Cefrey","Kethra","Mara","Olga","Silifrey","Westra","Atala","Ceidil","Hama","Jasmal","Meilil","Seipora","Yasheira","Zasheida","Alethra","Kara","Katernin","Mara","Natali","Olma","Tana","Zora"],

@@ -767,16 +767,12 @@ NPCSchema.methods.randomizeSkills = function () {
     };
 
     var removeExistingSkills = function (skills) {
-        console.log(self.skills.length);
         for (var i=0; i<self.skills.length; i++) {
-            console.log('key: '+self.skills[i]['key']);
             var index = skills.indexOf(self.skills[i].key);
-            console.log('index: '+index)
             if (index > -1) {
                 skills.splice(index, 1);
             }
         }
-        return skills;
     };
 
     // 1. add background skill proficiency
@@ -785,17 +781,22 @@ NPCSchema.methods.randomizeSkills = function () {
         addSkill(skills[i]);
     }
 
+    console.log('first background');
+    console.log(this.skills);
+
     // 2. add race skill proficiency
     var skills = config.race.skills || [];
     for (var i = 0; i < skills.length; i++) {
         if (skills[i] == '*') { // * means any
             var choices = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
-            addSkill(Math.floor(Math.random() * choices.length));
+            removeExistingSkills(choices);
+            addSkill(choices[Math.floor(Math.random() * choices.length)]);
         } else {
             addSkill(skills[i]);
         }
     }
 
+    console.log('then race background');
     console.log(this.skills);
 
     // 3. add random skill from class list
@@ -808,15 +809,17 @@ NPCSchema.methods.randomizeSkills = function () {
     console.log('after removing:');
     console.log(skills);
 
-    // actually choose alass skills
-    for (var i = 0; i < skills.length > 0 && this.config.classes[0].skillsno; i++) {
+    // actually choose class skills
+    for (var i=0; i < this.config.classes[0].skillsno; i++) {
         var random = Math.floor(Math.random() * skills.length);
         addSkill(skills[random]);
         skills.splice(random, 1);
     }
 
+    console.log('+ class');
+    console.log(this.skills);
 
-    // 4. add additional random skill for rogue/ranger/bard
+    // 4. add additional random skill for multiclass rogue/ranger/bard
     for (var i = 1; i < this.classes.length; i++) {
         if (this.classes[i].name == 'Rogue' || this.classes[i].name == 'Bard' || this.classes[i].name == 'Ranger') {
             console.log('adding additional skill');

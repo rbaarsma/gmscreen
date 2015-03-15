@@ -6,136 +6,15 @@
 (function () {
     angular.module('gm', ['angularFileUpload'])
 
-        // TODO: should live in it's own class
-        .factory('NPCCollection', ['$http', 'NPC', function ($http, NPC) {
-            var npcs = [];
-            var timeout = null;
-            var to_patch = {};
+        .service('NPCManager', ['$http', NPCManager])
 
-            // on unload do synchronious ajax to save last changes.
-            // TODO: this has a jQuery dependency for a syncrhonius request..
-            $(window).unload(function () {
-                console.log('onunload');
-                for (id in to_patch) {
-                    // use plain old ajax to be able to make async: false request.
-                    $.ajax('/npcs/' + id, {
-                        'method': 'PATCH',
-                        // unlike JSON.stringify, this also removes the angular stuff that otherwise
-                        // bothers MongoDB in the backend
-                        'data': angular.toJson(to_patch[id]),
-                        'contentType': 'application/json',
-                        'async': false // otherwise doesn't work on unload
-                    })
-                }
-            })
-            
-            var self = {
-                get: function () {
-                    $http.get('/npcs')
-                        .success(function (data) {
-                            for (var i=0; i<data.length; i++) {
-                                var npc = new NPC(data[i]);
-                                npcs.push( npc );
-                                /*
-                                Object.defineProperty(npc, '__changed', {
-                                    'set': function (val) {
-                                        console.log('SETTER CALLED');
-                                        console.log(val);
-                                    }
-                                });
-                                */
-                            }
-
-                            // sort alphabetically
-                            npcs.sort(function(a, b){
-                                if(a.name < b.name) return -1;
-                                if(a.name > b.name) return 1;
-                                return 0;
-                            })
-                        })
-                    ;
-                    return npcs;
-                },
-
-                update: function (npc) {
-                    to_patch[npc._id] = npc;
-
-                    if (timeout != null)
-                        window.clearTimeout(self.timeout);
-
-                    timeout = window.setTimeout(function () {
-                        console.log('updating');
-                        console.log(to_patch);
-                        for (id in to_patch) {
-                            $http.patch('/npcs/' + npc._id, npc.__changed)
-                                .success(function (data) {
-                                    for (var i=0; i<npcs.length; i++) {
-                                        if (npcs[i]._id == npc._id) {
-                                            angular.extend(npcs[i], data);
-                                        }
-                                    }
-                                    npc.__changed = {};
-                                    delete to_patch[npc._id];
-                                })
-                            ;
-                        }
-                    }, 5000);
-                },
-
-                create: function (data) {
-                    data.loading = true;
-                    var index = npcs.push(data);
-                    return $http.post('/npcs', data)
-                        .success(function (data) {
-                            data.loading = false;
-                            npcs[index-1] = data;
-                            console.log('npc added');
-                        })
-                        ;
-                },
-
-                remove: function (index) {
-                    npcs[index].loading = true;
-                    var id = npcs[index]._id;
-                    delete to_patch[id];
-                    return $http.delete('/npcs/' + id)
-                        .success(function (data) {
-                            npcs.splice(index, 1);
-                            console.log('npc removed');
-                        });
-                    ;
-                },
-
-                randomize: function (npc, section_id) {
-                    var changed = to_patch[npc._id];
-
-                    // clear for update
-                    delete to_patch[npc._id];
-
-                    // do randomize request
-                    return $http.post('/npcs/' + npc._id+'/randomize?type='+section_id, changed);
+        .factory('NPCHelper', function () {
+            return {
+                'hasSave': function (npc, index) {
+                    return npc.saves.indexOf(index) > -1;
                 }
             }
-
-            return self;
-        }])
-
-        // TODO: NPC has a hard dependency on the (NPC)collection, so it automatically updates when the NPC does. This is not very nice..
-        .factory('NPC', ['$parse', function ($parse) {
-            return function (data, collection) {
-                for (var prop in data) {
-                    this[prop] = data[prop];
-                }
-                this.__changed = {};
-
-                this.set = function (key, val) {
-                    var setter = $parse(key).assign;
-                    setter(this, val);
-                    this.__changed[key.split('.')[0]] = val;
-                    //collection.update(this);
-                }
-            };
-        }])
+        })
 
         // filter to show + sign expressively for things like modifiers
         .filter('modifier', function () {
@@ -177,16 +56,16 @@
             }
         })
 
-        .controller('npcController', ['$http', '$scope', 'NPCCollection', 'NPC', function ($http, $scope, NPCCollection, NPC) {
+        /**
+         * Main Controller
+         */
+        .controller('npcController', ['$http', '$scope', 'NPCManager', 'NPCHelper', function ($http, $scope, NPCManager, NPCHelper) {
             var self = this;
-
-            $scope.NPC = NPC;
-
-            console.log(NPC);
-
-
+            
             self.loaded = 0;
             self.total_to_load = 3;
+
+            $scope.NPCHelper = NPCHelper;
 
             // load config
             $scope.config = {};
@@ -206,11 +85,16 @@
                 })
             ;
 
-            $scope.npcs = NPCCollection.get();
+            $scope.npcs = NPCManager.get();
+            console.log($scope.npcs);
 
             // toggle side menu
             $scope.toggleSide = function () {
                 $scope.user.side_collapsed = !$scope.user.side_collapsed;
+            }
+
+            $scope.patch = function (npc, key) {
+                NPCManager.patch(npc, key);
             }
         }])
 
@@ -222,16 +106,16 @@
                     'user': '='
                 },
                 templateUrl: 'partial/side.html',
-                controller: ['$scope', 'NPCCollection', function ($scope, NPCCollection) {
+                controller: ['$scope', 'NPCManager', function ($scope, NPCManager) {
                     this.search = '';
 
                     this.addToPanel = function (npc) {
-                        npc.panel.show = true;
-                        NPCCollection.patch(npc, 'panel');
+                        npc.in_panel = true;
+                        NPCManager.patch(npc, 'in_panel');
                     }
 
                     this.remove = function (index) {
-                        NPCCollection.remove(index);
+                        NPCManager.remove(index);
                     }
 
                     /**
@@ -302,7 +186,7 @@
         .directive('npcNew', function () {
             return {
                 'templateUrl': 'partial/npc-new.html',
-                'controller': ['$http', '$scope', 'NPCCollection', function ($http, $scope, NPCCollection) {
+                'controller': ['$http', '$scope', 'NPCManager', function ($http, $scope, NPCManager) {
                     this.show = false;
                     $scope.npc = {
                         classes: [{name: '', level: ''}],
@@ -312,7 +196,7 @@
                     };
 
                     this.generate = function () {
-                        NPCCollection.create($scope.npc);
+                        NPCManager.create($scope.npc);
                         this.show=false;
                     }
                 }],
@@ -323,7 +207,7 @@
         .directive('npcShow', function () {
             return {
                 'templateUrl': 'partial/npc-show.html',
-                'controller': ['$http', '$scope', 'NPCCollection', function ($http, $scope, NPCCollection) {
+                'controller': ['$http', '$scope', 'NPCManager', function ($http, $scope, NPCManager) {
                     var self=this;
 
                     this.show = function (npc) {
@@ -340,27 +224,22 @@
             return {
                 restrict: 'E',
                 templateUrl: 'partial/npc-edit.html',
-                controller: ['$upload', '$http', '$scope', 'NPCCollection', function ($upload, $http, $scope, NPCCollection) {
+                controller: ['$upload', '$http', '$scope', 'NPCManager', function ($upload, $http, $scope, NPCManager) {
                     var self = this;
 
                     this.npcChange = function (key) {
-                        console.log(key);
                         if (typeof $scope.npc[key] == 'undefined')
                             throw Error('key '+key+' is not in $scope.npc: '+$scope.npc);
-                        NPCCollection.patch($scope.npc, key);
+                        NPCManager.patch($scope.npc, key);
                     }
 
                     // image stuff
                     this.onFileSelect = function (npc, image) {
-                        console.log('selected file');
                         if (angular.isArray(image)) {
                             image = image[0];
                         }
-
-                        // This is how I handle file types in client side
-                        if (image.type !== 'image/png' && image.type !== 'image/jpeg') {
-                            alert('Only PNG and JPEG are accepted.');
-                            return;
+                        if (typeof image == 'undefined') {
+                            throw new Error('Image is undefined');
                         }
 
                         self.uploadInProgress = true;
@@ -401,7 +280,7 @@
                     }
 
                     this.randomizeAll = function () {
-                        NPCCollection.randomize($scope.npc, 'all')
+                        NPCManager.randomize($scope.npc, 'all')
                             .success(function (data) {
                                 $scope.npc = data;
                             })
@@ -504,7 +383,7 @@
                     'title': '@',
                     'npc': '='
                 },
-                controller: ['$scope', 'NPCCollection', function ($scope, NPCCollection) {
+                controller: ['$scope', 'NPCManager', function ($scope, NPCManager) {
                     // show or hide panel body (and save in npc.panel.sections)
                     this.toggleShow = function () {
                         if (typeof $scope.npc.closed_panels == 'undefined') {
@@ -517,12 +396,12 @@
                         } else {
                             delete $scope.npc.closed_panels[index];
                         }
-                        NPCCollection.patch($scope.npc, 'closed_panels');
+                        NPCManager.patch($scope.npc, 'closed_panels');
                     }
 
                     // randomize/refresh specific section
                     this.randomize = function () {
-                        NPCCollection.randomize($scope.npc, $scope.title.toLowerCase())
+                        NPCManager.randomize($scope.npc, $scope.title.toLowerCase())
                             .success(function (data) {
                                 $scope.npc = angular.extend($scope.npc, data);
                             })
