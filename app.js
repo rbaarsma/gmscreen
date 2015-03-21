@@ -9,11 +9,20 @@ var express = require('express');
 var expressLess = require('express-less');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
+var passport = require('passport')
+//    , FacebookStrategy = require('passport-facebook').Strategy;
+    , OpenIDStrategy = require('passport-openid').Strategy;
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 var npcs = require('./routes/npcs');
 var spells = require('./routes/spells');
+
+var User = require('./models/user');
+
+var WEB_ADDRESS = 'http://localhost:3000';
+
+//var FACEBOOK_APP_ID = '1020303194650999',
+//    FACEBOOK_APP_SECRET = '3775bd494d0a0902e3a0847b82d7775c';
 
 // connect to mongodb
 mongoose.connect('mongodb://localhost/gm', function(err, next) {
@@ -30,21 +39,74 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(cookieParser);
+
 app.use(session({
     secret: 'mysecret (should live in separate file outside git)',
     store: new MongoStore({mongooseConnection: mongoose.connection})
 }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+
+//app.use(session({ secret: 'keyboard cat' }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new OpenIDStrategy({
+        returnURL: WEB_ADDRESS+'/auth/openid/return',
+        realm: WEB_ADDRESS+'/'
+        //profile: true
+    },
+    function(identifier, done) {
+        var User = require('./models/user.js');
+
+        User.findOne({ openId: identifier }, function (err, user) {
+            if (err) return done(err, null);
+
+            console.log('user found: ');
+            console.log(user);
+
+            // for now we don't have a registration, so we simply make an empty
+            // user on the fly and store it in our session
+            if (user === null) {
+                User.create({ openId: identifier }, function (err, user) {
+                    console.log('created new user');
+                    if (err) return done(err, null);
+
+                    user.save();
+                    done(null, user);
+                });
+            } else {
+                //user.save();
+            }
+
+            done(null, user);
+        });
+    }
+));
+
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    done(null, user);
+});
+
+//app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use('/less', expressLess(path.join(__dirname, '/less'), {debug: app.get('env') == 'development', compress: app.get('env') != 'development'}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(path.join(__dirname, '/bower_components')));
 app.use('/fonts',  express.static(path.join(__dirname, '/bower_components/bootstrap/fonts')));
 
+// OpenID routes
+app.post('/auth/openid', passport.authenticate('openid'));
+app.get('/auth/openid/return', passport.authenticate('openid', { successRedirect: '/', failureRedirect: '/login' }));
+
+// gm routes
 app.use('/', routes);
-app.use('/users', users);
 app.use('/npcs', npcs);
 app.use('/spells', spells);
 

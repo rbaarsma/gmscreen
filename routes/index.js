@@ -1,11 +1,22 @@
 var express = require('express');
 var router = express.Router();
 var DND = require('../models/dnd.js');
-var USER = require('../models/user.js');
+var User = require('../models/user.js');
+
+function checkAuth (req, res, next) {
+    if (!req.user || !req.user._id)
+        res.redirect('/login');
+    else
+        next();
+}
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', checkAuth, function(req, res, next) {
+    res.render('index');
+});
+
+router.get('/login', function(req, res, next) {
+    res.render('login');
 });
 
 router.get('/config', function(req, res, next) {
@@ -53,23 +64,9 @@ router.get('/config', function(req, res, next) {
 });
 
 router.get('/me', function(req, res, next) {
-    USER.findById(req.session.userid, function (err, post) {
-        if (err) return next(err);
-
-        // for now we don't have a registration, so we simply make an empty
-        // user on the fly and store it in our session
-        if (post === null) {
-            USER.create({}, function (err, user) {
-                if (err) return next(err);
-                user.save();
-                req.session.userid = user._id;
-                res.json(user);
-            });
-        } else {
-            res.json(post);
-        }
-    });
+    res.json(req.user);
 });
+
 
 console.log('test');
 

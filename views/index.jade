@@ -1,5 +1,25 @@
 extends layout
 
+block head
+    title Gm Screen
+    script(type="text/javascript", src="/bower_components/angularjs/angular.js")
+    script(type="text/javascript", src="/bower_components/ng-file-upload/angular-file-upload.js")
+
 block content
-  h1= title
-  p Welcome to #{title}
+    npc-container(ng-controller="npcController" ng-class="{'collapsed': user.side_collapsed}")
+        div(ng-show="loaded == total_to_load")
+            npc-side(npcs="npcs", user="user")
+            npc-main
+                npc-header
+                    button(ng-click="toggleSide()").btn-primary
+                        i.glyphicon.glyphicon-menu-hamburger
+                    button(ng-click="npc_new_visible = true") Create NPC
+            npc-modals
+                npc-show(visible="npc_show_visible")
+                npc-edit(visible="npc_edit_visible")
+                npc-new(config="config", visible="npc_new_visible")
+        progress(ng-hide="loaded == total_to_load",value="{{ loaded }}",max="{{ total_to_load }}")
+
+    script(type="text/javascript", src="/bower_components/jquery/dist/jquery.min.js")
+    script(type="text/javascript", src="/javascripts/npc-collection.js")
+    script(type="text/javascript", src="/javascripts/gm.js")

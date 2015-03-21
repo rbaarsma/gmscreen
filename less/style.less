@@ -10,6 +10,7 @@
 
 @side-background: #990000;
 @main-background: white;
+@tab-background: #f7f7f7;
 
 @padding: 20px;
 @side-width: 250px;
@@ -24,7 +25,11 @@
     padding-left: 2px !important;
     padding-right: 2px !important;
   }
+}
 
+hr {
+  margin: 5px 0;
+  border-top: 1px dotted #aaa;
 }
 
 .modal-dialog-wide {
@@ -49,6 +54,26 @@ npc-panels {
   width: 100%;
   background-color: @main-background;
   padding: @padding;
+}
+
+npc-panel + npc-panel {
+  /* margin-left: 1%; */
+}
+
+npc-panel-body {
+  display: block;
+  min-height: 350px;
+  padding: 0;
+}
+
+npc-panel-body .nav li.active a, npc-panel-body .nav li.active a:active, npc-panel-body .nav li.active a:visited, npc-panel-body .nav li.active a:focus {
+  background-color: @tab-background;
+}
+
+npc-panel-body .tab-pane {
+  padding: 10px;
+  background-color: @tab-background;
+  min-height: calc(350px-20px);
 }
 
 npc-side {
@@ -112,11 +137,6 @@ tag button.label {
   margin: 0;
 }
 
-npc-panel-body {
-  display: block;
-  .panel-body;
-}
-
 button {
   .btn;
   .btn-primary;
@@ -148,28 +168,24 @@ npc-item {
 npc-panel {
   display: block;
 }
-npc-panel {
-  .make-md-column(4);
-  padding: 0;
-}
-npc-panel.maximized {
-  .make-md-column(12);
-  padding: 0;
+
+.panel-container{
+  padding-left: 5px !important;
+  padding-right: 5px !important;
 }
 
-npc-panel.maximized npc-panel-column {
-  .make-sm-column(3);
-}
-npc-panel-column {
-  .make-sm-column(12);
+.panel {
+  margin-bottom: 10px;
 }
 
-npc-panel-body {
-  padding-left: 0;
+h3.panel-title {
+  padding-left: 30px;
 }
-
-npc-panel npc-panel-column {
-  padding-right: 0 !important;
+.panel-title img {
+  height: 38px;
+  position: absolute;
+  top: 1px;
+  left: 6px;
 }
 
 npc-section {

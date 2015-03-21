@@ -3,16 +3,30 @@ var router = express.Router();
 var fs = require('fs');
 var multiparty = require('multiparty');
 var mongoose = require('mongoose');
+var passport = require('passport');
+
+var User = require('../models/user.js');
 var NPC = require('../models/npc.js');
 var spell = require('../models/spell.js');
 var Picture = require('../models/picture.js');
 
+// TODO put somewhere in shared file
+function checkAuth (req, res, next) {
+    if (!req.user || !req.user._id) {
+        res.statusCode(400);
+        res.json({});
+    } else {
+        next();
+    }
+}
+
 /* GET NPC listing. */
-router.get('/', function(req, res, next) {
-    NPC.find(function (err, npcs) {
+router.get('/', checkAuth, function(req, res, next) {
+    NPC.find({_user_id: req.user._id}, function (err, npcs) {
         if (err) return next(err);
 
         for (var i=0; i<npcs.length; i++) {
+            //npcs[i]._user_id = req.user._id;
             npcs[i].save();
         }
 
@@ -21,14 +35,21 @@ router.get('/', function(req, res, next) {
 });
 
 /* POST new NPC */
-router.post('/', function (req, res, next) {
+router.post('/', checkAuth, function (req, res, next) {
+    if (req.body.classes[0].level[1] == '-') {
+        var level = req.body.classes[0].level;
+        req.body.classes[0].level = 1;
+    }
+
     NPC.create(req.body, function (err, npc) {
         if (err) return next(err);
+
+        npc._user_id = req.user._id;
 
         if (!npc.race)
             npc.randomizeRace();
         if (!npc.classes[0].name || !npc.classes[0].level)
-            npc.randomizeClasses(!!req.body.multiclass, npc.classes[0].name, npc.classes[0].level);
+            npc.randomizeClasses(!!req.body.multiclass, npc.classes[0].name, level);
         if (!npc.background || !npc.background.name)
             npc.randomizeBackground();
         if (!npc.gender)
@@ -42,8 +63,9 @@ router.post('/', function (req, res, next) {
         npc.randomizeStats();
         npc.randomizeSkills();
         npc.randomizeEquipment();
+        npc.randomizeSpells();
 
-        npc.calc(['features', 'attacks', 'sections']);
+        npc.calc(['features', 'attacks']);
 
         npc.recalculate();
 
@@ -53,7 +75,7 @@ router.post('/', function (req, res, next) {
 });
 
 /* GET NPC by id */
-router.get('/:id', function(req, res, next) {
+router.get('/:id', checkAuth, function(req, res, next) {
     NPC.findById(req.params.id, function (err, post) {
         if (err) return next(err);
         res.json(post);
@@ -61,7 +83,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 /* PATCH edit NPC by id */
-router.patch('/:id', function (req, res, next) {
+router.patch('/:id', checkAuth, function (req, res, next) {
     NPC.findByIdAndUpdate(req.params.id, req.body, function (err, npc) {
         if (err) return next(err);
         var changes = npc.recalculate();
@@ -71,7 +93,7 @@ router.patch('/:id', function (req, res, next) {
 });
 
 /* DELETE by id */
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id', checkAuth, function(req, res, next) {
     NPC.findByIdAndRemove(req.params.id, req.body, function (err, post) {
         if (err) return next(err);
         res.json(post);
@@ -79,7 +101,7 @@ router.delete('/:id', function(req, res, next) {
 });
 
 /* generate by id */
-router.post('/:id/randomize', function(req, res, next) {
+router.post('/:id/randomize', checkAuth, function(req, res, next) {
     var npc = NPC.findByIdAndUpdate(req.params.id, req.body, function (err, npc) {
         if (err) return next(err);
 
@@ -173,7 +195,7 @@ router.post('/:id/picture', function(req, res, next) {
     });
 });
 
-router.get('/:id/picture', function(req, res, next) {
+router.get('/:id/picture', checkAuth, function(req, res, next) {
     NPC.findById(req.params.id, '_picture_id', function (err, npc) {
         if (err) return next(err);
         Picture.findById(npc._picture_id, function (err, pic) {

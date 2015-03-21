@@ -77,6 +77,7 @@ var SectionSchema = new mongoose.Schema({
 
 var NPCSchema = new mongoose.Schema({
     _picture_id: mongoose.Schema.Types.ObjectId,
+    _user_id: mongoose.Schema.Types.ObjectId,
     ac: Number,
     it: Number,
     hp: Number,
@@ -128,6 +129,7 @@ NPCSchema.methods.calc = function (props) {
 
         switch (props[_i]) {
             case 'sections':
+                /*
                 for (var i=0; i<SECTIONS.length; i++) {
                     var found=false;
                     for (var j=0; j<this.panel.sections.length; j++) {
@@ -145,6 +147,7 @@ NPCSchema.methods.calc = function (props) {
                     }
                 }
                 break;
+                */
 
             case 'saves':
                 this.saves = this.calced('config').classes[0].saves;
@@ -578,9 +581,10 @@ NPCSchema.methods.randomizeClasses = function (multiclass, name, level) {
         console.log('randomizing level');
         level = Math.floor((Math.random() * Math.random()) * 20) + 1;
     } else if (level[1] == '-') {
-        level = Math.floor((Math.random() * Math.random()) * (level[2]-level[0])) + level[0];
+        level = Math.floor((Math.random()) * (level[2]-level[0])) + parseInt(level[0]);
     } // else level=level
     console.log('level: '+level);
+
 
     var index = class_names.indexOf(name);
     if (index > -1) {
@@ -627,7 +631,7 @@ NPCSchema.methods.randomizeBackground = function () {
 NPCSchema.methods.randomizeRace = function () {
     var r = Math.floor(Math.random() * DND.RACES.length),
         subraces = DND.RACES[r].subraces;
-    this.race = {name: subraces.length > 0 ? subraces[Math.floor(Math.random() * subraces.length)].name : DND.RACES[r].name};
+    this.race = {name: subraces.length > 0 ? subraces[Math.floor(Math.random() * subraces.length)].name : DND.RACES[r].name, speed: DND.RACES[r].speed};
 
 };
 

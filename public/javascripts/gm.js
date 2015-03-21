@@ -83,6 +83,9 @@
                     $scope.user = data;
                     self.loaded++;
                 })
+                .error(function (data) {
+                    console.log('not logged in');
+                })
             ;
 
             $scope.npcs = NPCManager.get();
@@ -95,6 +98,10 @@
 
             $scope.patch = function (npc, key) {
                 NPCManager.patch(npc, key);
+            }
+
+            $scope.log = function (msg) {
+                console.log(msg);
             }
         }])
 
@@ -186,8 +193,15 @@
         .directive('npcNew', function () {
             return {
                 'templateUrl': 'partial/npc-new.html',
+                scope: {
+                    'visible': '=',
+                    'config': '='
+                },
                 'controller': ['$http', '$scope', 'NPCManager', function ($http, $scope, NPCManager) {
                     this.show = false;
+
+                    console.log($scope.visible);
+
                     $scope.npc = {
                         classes: [{name: '', level: ''}],
                         multiclass: true,
@@ -197,7 +211,7 @@
 
                     this.generate = function () {
                         NPCManager.create($scope.npc);
-                        this.show=false;
+                        $scope.visible = false;
                     }
                 }],
                 'controllerAs': 'npcNewCtrl'

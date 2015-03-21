@@ -1,29 +1,77 @@
 <div class="row">
     <div class="npc-panel-container">
-        <npc-panel class="panel panel-primary" ng-repeat="npc in npcs" ng-show="npc.in_panel">
-            <div class="panel-heading">
-                <!--<button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.toggleShow(npc)"><i class="glyphicon glyphicon-remove"></i></button>-->
-                <!--<button ng-click="panelCtrl.randomizeAll()" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>-->
-                <button ng-click="npcShowCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-fullscreen"></i></button>
-                <button ng-click="npcEditCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-pencil"></i></button>
-                <button ng-click="npc.in_panel = false; patch(npc, 'in_panel')" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-minus': npc.in_panel, 'glyphicon-plus': !npc.in_panel}" class="glyphicon"></i></button>
-                <h3 class="panel-title">{{ npc.name }}</h3>
-            </div>
-            <npc-panel-body>
-                <dl class="dl-horizontal">
-                    <dt>AC</dt>
-                    <dd>{{ npc.ac }}</dd>
-                    <dt>HP</dt>
-                    <dd>{{ npc.hp }}</dd>
-                    <dt>Speed</dt>
-                    <dd>{{ npc.speed }}</dd>
-                    <dt>Stats</dt>
-                    <dd><span ng-repeat="stat in npc.stats"><b>{{ stat.name }}</b>: {{ stat.stat }} ({{ stat.mod|modifier }})</span></dd>
-                    <dt>Saves</dt>
-                    <dd><span ng-repeat="save in npc.saves" ng-show="NPCHelper.hasSave(npc, $index)">{{ npc.stats[$index].name }} {{ (npc.stats[$index].mod + npc.prof)|modifier }}</span></dd>
-                </dl>
+        <div class="panel-container col-md-4" ng-repeat="npc in npcs" ng-show="npc.in_panel">
+            <npc-panel class="panel panel-primary">
+                <div class="panel-heading">
+                    <!--<button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.toggleShow(npc)"><i class="glyphicon glyphicon-remove"></i></button>-->
+                    <!--<button ng-click="panelCtrl.randomizeAll()" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>-->
+                    <button ng-click="npcShowCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-fullscreen"></i></button>
+                    <button ng-click="npcEditCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-pencil"></i></button>
+                    <button ng-click="npc.in_panel = false; patch(npc, 'in_panel')" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-minus': npc.in_panel, 'glyphicon-plus': !npc.in_panel}" class="glyphicon"></i></button>
+                    <h3 class="panel-title"><img ng-model="npc._picture_id" ng-show="npc._picture_id" ng-src="/npcs/{{ npc._id }}/picture?{{ npc._picture_id }}"> {{ npc.name }}</h3>
+                </div>
+                <npc-panel-body ng-init="tab = 'overview'">
+                    <!-- tab navigation -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" ng-class="{'active': tab == 'overview'}"><a href="#overview" role="tab" ng-click="tab = 'overview'">Overview</a></li>
+                        <li role="presentation" ng-class="{'active': tab == 'background'}"><a href="#background" role="tab" ng-click="tab = 'background'">Background</a></li>
+                        <li ng-show="npc.notes" role="presentation" ng-class="{'active': tab == 'notes'}"><a href="#notes" role="tab" ng-click="tab = 'notes'">Notes</a></li>
+                    </ul>
 
-            </npc-panel-body>
-        </npc-panel>
+                    <!-- tab content #overview -->
+                    <div role="tabpanel" class="tab-pane" ng-show="tab == 'overview'">
+                        <div class="row">
+                            <div class="col-md-6 col-lg-4" ><b>HP</b> {{ npc.hp}}</div>
+                            <div class="col-md-6 col-lg-4" ><b>AC</b> {{ npc.ac}}</div>
+                            <div class="col-md-6 col-lg-4" ><b>IT</b> {{ npc.it}}</div>
+                            <div class="col-md-6 col-lg-4" ><b>Speed</b> {{ npc.race.speed }}</div>
+                            <div class="col-md-6 col-lg-8" ><b>Saves</b> <span style="padding-right: 5px;" ng-repeat="save in npc.saves" ng-show="NPCHelper.hasSave(npc, $index)">{{ npc.stats[$index].name }} {{ (npc.stats[$index].mod + npc.prof)|modifier }}</span></div>
+
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6 col-lg-4" ng-repeat="stat in npc.stats"><b>{{ stat.name }}</b>: {{ stat.stat }} ({{ stat.mod|modifier }})</div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-6" ng-repeat="skill in npc.skills">{{ skill.name }}: {{ skill.mod|modifier }}</div>
+                        </div>
+                        <hr>
+                        <dl class="dl-horizontal form-group-tight">
+                            <dt>Senses</dt>
+                            <dd>Passive Perception {{}}</dd>
+                            <dt>Languages</dt>
+                            <dd><span ng-repeat="language in npc.languages">{{ language }}</span></dd>
+                            <dt>CR</dt>
+                            <dd>x (x XP)</dd>
+                            <dt>Attacks</dt>
+                            <dd><div ng-repeat="attack in npc.attacks"><b>{{ attack.name }}</b>: {{ attack.bonus|modifier }} {{ attack.damage }} ({{ attack.damage|dieaverage }})</div></dd>
+                        </dl>
+                    </div>
+
+                    <!-- tab content #background -->
+                    <div role="tabpanel" class="tab-pane" ng-show="tab == 'background'">
+                        <h4>{{ npc.background.name}} <small ng-show="npc.background.speciality">{{ npc.background.speciality }}</small></h4>
+                        <dl class="dl-horizontal">
+                            <dt>Personality</dt>
+                            <dd>{{ npc.background.personality }}</dd>
+                            <dt>Ideal</dt>
+                            <dd>{{ npc.background.ideal }}</dd>
+                            <dt>Bond</dt>
+                            <dd>{{ npc.background.bond}}</dd>
+                            <dt>Flaw</dt>
+                            <dd>{{ npc.background.flaw}}</dd>
+                        </dl>
+                    </div>
+
+                    <!-- tab content #notes -->
+                    <div role="tabpanel" class="tab-pane" ng-show="npc.notes && tab == 'notes'">
+                        <h4>Notes</h4>
+                        <p>{{ npc.notes }}</p>
+                        {{ npc.tags|join:', ' }}
+                    </div>
+                </npc-panel-body>
+            </npc-panel>
+        </div>
     </div>
 </div>
