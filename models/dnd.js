@@ -1,6 +1,7 @@
 var DND = {
     ALIGNMENTS: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
     STATNAMES: ['STR','DEX','CON','INT','WIS','CHA'],
+    LANGUAGES: ['Common','Dwarvish','Elvish','Giant','Gnomish','Halfing','Orc','Abyssal','Celestial','Draconic','Deep Speech','Infernal','Primordial','Sylvan','Undercommon'],
     DAMAGE_TYPES: [
         /*  0 */ 'bludgeoning',
         /*  1 */ 'piercing',
@@ -17,44 +18,44 @@ var DND = {
         /* 12 */ "Thunder"
     ],
     WEAPONS: [
-        /*  0 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Club', cost: 0.1, damage: '1d4', dmgtype: 0, weight: 2, props: []},
-        /*  1 */ {pickchance: 3, complexity: 'simple', type: 'melee', hands: 1, name: 'Dagger', cost: 2, damage: '1d4', dmgtype: 1, weight: 1, props: []},
-        /*  2 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 2, name: 'Greatclub', cost: 0.2, damage: '1d8', dmgtype: 0, weight: 10, props: []},
-        /*  3 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Handaxe', cost: 5, damage: '1d6', dmgtype: 2, weight: 2, props: []},
+        /*  0 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Club', cost: 0.1, damage: '1d4', dmgtype: 0, weight: 2, props: ['Light']},
+        /*  1 */ {pickchance: 3, complexity: 'simple', type: 'melee', hands: 1, name: 'Dagger', cost: 2, damage: '1d4', dmgtype: 1, weight: 1, props: ['Finesse','Light']},
+        /*  2 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 2, name: 'Greatclub', cost: 0.2, damage: '1d8', dmgtype: 0, weight: 10, props: ['Two-handed']},
+        /*  3 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Handaxe', cost: 5, damage: '1d6', dmgtype: 2, weight: 2, props: ['Light']},
         /*  4 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Javelin', cost: 0.5, damage: '1d6', dmgtype: 1, weight: 2, props: []},
-        /*  5 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Light hammer', cost: 2, damage: '1d4', dmgtype: 0, weight: 2, props: []},
+        /*  5 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Light hammer', cost: 2, damage: '1d4', dmgtype: 0, weight: 2, props: ['Light']},
         /*  6 */ {pickchance: 3, complexity: 'simple', type: 'melee', hands: 1, name: 'Mace', cost: 5, damage: '1d6', dmgtype: 0, weight: 4, props: []},
-        /*  7 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Quarterstaff', cost: 0.2, damage: '1d6', dmgtype: 0, weight: 4, props: []},
-        /*  8 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Sickle', cost: 1, damage: '1d4', dmgtype: 2, weight: 2, props: []},
-        /*  9 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Spear', cost: 1, damage: '1d6', dmgtype: 1, weight: 3, props: []},
+        /*  7 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Quarterstaff', cost: 0.2, damage: '1d6', dmgtype: 0, weight: 4, props: ['Versatile (1d8)']},
+        /*  8 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Sickle', cost: 1, damage: '1d4', dmgtype: 2, weight: 2, props: ['Light']},
+        /*  9 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Spear', cost: 1, damage: '1d6', dmgtype: 1, weight: 3, props: ['Versatile (1d8)']},
         /* 10 */ {pickchance: 1, complexity: 'simple', type: 'melee', hands: 1, name: 'Unarmed strike', cost: 0, damage: '1', dmgtype: 0, weight: 0, props: []},
-        /* 11 */ {pickchance: 5, complexity: 'simple', type: 'ranged', hands: 2, name: 'Crossbow, light', cost: 25, damage: '1d8', dmgtype: 1, weight: 5, props: []},
-        /* 12 */ {pickchance: 1, complexity: 'simple', type: 'ranged', hands: 1, name: 'Dart', cost: 0.05, damage: '1d4', dmgtype: 1, weight: 0.25, props: []},
-        /* 13 */ {pickchance: 3, complexity: 'simple', type: 'ranged', hands: 2, name: 'Shortbow', cost: 25, damage: '1d6', dmgtype: 1, weight: 2, props: []},
+        /* 11 */ {pickchance: 5, complexity: 'simple', type: 'ranged', hands: 2, name: 'Crossbow, light', cost: 25, damage: '1d8', dmgtype: 1, weight: 5, props: ['Two-handed']},
+        /* 12 */ {pickchance: 1, complexity: 'simple', type: 'ranged', hands: 1, name: 'Dart', cost: 0.05, damage: '1d4', dmgtype: 1, weight: 0.25, props: ['Finesse']},
+        /* 13 */ {pickchance: 3, complexity: 'simple', type: 'ranged', hands: 2, name: 'Shortbow', cost: 25, damage: '1d6', dmgtype: 1, weight: 2, props: ['Two-handed']},
         /* 14 */ {pickchance: 1, complexity: 'simple', type: 'ranged', hands: 1, name: 'Sling', cost: 0.1, damage: '1d4', dmgtype: 0, weight: 0, props: []},
-        /* 15 */ {pickchance: 2, complexity: 'martial', type: 'melee', hands: 1, name: 'Battleaxe', cost: 10, damage: '1d8', dmgtype: 2, weight: 4, props: []},
+        /* 15 */ {pickchance: 2, complexity: 'martial', type: 'melee', hands: 1, name: 'Battleaxe', cost: 10, damage: '1d8', dmgtype: 2, weight: 4, props: ['Versatile (1d8)']},
         /* 16 */ {pickchance: 1, complexity: 'martial', type: 'melee', hands: 1, name: 'Flail', cost: 10, damage: '1d8', dmgtype: 0, weight: 2, props: []},
-        /* 17 */ {pickchance: 1, complexity: 'martial', type: 'melee', hands: 2, name: 'Glaive', cost: 20, damage: '1d10', dmgtype: 2, weight: 6, props: []},
-        /* 18 */ {pickchance: 2, complexity: 'martial',type: 'melee', hands: 2, name: 'Greataxe', cost: 30, damage: '1d12', dmgtype: 2, weight: 7, props: []},
-        /* 19 */ {pickchance: 2, complexity: 'martial',type: 'melee', hands: 2, name: 'Greatsword', cost: 50, damage: '2d6', dmgtype: 2, weight: 6, props: []},
-        /* 20 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 2, name: 'Halberd', cost: 20, damage: '1d10', dmgtype: 2, weight: 6, props: []},
-        /* 21 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 2, name: 'Lance', cost: 10, damage: '1d12', dmgtype: 1, weight: 6, props: []},
-        /* 22 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 1, name: 'Longsword', cost: 15, damage: '1d8', dmgtype: 2, weight: 3, props: []},
-        /* 23 */ {pickchance: 5, complexity: 'martial',type: 'melee', hands: 2, name: 'Maul', cost: 10, damage: '2d6', dmgtype: 0, weight: 10, props: []},
+        /* 17 */ {pickchance: 1, complexity: 'martial', type: 'melee', hands: 2, name: 'Glaive', cost: 20, damage: '1d10', dmgtype: 2, weight: 6, props: ['Heavy','Reach','Two-handed']},
+        /* 18 */ {pickchance: 2, complexity: 'martial',type: 'melee', hands: 2, name: 'Greataxe', cost: 30, damage: '1d12', dmgtype: 2, weight: 7, props: ['Heavy','Two-handed']},
+        /* 19 */ {pickchance: 2, complexity: 'martial',type: 'melee', hands: 2, name: 'Greatsword', cost: 50, damage: '2d6', dmgtype: 2, weight: 6, props: ['Heavy','Two-handed']},
+        /* 20 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 2, name: 'Halberd', cost: 20, damage: '1d10', dmgtype: 2, weight: 6, props: ['Heavy','Reach','Two-handed']},
+        /* 21 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 2, name: 'Lance', cost: 10, damage: '1d12', dmgtype: 1, weight: 6, props: ['Reach','Special']},
+        /* 22 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 1, name: 'Longsword', cost: 15, damage: '1d8', dmgtype: 2, weight: 3, props: ['Versatile (1d10)']},
+        /* 23 */ {pickchance: 5, complexity: 'martial',type: 'melee', hands: 2, name: 'Maul', cost: 10, damage: '2d6', dmgtype: 0, weight: 10, props: ['Heavy','Two-handed']},
         /* 24 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 1, name: 'Morningstar', cost: 15, damage: '1d8', dmgtype: 1, weight: 4, props: []},
-        /* 25 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 2, name: 'Pike', cost: 5, damage: '1d10', dmgtype: 1, weight: 18, props: []},
-        /* 26 */ {pickchance: 2, complexity: 'martial',type: 'melee', hands: 1, name: 'Rapier', cost: 25, damage: '1d8', dmgtype: 1, weight: 2, props: []},
-        /* 27 */ {pickchance: 2, complexity: 'martial',type: 'melee', hands: 1, name: 'Scimitar', cost: 25, damage: '1d6', dmgtype: 2, weight: 3, props: []},
-        /* 28 */ {pickchance: 4, complexity: 'martial',type: 'melee', hands: 1, name: 'Shortsword', cost: 10, damage: '1d6', dmgtype: 1, weight: 2, props: []},
-        /* 29 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 1, name: 'Trident', cost: 5, damage: '1d6', dmgtype: 1, weight: 4, props: []},
+        /* 25 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 2, name: 'Pike', cost: 5, damage: '1d10', dmgtype: 1, weight: 18, props: ['Heavy','Reach','Two-handed']},
+        /* 26 */ {pickchance: 2, complexity: 'martial',type: 'melee', hands: 1, name: 'Rapier', cost: 25, damage: '1d8', dmgtype: 1, weight: 2, props: ['Finesse']},
+        /* 27 */ {pickchance: 2, complexity: 'martial',type: 'melee', hands: 1, name: 'Scimitar', cost: 25, damage: '1d6', dmgtype: 2, weight: 3, props: ['Finesse','Light']},
+        /* 28 */ {pickchance: 4, complexity: 'martial',type: 'melee', hands: 1, name: 'Shortsword', cost: 10, damage: '1d6', dmgtype: 1, weight: 2, props: ['Finesse','Light']},
+        /* 29 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 1, name: 'Trident', cost: 5, damage: '1d6', dmgtype: 1, weight: 4, props: ['Versatile (1d8)']},
         /* 30 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 1, name: 'War pick', cost: 5, damage: '1d8', dmgtype: 1, weight: 2, props: []},
-        /* 31 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 1, name: 'Warhammer', cost: 15, damage: '1d8', dmgtype: 0, weight: 2, props: []},
-        /* 32 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 1, name: 'Whip', cost: 2, damage: '1d4', dmgtype: 2, weight: 3, props: []},
+        /* 31 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 1, name: 'Warhammer', cost: 15, damage: '1d8', dmgtype: 0, weight: 2, props: ['Versatile (1d10)']},
+        /* 32 */ {pickchance: 1, complexity: 'martial',type: 'melee', hands: 1, name: 'Whip', cost: 2, damage: '1d4', dmgtype: 2, weight: 3, props: ['Finesse','Reach']},
         /* 33 */ {pickchance: 1, complexity: 'martial',type: 'ranged', hands: 1, name: 'Blowgun', cost: 10, damage: '1', dmgtype: 1, weight: 2, props: []},
-        /* 34 */ {pickchance: 1, complexity: 'martial',type: 'ranged', hands: 1, name: 'Crossbow, hand', cost: 75, damage: '1d6', dmgtype: 1, weight: 0, props: []},
-        /* 35 */ {pickchance: 5, complexity: 'martial',type: 'ranged', hands: 2, name: 'Crossbow, heavy', cost: 50, damage: '1d10', dmgtype: 1, weight: 18, props: []},
-        /* 36 */ {pickchance: 4, complexity: 'martial',type: 'ranged', hands: 2, name: 'Longbow', cost: 50, damage: '1d8', dmgtype: 1, weight: 2, props: []},
-        /* 37 */ {pickchance: 1, complexity: 'martial',type: 'ranged', hands: 1, name: 'Net', cost: 1, damage: '-', dmgtype: -1, weight: 3, props: []},
+        /* 34 */ {pickchance: 1, complexity: 'martial',type: 'ranged', hands: 1, name: 'Crossbow, hand', cost: 75, damage: '1d6', dmgtype: 1, weight: 0, props: ['Light']},
+        /* 35 */ {pickchance: 5, complexity: 'martial',type: 'ranged', hands: 2, name: 'Crossbow, heavy', cost: 50, damage: '1d10', dmgtype: 1, weight: 18, props: ['Heavy','Two-handed']},
+        /* 36 */ {pickchance: 4, complexity: 'martial',type: 'ranged', hands: 2, name: 'Longbow', cost: 50, damage: '1d8', dmgtype: 1, weight: 2, props: ['Heavy','Two-handed']},
+        /* 37 */ {pickchance: 1, complexity: 'martial',type: 'ranged', hands: 1, name: 'Net', cost: 1, damage: '-', dmgtype: -1, weight: 3, props: ['Special']},
     ],
     WEAPON_GROUPS: {
         'simple_melee': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -136,7 +137,7 @@ DND.CLASSES = [
         saves: [0,2],
         primary_stats: [0,2],
         features: [
-            ['Rage', 'Unarmored Defense'],
+            ['Rage', 'Unarmored Defense (CON)'],
             ['Reckless Attack', 'Danger Sense'],
             ['Path'],
             ['Ability Score Improvement'],
@@ -180,7 +181,11 @@ DND.CLASSES = [
             ["Animal Messenger","Blindness/Deafness","Calm Emotions","Cloud of Daggers","Crown of Madness","Detect Thoughts","Enhance Ability","Enthrall","Heat Metal","Hold Person","Invisibility","Knock","Lesser Restoration","Locate Animals or Plants","Locate Object","Magic Mouth","Phantasmal Force","See Invisibility","Shatter","Silence","Suggestion","Zone of Truth"],
             ["Bestow Curse","Clairvoyance","Dispel Magic","Fear","Feign Death","Glyph of Warding","Hypnotic Pattern","Leomund's Tiny Hut","Major Image","Nondetection","Plant Growth","Sending","Speak with Dead","Speak with Plants","Stinking Cloud","Tongues"],
             ["Compulsion","Confusion","Dimension Door","Freedom of Movement","Greater Invisibility","Hallucinatory Terrain","Locate Creature","Polymorph"],
-            ["Animate Objects","Awaken","Dominate Person","Dream","Geas","Greater Restoration","Hold Monster","Legend Lore","Mass Cure Wounds","Mislead","Modify Memory","Planar Binding","Raise Dead","Scrying","Seeming","Teleportation Circle"]
+            ["Animate Objects","Awaken","Dominate Person","Dream","Geas","Greater Restoration","Hold Monster","Legend Lore","Mass Cure Wounds","Mislead","Modify Memory","Planar Binding","Raise Dead","Scrying","Seeming","Teleportation Circle"],
+            ["Eyebite","Find the Path","Guards and Wards","Mass Suggestion","Otto's Irresistible Dance","Programmed Illusion","True Seeing"],
+            ["Etherealness","Forcecage","Mirage Arcana","Mordenkainen’s Magnificent Mansion","Mordenkainen’s Sword","Project Image","Regenerate","Ressurection","Symbol","Teleport"],
+            ["Dominate Monster","Feeblemind","Glibness","Mind Blank","Power Word Stun"],
+            ["Foresight","Power Word Heal","Power Word Kill","True Polymorph"]
         ],
         features: [
             ['Spellcasting', 'Bardic Inspiration (d6)'],
@@ -223,7 +228,11 @@ DND.CLASSES = [
             ["Aid","Augury","Blindness/Deafness","Calm Emotions","Continual Flame","Enhance Ability","Find Traps","Gentle Repose","Hold Person","Lesser Restoration","Locate Object","Prayer of Healing","Protection from Poison","Silence","Spiritual Weapon","Warding Bond","Zone of Truth"],
             ["Animate Dead","Beacon of Hope","Bestow Curse","Clairvoyance","Create Food and Water","Daylight","Dispel Magic","Feign Death","Glyph of Warding","Magic Circle","Mass Healing Word","Meld into Stone","Protection from Energy","Remove Curse","Revivify","Sending","Speak with Dead","Spirit Guardians","Tongues","Water Walk"],
             ["Banishment","Control Water","Death Ward","Divination","Freedom of Movement","Guardian of Faith","Locate Creature","Stone Shape"],
-            ["Commune","Contagion","Dispel Evil and Good","Flame Strike","Geas","Greater Restoration","Hallow","Insect Plague","Legend Lore","Mass Cure Wounds","Planar Binding","Raise Dead","Scrying"]
+            ["Commune","Contagion","Dispel Evil and Good","Flame Strike","Geas","Greater Restoration","Hallow","Insect Plague","Legend Lore","Mass Cure Wounds","Planar Binding","Raise Dead","Scrying"],
+            ["Blade Barrier","Create Undead","Find the Path","Forbiddance","Harm","Heal","Heroes' Feast","Planar Ally","True Seeing","Word of Recall"],
+            ["Conjure Celestial","Divine Word","Etherealness","Fire Storm","Plane Shift","Regenerate","Resurrection","Symbol"],
+            ["Antimagic Field","Control Weather","Earthquake","Holy Aura"],
+            ["Astral Projection","Gate","Mass Heal","True Ressurection"]
         ],
         cantrips: [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
         features: [
@@ -269,7 +278,11 @@ DND.CLASSES = [
             ["Animal Messenger","Barkskin","Beast Sense", "Darkvision", "Enhance Ability", "Find Traps", "Flame Blade", "Flaming Sphere", "Gust of Wind", "Heat Metal", "Hold Person","Lesser Restoration","Locate Object", "Moonbeam", "Pass without Trace", "Protection from Poison","Spike Growth"],
             ["Call Lightning","Conjure Animals","Daylight","Dispel Magic","Feign Death","Meld into Stone","Plant Growth","Protection from Energy","Sleet Storm","Speak with Plants","Water Breathing","Water Walk","Wind Wall"],
             ["Blight","Confusion","Conjure Minor Elementals","Conjure Woodland Beings","Control Water","Dominate Beast","Freedom of Movement","Giant Insect","Grasping Vine","Hallucinatory Terrain","Ice Storm","Locate Creature","Polymorph","Stone Shape","Stoneskin","Wall of Fire"],
-            ["Antilife Shell","Awaken","Commune with Nature","Conjure Elemental","Contagion","Geas","Greater Restoration","Insect Plague","Mass Cure Wounds","Planar Binding","Reincarnate","Scrying","Tree Stride","Wall of Stone"]
+            ["Antilife Shell","Awaken","Commune with Nature","Conjure Elemental","Contagion","Geas","Greater Restoration","Insect Plague","Mass Cure Wounds","Planar Binding","Reincarnate","Scrying","Tree Stride","Wall of Stone"],
+            ["Conjure Fey","Find the Path","Heal","Heroes' Feast","Move Earth","Sunbeam","Transport via Plants","Wall of Thorns","Wind Walk"],
+            ["Fire Storm","Mirage Arcane","Plane Shift","Regenerate","Reverse Gravity"],
+            ["Animal Shapes","Antipathy/Sympathy","Control Weather","Earthquake","Feeblemind","Sunburst","Tsunami"],
+            ["Foresight","Shapechange","Storm of Vengeance","True Resurrection"]
         ],
         cantrips: [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
         features: [
@@ -307,7 +320,7 @@ DND.CLASSES = [
         armors: DND.ARMOR_GROUPS.all,
         alignments: ['LG','NG','CG','LN','N','CN','LE','NE','CE'],
         saves: [0,2],
-        primary_stats: [],
+        primary_stats: [0,1,2,3],
         spellstat: 3,
         spells_known: [0,0,3,4,4,4,5,6,6,7,8,8,9,10,10,11,11,11,12,13],
         cantrips: [0,0,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
@@ -334,7 +347,7 @@ DND.CLASSES = [
             /* 20 */ ['Extra Attack'],
         ],
         paths: ['Champion', 'Battle Master', 'Eldritch Knight'],
-        fighting_styles: ['Archery', 'Defense', 'Dueling', 'Great Weapon Fighting', 'Protection']
+        fighting_styles: ['Archery', 'Defense', 'Dueling', 'Great Weapon Fighting', 'Protection', 'Two-Weapon Fighting']
     },
     {
         name: 'Monk',
@@ -349,7 +362,7 @@ DND.CLASSES = [
         saves: [0,1],
         primary_stats: [1,4],
         features: [
-            /*  1 */ ['Unarmored Defense', 'Martial Arts'],
+            /*  1 */ ['Unarmored Defense (WIS)', 'Martial Arts'],
             /*  2 */ ['Ki', 'Unarmored Movement'],
             /*  3 */ ['Path', 'Deflect Missiles'],
             /*  4 */ ['Ability Score Improvement', 'Slow Fall'],
@@ -370,6 +383,7 @@ DND.CLASSES = [
             /* 19 */ ['Ability Score Improvement'],
             /* 20 */ ['Perfect Self'],
         ],
+        martial_arts: [4,4,4,4,6,6,6,6,6,6,8,8,8,8,8,8,10,10,10,10],
         paths: ['Way of the Open Hand', 'Way of Shadow', 'Way of the Four Elements'],
         cantrips: []
     },
@@ -390,7 +404,9 @@ DND.CLASSES = [
             [],
             ["Bless","Command","Compelled Duel","Cure Wounds","Detect Evil and Good","Detect Magic","Detect Poison and Disease","Divine Favor","Heroism","Protection from Evil and Good","Purify Food and Drink","Searing Smite","Shield of Faith","Thunderous Smite","Wrathful Smite"],
             ["Aid","Branding Smite","Find Steed","Lesser Restoration","Locate Object","Magic Weapon","Protection from Poison","Zone of Truth"],
-            ["Aura of Vitality","Blinding Smite","Create Food and Water","Crusader's Mantle","Daylight","Dispel Magic","Elemental Weapon"]
+            ["Aura of Vitality","Blinding Smite","Create Food and Water","Crusader's Mantle","Daylight","Dispel Magic","Elemental Weapon"],
+            ["Aura of Life","Aura of Purity","Banishment","Death Ward","Locate Creature","Staggering Smite"],
+            ["Banishing Smite","Circle of Power","Destructive Smite","Dispel Evil and Good","Geas","Raise Dead"]
         ],
         features: [
             /*  1 */ ['Divine Sense', 'Lay on Hands'],
@@ -435,7 +451,9 @@ DND.CLASSES = [
             [],
             ["Alarm","Animal Friendship","Cure Wounds","Detect Magic","Detect Poison and Disease","Ensnaring Strike","Fog Cloud","Goodberry","Hail of Thorns","Hunter's Mark","Jump","Longstrider","Speak with Animals"],
             ["Animal Messenger","Barkskin","Beast Sense","Cordon of Arrows","Darkvision","Find Traps","Lesser Restoration","Locate Animals or Plants","Locate Object","Pass without Trace","Protection from Poison","Silence","Spike Growth"],
-            ["Conjure Animals","Conjure Barrage","Daylight","Lightning Arrow","Nondetection","Plant Growth","Protection from Energy","Speak with Plants","Water Breathing","Water Walk","Wind Wall"]
+            ["Conjure Animals","Conjure Barrage","Daylight","Lightning Arrow","Nondetection","Plant Growth","Protection from Energy","Speak with Plants","Water Breathing","Water Walk","Wind Wall"],
+            ["Conjure Woodland Beings","Freedom of Movement","Grasping Vine","Locate Creature","Stoneskin"],
+            ["Commune with Nature","Conjure Volley","Swift Quiver","Tree Stride"]
         ],
         features: [
             /*  1 */ ['Favored Enemy', 'Natural Explorer'],
@@ -461,7 +479,7 @@ DND.CLASSES = [
         ],
         paths: ['Hunter', 'Beast Master'],
         spells_known: [0,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11],
-        fighting_styles: ['Archery', 'Defense', 'Dueling', 'Protection'],
+        fighting_styles: ['Archery', 'Defense', 'Dueling', 'Protection', 'Two-Weapon Fighting'],
         cantrips: []
     },
     {
@@ -501,7 +519,7 @@ DND.CLASSES = [
             /* 19 */ ['Ability Score Improvement'],
             /* 20 */ ['Stroke of Luck'],
         ],
-        paths: ['Thief', 'Assassin', 'Arcane Trickster']
+        paths: ['Thief', 'Assassin', 'Arcane Trickster'],
     },
     {
         name: 'Sorcerer',
@@ -604,7 +622,9 @@ DND.CLASSES = [
         ],
         paths: ['The Archfey', 'The Fiend', 'The Great Old One'],
         cantrips: [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
-        spells_known: [2,3,4,5,6,7,8,9,10,10,11,11,12,12,13,13,14,14,15,15]
+        spells_known: [2,3,4,5,6,7,8,9,10,10,11,11,12,12,13,13,14,14,15,15],
+        spell_slots: [1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4],
+        spell_max_level: [1,1,2,2,3,3,4,4,5,5,5,5,5,5,5,5,5,5,5,5]
     },
     {
         name: 'Wizard',

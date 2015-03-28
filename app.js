@@ -94,6 +94,14 @@ passport.deserializeUser(function(user, done) {
     done(null, user);
 });
 
+// auto-login on development (so I can develop offline)
+if (app.get('env') == 'development') {
+    app.use(function (req, res, next) {
+        req.user = {_id: '550ab20adacd0ae9f08d4028'};
+        next();
+    });
+}
+
 //app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use('/less', expressLess(path.join(__dirname, '/less'), {debug: app.get('env') == 'development', compress: app.get('env') != 'development'}));

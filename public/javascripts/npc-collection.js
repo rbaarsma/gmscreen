@@ -122,6 +122,7 @@ var NPCManager = function ($http) {
         ;
     };
 
+    // randomize specific section
     this.randomize = function (npc, section_id) {
         var changed = self.to_patch[npc._id];
 
@@ -130,6 +131,23 @@ var NPCManager = function ($http) {
 
         // do randomize request
         return this.request('/npcs/' + npc._id + '/randomize?type=' + section_id, 'POST', changed);
+    }
+
+    // check if NPC has skill
+    this.hasSkill = function (npc, skill) {
+        for (var i=0; i<npc.skills.length; i++) {
+            if (npc.skills[i].name.toLowerCase() == skill.toLowerCase()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // give NPC's passive perception
+    this.passivePerception = function (npc) {
+        if (npc.stats.length != 6)
+            return '?';
+        return 10 + npc.stats[4].mod + (self.hasSkill(npc, 'perception') ? npc.prof : 0);
     }
 
     // recalculate stats

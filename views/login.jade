@@ -1,0 +1,19 @@
+extends layout
+
+block head
+    title Login
+
+block content
+  div.modal
+      div.modal-backdrop
+      div.modal-dialog
+          div.modal-content
+              div.modal-header
+                  h4.modal-title Login
+              div.modal-body
+                  form(action="/auth/openid", method="post")
+                      div.form-group
+                          label(for=openid) Open ID
+                          input#openid.form-control(name="openid_identifier")
+              div.modal-footer
+                  button(type="submit").btn.btn-submit Sign in

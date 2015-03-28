@@ -24,6 +24,7 @@ router.get('/config', function(req, res, next) {
         CLASSES: [],
         SKILLS: [],
         RACES: [],
+        LANGUAGES: DND.LANGUAGES,
         BACKGROUNDS: [],
         ALIGNMENTS: DND.ALIGNMENTS
     };

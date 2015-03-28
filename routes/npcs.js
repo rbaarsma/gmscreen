@@ -46,7 +46,7 @@ router.post('/', checkAuth, function (req, res, next) {
 
         npc._user_id = req.user._id;
 
-        if (!npc.race)
+        if (!npc.race || !npc.race.name)
             npc.randomizeRace();
         if (!npc.classes[0].name || !npc.classes[0].level)
             npc.randomizeClasses(!!req.body.multiclass, npc.classes[0].name, level);
@@ -64,6 +64,7 @@ router.post('/', checkAuth, function (req, res, next) {
         npc.randomizeSkills();
         npc.randomizeEquipment();
         npc.randomizeSpells();
+        npc.randomizeLanguages();
 
         npc.calc(['features', 'attacks']);
 
@@ -127,11 +128,21 @@ router.post('/:id/randomize', checkAuth, function(req, res, next) {
                 changed.path = npc.path;
                 changed.level = npc.level;
                 break;
+            case 'race':
+                npc.randomizeRace();
+                changed = {race: npc.race};
+                break;
+            case 'gender':
+                npc.randomizeGender();
+                changed = {gender: npc.gender};
+                break;
             case 'name':
                 npc.randomizeName();
-                npc.randomizeGender();
-                // npc.randomizeAppearance
-                changed = {name: npc.name, gender: npc.gender};
+                changed = {name: npc.name};
+                break;
+            case 'alignment':
+                npc.randomizeAlignment();
+                changed = {alignment: npc.alignment};
                 break;
             case 'stats':
                 npc.randomizeStats();
@@ -144,16 +155,30 @@ router.post('/:id/randomize', checkAuth, function(req, res, next) {
                 break;
             case 'equipment':
                 npc.randomizeEquipment();
+                npc.calc('attacks');
                 var changed = npc.recalculate();
                 changed.armor = npc.armor;
                 changed.shield = npc.shield;
                 changed.weapons = npc.weapons;
-                npc.calc('attacks');
                 changed.attacks = npc.attacks;
                 break;
             case 'background':
                 npc.randomizeBackgroundStuff();
                 changed = {background: npc.background};
+                break;
+            case 'bg-speciality':
+            case 'bg-personality':
+            case 'bg-ideal':
+            case 'bg-bond':
+            case 'bg-flaw':
+                var part = req.query.type.substr(3);
+                npc.randomizeBackgroundStuff(part);
+                changed = {background: npc.background};
+                console.log(changed);
+                break;
+            case 'languages':
+                npc.randomizeLanguages();
+                changed = {languages: npc.languages};
                 break;
             case 'spells':
                 npc.randomizeSpells();

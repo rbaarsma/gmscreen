@@ -3,10 +3,7 @@
         <div class="panel-container col-md-4" ng-repeat="npc in npcs" ng-show="npc.in_panel">
             <npc-panel class="panel panel-primary">
                 <div class="panel-heading">
-                    <!--<button class="btn btn-xs btn-danger pull-right" ng-click="panelCtrl.toggleShow(npc)"><i class="glyphicon glyphicon-remove"></i></button>-->
-                    <!--<button ng-click="panelCtrl.randomizeAll()" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>-->
-                    <button ng-click="npcShowCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-fullscreen"></i></button>
-                    <button ng-click="npcEditCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-pencil"></i></button>
+                    <button ng-click="npcEditCtrl.show(npc);" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-fullscreen"></i></button>
                     <button ng-click="npc.in_panel = false; patch(npc, 'in_panel')" class="pull-right btn btn-xs"><i ng-class="{'glyphicon-minus': npc.in_panel, 'glyphicon-plus': !npc.in_panel}" class="glyphicon"></i></button>
                     <h3 class="panel-title"><img ng-model="npc._picture_id" ng-show="npc._picture_id" ng-src="/npcs/{{ npc._id }}/picture?{{ npc._picture_id }}"> {{ npc.name }}</h3>
                 </div>
@@ -20,12 +17,13 @@
 
                     <!-- tab content #overview -->
                     <div role="tabpanel" class="tab-pane" ng-show="tab == 'overview'">
+                        <h5><small>{{ npc.size }}</small> {{ npc.race.name }} <span ng-repeat="class in npc.classes">{{ class.name }} {{ class.level }}<span ng-if="!$last"> / </span></span></h5>
                         <div class="row">
                             <div class="col-md-6 col-lg-4" ><b>HP</b> {{ npc.hp}}</div>
                             <div class="col-md-6 col-lg-4" ><b>AC</b> {{ npc.ac}}</div>
                             <div class="col-md-6 col-lg-4" ><b>IT</b> {{ npc.it}}</div>
                             <div class="col-md-6 col-lg-4" ><b>Speed</b> {{ npc.race.speed }}</div>
-                            <div class="col-md-6 col-lg-8" ><b>Saves</b> <span style="padding-right: 5px;" ng-repeat="save in npc.saves" ng-show="NPCHelper.hasSave(npc, $index)">{{ npc.stats[$index].name }} {{ (npc.stats[$index].mod + npc.prof)|modifier }}</span></div>
+                            <div class="col-md-6 col-lg-8" ><b>Saves</b> <span style="padding-right: 5px;" ng-repeat="save in npc.saves">{{ npc.stats[save].name }} {{ (npc.stats[save].mod + npc.prof)|modifier }}</span></div>
 
                         </div>
                         <hr>
@@ -39,11 +37,11 @@
                         <hr>
                         <dl class="dl-horizontal form-group-tight">
                             <dt>Senses</dt>
-                            <dd>Passive Perception {{}}</dd>
+                            <dd>Passive Perception {{ NPCManager.passivePerception(npc)}}</dd>
                             <dt>Languages</dt>
-                            <dd><span ng-repeat="language in npc.languages">{{ language }}</span></dd>
+                            <dd>{{ npc.languages|join:', ' }}</dd>
                             <dt>CR</dt>
-                            <dd>x (x XP)</dd>
+                            <dd>{{ npc.cr < 1 && npc.cr > 0 ? '1/'+(1/npc.cr) : npc.cr }} (x XP)</dd>
                             <dt>Attacks</dt>
                             <dd><div ng-repeat="attack in npc.attacks"><b>{{ attack.name }}</b>: {{ attack.bonus|modifier }} {{ attack.damage }} ({{ attack.damage|dieaverage }})</div></dd>
                         </dl>

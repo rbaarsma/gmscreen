@@ -13,9 +13,15 @@ block content
                 npc-header
                     button(ng-click="toggleSide()").btn-primary
                         i.glyphicon.glyphicon-menu-hamburger
-                    button(ng-click="npc_new_visible = true") Create NPC
+                        span  Menu
+                    button(ng-click="npc_new_visible = true").btn-primary
+                        i.glyphicon.glyphicon-plus
+                        span  Create NPC
+                    button(ng-click="gm_settings_visible = true").btn-primary
+                        i.glyphicon.glyphicon-cog
+                        span  Settings
+                npc-panels
             npc-modals
-                npc-show(visible="npc_show_visible")
                 npc-edit(visible="npc_edit_visible")
                 npc-new(config="config", visible="npc_new_visible")
         progress(ng-hide="loaded == total_to_load",value="{{ loaded }}",max="{{ total_to_load }}")

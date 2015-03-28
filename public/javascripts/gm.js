@@ -8,14 +8,6 @@
 
         .service('NPCManager', ['$http', NPCManager])
 
-        .factory('NPCHelper', function () {
-            return {
-                'hasSave': function (npc, index) {
-                    return npc.saves.indexOf(index) > -1;
-                }
-            }
-        })
-
         // filter to show + sign expressively for things like modifiers
         .filter('modifier', function () {
             return function (input) {
@@ -59,13 +51,13 @@
         /**
          * Main Controller
          */
-        .controller('npcController', ['$http', '$scope', 'NPCManager', 'NPCHelper', function ($http, $scope, NPCManager, NPCHelper) {
+        .controller('npcController', ['$http', '$scope', 'NPCManager', function ($http, $scope, NPCManager) {
             var self = this;
+
+            $scope.NPCManager = NPCManager;
             
             self.loaded = 0;
             self.total_to_load = 3;
-
-            $scope.NPCHelper = NPCHelper;
 
             // load config
             $scope.config = {};
@@ -218,26 +210,10 @@
             }
         })
 
-        .directive('npcShow', function () {
-            return {
-                'templateUrl': 'partial/npc-show.html',
-                'controller': ['$http', '$scope', 'NPCManager', function ($http, $scope, NPCManager) {
-                    var self=this;
-
-                    this.show = function (npc) {
-                        console.log('showing');
-                        $scope.npc = npc;
-                        this.visible = true;
-                    }
-                }],
-                'controllerAs': 'npcShowCtrl'
-            }
-        })
-
          .directive('npcEdit', function () {
             return {
                 restrict: 'E',
-                templateUrl: 'partial/npc-edit.html',
+                templateUrl: 'partial/npc-modal.html',
                 controller: ['$upload', '$http', '$scope', 'NPCManager', function ($upload, $http, $scope, NPCManager) {
                     var self = this;
 
@@ -311,6 +287,19 @@
                         self.npcChange('skills');
                     };
 
+                    this.changeClass = function (index, name, cls) {
+                        var clsnames = [];
+                        for (var i=0; i<$scope.config.CLASSES.length; i++) {
+                            clsnames.push($scope.config.CLASSES[i].name);
+                        }
+
+                        $scope.npc.classes[index].index = clsnames.indexOf(name);
+                        $scope.npc.classes[index].path = '';
+                        $scope.npc.classes[index].fighting_style = '';
+
+                        this.npcChange('classes');
+                    }
+
                     this.addClass = function (npc) {
                         npc.classes.push({name: 'Barbarian', level: 1});
                         self.npcChange('classes');
@@ -383,6 +372,16 @@
                         $scope.npc = npc;
                         this.visible = true;
                     }
+
+                    // randomize/refresh specific section
+                    this.randomize = function (title) {
+                        NPCManager.randomize($scope.npc, title.toLowerCase())
+                            .success(function (data) {
+                                $scope.npc = angular.extend($scope.npc, data);
+                            })
+                        ;
+                    }
+
                 }],
                 'controllerAs': 'npcEditCtrl'
             }
@@ -408,13 +407,36 @@
                         if (index == -1) {
                             $scope.npc.closed_panels.push($scope.title);
                         } else {
-                            delete $scope.npc.closed_panels[index];
+                            $scope.npc.closed_panels.splice(index, 1);
                         }
                         NPCManager.patch($scope.npc, 'closed_panels');
                     }
 
+                    // toggle editing modus
+                    this.toggleEdit = function () {
+                        if (typeof $scope.npc.edit_panels == 'undefined') {
+                            $scope.npc.edit_panels = [];
+                        }
+
+                        var index = $scope.npc.edit_panels.indexOf($scope.title);
+                        if (index == -1) {
+                            $scope.npc.edit_panels.push($scope.title);
+                        } else {
+                            $scope.npc.edit_panels.splice(index, 1);
+                        }
+
+                        // also open panel for editing if it was closed
+                        var index = $scope.npc.closed_panels.indexOf($scope.title);
+                        if (index > -1) {
+                            $scope.npc.closed_panels.splice(index, 1);
+                            NPCManager.patch($scope.npc, 'edit_panels');
+                        }
+
+                        NPCManager.patch($scope.npc, 'edit_panels');
+                    }
+
                     // randomize/refresh specific section
-                    this.randomize = function () {
+                    this.randomize = function (section) {
                         NPCManager.randomize($scope.npc, $scope.title.toLowerCase())
                             .success(function (data) {
                                 $scope.npc = angular.extend($scope.npc, data);
@@ -426,7 +448,8 @@
                 template: '\
                     <div class="panel panel-primary">\
                         <div class="panel-heading">\
-                            <button ng-click="panelCtrl.toggleShow(npc)" class="pull-right btn btn-xs"><i ng-class="{\'glyphicon-minus\': npc.closed_panels.indexOf(title) > -1, \'glyphicon-plus\': npc.closed_panels.indexOf(title) == -1}" class="glyphicon"></i></button>\
+                            <button ng-click="panelCtrl.toggleShow(npc)" class="pull-right btn btn-xs"><i ng-class="{\'glyphicon-plus\': npc.closed_panels.indexOf(title) > -1, \'glyphicon-minus\': npc.closed_panels.indexOf(title) == -1}" class="glyphicon"></i></button>\
+                            <button ng-click="panelCtrl.toggleEdit(npc)" class="pull-right btn btn-xs"><i class="glyphicon"  ng-class="{\'glyphicon-search\': npc.edit_panels.indexOf(title) > -1, \'glyphicon-pencil\': npc.edit_panels.indexOf(title) == -1}"></i></button>\
                             <button ng-click="panelCtrl.randomize(npc)" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>\
                             {{ title }}\
                         </div>\

@@ -15,6 +15,7 @@
 @padding: 20px;
 @side-width: 250px;
 @side-width-min: 0;
+@panel-height: 380px;
 
 .form-group-tight {
   .row;
@@ -25,6 +26,11 @@
     padding-left: 2px !important;
     padding-right: 2px !important;
   }
+}
+
+.form-group-tight .form-control-static {
+  padding: 0;
+  padding-top: 3px;
 }
 
 hr {
@@ -62,7 +68,7 @@ npc-panel + npc-panel {
 
 npc-panel-body {
   display: block;
-  min-height: 350px;
+  min-height: @panel-height;
   padding: 0;
 }
 
@@ -73,7 +79,8 @@ npc-panel-body .nav li.active a, npc-panel-body .nav li.active a:active, npc-pan
 npc-panel-body .tab-pane {
   padding: 10px;
   background-color: @tab-background;
-  min-height: calc(350px-20px);
+  min-height: calc(@panel-height - 20px);
+
 }
 
 npc-side {
@@ -200,6 +207,16 @@ npc-panel-column {
   border: 1px dotted black;
   margin: 0 1em 1em 0;
   height: 50px;
+}
+
+.xs-remove, .xs-remove:visited, .xs-remove:active {
+  font-size: 80%;
+  color: red;
+  cursor: pointer;
+  margin-left: 1px;
+}
+.xs-remove:focus, .xs-remove:hover {
+  color: darkred;
 }
 
 /*
