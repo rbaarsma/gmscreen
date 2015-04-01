@@ -1,48 +1,48 @@
-<div class="modal" ng-show="visible">
+<div class="modal" ng-show="visible" ng-escape="visible = false;">
     <div class="modal-backdrop" ng-show="visible"></div>
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button ng-click="visible = false" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                <h4 class="modal-title">Modal title</h4>
+                <button tabindex="1000" ng-click="visible = false" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Randomize new NPC</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
                     <div class="form-group">
                         <label class="col-sm-3" for="npc-name">Name</label>
-                        <input class="col-sm-7" type="text" id="npc-name" ng-model="npc.name" placeholder="leave empty to randomize">
+                        <input tabindex="1001" class="col-sm-7" type="text" id="npc-name" ng-model="npc.name" placeholder="leave empty to randomize" focus-on="visible">
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3" for="npc-gender">Gender</label>
-                        <select class="col-sm-7" id="npc-gender" name="npc-gender" ng-model="npc.gender.name" ng-options="gn as gn for gn in ['male','female']">
+                        <select tabindex="1002" class="col-sm-7" id="npc-gender" name="npc-gender" ng-model="npc.gender" ng-options="gn as gn for gn in ['male','female']">
                             <option value="">Randomize</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3" for="npc-race">Race</label>
-                        <select class="col-sm-7" id="npc-race" name="npc-race" ng-model="npc.race.name" ng-options="rc.name as rc.name group by rc.race for rc in config.RACES">
+                        <select tabindex="1003" class="col-sm-7" id="npc-race" name="npc-race" ng-model="npc.race.name" ng-options="rc.name as rc.name group by rc.race for rc in config.RACES">
                             <option value="">Randomize</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3" for="npc-background">Background</label>
-                        <select class="col-sm-7" id="npc-background" name="npc-background" ng-model="npc.background.name" ng-options="bg.name as bg.name for bg in config.BACKGROUNDS">
+                        <select tabindex="1004" class="col-sm-7" id="npc-background" name="npc-background" ng-model="npc.background.name" ng-options="bg.name as bg.name for bg in config.BACKGROUNDS">
                             <option value="">Randomize</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3" for="npc-alignment">Alignment</label>
-                        <select class="col-sm-7" id="npc-alignment" name="npc-alignment" ng-model="npc.alignment" ng-options="al as al for al in config.ALIGNMENTS">
+                        <select tabindex="1005" class="col-sm-7" id="npc-alignment" name="npc-alignment" ng-model="npc.alignment" ng-options="al as al for al in config.ALIGNMENTS">
                             <option value="">Randomize</option>
                         </select>
                     </div>
                     <div ng-repeat="class in npc.classes">
                         <div class="form-group">
                             <label class="col-sm-3" for="npc-class{{ $index }}">Class</label>
-                            <select class="col-sm-4" id="npc-class{{ $index }}" name="npc-class{{ $index }}" ng-model="class.name" ng-options="cls.name as cls.name for cls in config.CLASSES">
+                            <select tabindex="1006" class="col-sm-4" id="npc-class{{ $index }}" name="npc-class{{ $index }}" ng-model="class.name" ng-options="cls.name as cls.name for cls in config.CLASSES">
                                 <option value="">Randomize</option>
                             </select>
-                            <select ng-model="class.level">
+                            <select tabindex="1007" ng-model="class.level">
                                 <option value="">randomize</option>
                                 <option value="1-4">lvl 1-4</option>
                                 <option value="5-9">lvl 5-9</option>
@@ -57,7 +57,7 @@
                     <div class="form-group">
                         <div class="col-sm-3"><label for="multiclass">Multiclass?</label></div>
                         <div class="col-sm-7">
-                            <input type="checkbox" ng-model="npc.multiclass" id="multiclass">
+                            <input tabindex="1008" type="checkbox" ng-model="npc.multiclass" id="multiclass">
 
                         </div>
                     </div>
@@ -65,8 +65,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="visible = false">Close</button>
-                <button type="button" class="btn btn-primary" ng-click="npcNewCtrl.generate()">Generate</button>
+                <button tabindex="1010" type="button" class="btn btn-default" data-dismiss="modal" ng-click="visible = false">Close</button>
+                <button tabindex="1009" type="button" class="btn btn-primary" ng-click="npcNewCtrl.generate()">Generate</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

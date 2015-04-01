@@ -72,10 +72,13 @@ var NPCManager = function ($http) {
     this.patch = function (npc, key) {
         console.log('to patch: ' + npc._id + ' key: ' + key);
         self.to_patch[npc._id] = self.to_patch[npc._id] || {};
+        console.log(self.to_patch);
         self.to_patch[npc._id][key] = npc[key];
+        console.log(self.to_patch);
 
-        if (self.timeout != null)
+        if (self.timeout != null) {
             window.clearTimeout(self.timeout);
+        }
 
         self.timeout = window.setTimeout(function () {
             console.log('patching');

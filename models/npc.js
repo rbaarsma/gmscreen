@@ -117,7 +117,6 @@ var NPCSchema = new mongoose.Schema({
     tags: [String],
     prof: Number, // proficiency bonus
     name: String,
-    in_panel: Boolean,
     stats: [StatSchema],
     saves: [{ type:Number, min: 0, max: 5}],
     editing: [String],
@@ -138,7 +137,9 @@ var NPCSchema = new mongoose.Schema({
     gender: String,
     // ui options
     closed_panels: [String],
-    edit_panels: [String]
+    edit_panels: [String],
+    in_panel: Boolean,
+    editing: Boolean
 });
 
 /**
@@ -159,9 +160,13 @@ NPCSchema.methods.calc = function (props) {
         switch (props[_i]) {
             case 'fighting_style':
                 // just check wether to remove fighting style when the feature does not exist
-                var features = this.calced('features');
-                if (!features.contains('Fighting Style')) {
-                    this.fighting_style = '';
+                for (var i=0; i<this.classes.length; i++) {
+                    var n = this.classes[i].name,
+                        l = this.classes[i].level;
+                    if (!(n == 'Fighter') && !(n=='Ranger'&&l>=2) && !(n=='Paladin'&&l>=2)) {
+                        this.classes[i].fighting_style = '';
+                        console.log(this.classes);
+                    }
                 }
 
                 break;
@@ -185,12 +190,12 @@ NPCSchema.methods.calc = function (props) {
                 var attacks = [],
                     stats = this.calced('stats');
 
-                var attack = {name: this.hands[0].name, no: 1, special: '',extra_dmg:''};
-
                 // backwards compatible..
                 if (!this.hands || this.hands.length == 0) {
                     this.randomizeEquipment();
                 }
+
+                var attack = {name: this.hands[0].name, no: 1, special: '',extra_dmg:''};
 
                 //console.log('---- hands ----');
                 //console.log(this.hands);
@@ -375,13 +380,24 @@ NPCSchema.methods.calc = function (props) {
                 // adjust defensive cr by ac for every 2 points of difference
                 var cr_ac= [13,13,13,13,14,15,15,15,16,16,17,17,17,18,18,18,19];
                 var defcr_ac = defcr < cr_ac.length ? cr_ac[Math.floor(defcr)] : 19;
-                var diff = Math.floor((defcr_ac-this.ac) /2);
+                var diff = defcr_ac-this.ac;
+                diff = diff < 0 ? -(Math.floor(-diff/2)) : Math.floor(diff/2);
                 defcr -= diff;
+
+                if (!this.attacks || !this.attacks[0]) {
+                    this.calc('attacks');
+                }
+
 
                 // get offensive CR
                 // first get attack with highest damage output
                 var dmg = 0,
                     atk = this.attacks[0];
+                console.log(atk);
+
+                console.log(atk.damage);
+                console.log(atk.extra_dmg);
+
                 for (var i=0; i<this.attacks.length; i++) {
                     var tmp_atk = this.attacks[i];
                     tmp_atk.avgdmg = 0;
@@ -399,6 +415,8 @@ NPCSchema.methods.calc = function (props) {
                 }
                 delete tmp_atk;
 
+                console.log(atk.avgdmg);
+
                 var offcr = 0;
                 if (atk.avgdmg <= 1) {
                     offcr = 0;
@@ -409,41 +427,90 @@ NPCSchema.methods.calc = function (props) {
                 } else if (atk.avgdmg <= 8) {
                     offcr = 1/2;
                 } else if (atk.avgdmg <= 122) {
+                    console.log('test');
                     offcr = Math.floor((atk.avgdmg-9) / 6) + 1;
                 } else {
                     offcr = Math.floor((atk.avgdmg-123) / 18) + 20;
                 }
+
+                console.log(offcr);
 
                 // TODO: for a monk 1 / sorcerer 15, this would still determine it is a melee class..
                 var caster_levels = 0,
                     highest_dc = 0;
                 for (var i=0; i<this.classes.length; i++) {
                     var n = this.classes[i].name;
-                    if (n == 'Bard' || n == 'Cleric' || n == 'Druid' || n == 'Sorcerer' || n == 'Wizard') {
+                    if (n == 'Bard' || n == 'Cleric' || n == 'Druid' || n == 'Sorcerer' || n == 'Wizard' || n == 'Warlock') {
                         caster_levels +=this.classes[i].level;
-                        if (highest_dc < this.classes[i].spelldc)
-                            highest_dc = this.classes[i].spelldc;
+
+                        var tmp_highest_dc = this.classes[i].spelldc;
+                        if (n == 'Warlock') {
+                            tmp_highest_dc += this.calced('config').classes[i].spell_max_level[this.classes[i].level];
+                        } else {
+                            tmp_highest_dc += this.spells_day.length
+                        }
+
+                        if (tmp_highest_dc > highest_dc) {
+                            highest_dc = tmp_highest_dc;
+                        }
+
                     }
                 }
 
                 // determine spellcaster by having at least 3 times the amount of levels in spellcaster classes.
                 if (caster_levels / 3 >= this.calced('level')-caster_levels) {
                     // adjust offensive CR for casters by spell DC
-                    highest_dc += this.spells_day.length;  // dcs from class are always without spell, so add the highest spell level
+
+                    ;  // dcs from class are always without spell, so add the highest spell level
 
                     var cr_dc = [13,13,13,13,14,15,15,15,16,16,16,17,17,18,18,18,18,19,19,19,19,20,20,20,21,21,21,22,22,22,23];
+                    console.log(Math.floor(offcr));
+                    console.log(cr_dc[0]);
                     var offcr_dc = cr_dc[Math.floor(offcr)];
+                    console.log(highest_dc);
+                    console.log(offcr_dc);
                     var diff = Math.floor((offcr_dc - highest_dc) / 2);
+
+                    console.log(diff);
+                    // non-rules addition: highest spell level also determines cr
+                    var offcr_spellcr = (this.spells_day.length * 2) - 1; // so level 5 spells is cr 9
+                    diff -= Math.floor((offcr_spellcr - offcr)/2);
+                    console.log(diff);
+
                 } else {
                     // adjust offensive CR for non-casters by attack bonus
                     var cr_atk = [3, 3, 3, 4, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 8, 8, 9, 10, 10, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 14];
                     var offcr_atk = cr_atk[Math.floor(offcr)];
-                    var diff = Math.floor((offcr_atk - atk.bonus) / 2);
+                    var diff = (offcr_atk - atk.bonus);
+                    diff = diff < 0 ? -(Math.floor(-diff/2)) : Math.floor(diff/2);
                 }
                 offcr -= diff;
 
+                console.log(defcr);
+                console.log(offcr);
+
                 // now determine average cr;
-                this.cr = Math.round((defcr+offcr)/2);
+                this.cr = ((defcr+offcr)/2);
+
+                // for cr's of 1/2, 1/4 and 1/8 make sure the average is also one of these or 0.
+                if (this.cr < 1) {
+                    var tmpcr = Math.round(this.cr * 8);
+                    if (tmpcr > 6) {
+                        this.cr = 1;
+                    } else if (tmpcr >= 3) {
+                        this.cr = 1/2;
+                    } else if (tmpcr >= 2) {
+                        this.cr = 1/4;
+                    } else if (tmpcr >= 1) {
+                        this.cr = 1/8
+                    } else {
+                        this.cr = 0;
+                    }
+
+                } else {
+                    this.cr = Math.round(this.cr);
+                }
+                console.log(this.cr);
                 break;
 
             // get all the class stuff at once
@@ -619,11 +686,13 @@ NPCSchema.methods.recalculate = function () {
             }
             if (changed === false) {
                 delete b[prop];
+            } else {
+                b[prop] = this[prop];
             }
-        }
-
-        if (b[prop] == this[prop]) {
+        } else if (b[prop] == this[prop]) {
             delete b[prop];
+        } else {
+            b[prop] = this[prop];
         }
     }
 
@@ -787,13 +856,13 @@ NPCSchema.methods.randomizeSpells = function () {
             spells_day = [];
 
         if (n == 'Bard' || n == 'Cleric' || n == 'Druid' || n == 'Sorcerer' || n == 'Wizard') {
-            spells_day = DND.spells_day_full[lvl];
+            spells_day = DND.spells_day_full[lvl-1];
             maxhighest = lvl/2 == Math.floor(lvl/2) ? 4 : 2;
             total_spells = stats[clsconfig.spellstat].mod + lvl;
         } else if ((n == 'Paladin' && lvl > 1)|| (n == 'Ranger' && lvl > 1) || (n == 'Fighter' && p == 'Eldritch Knight' && lvl > 2) || (n == 'Rogue' && p == 'Arcane Trickster' && lvl > 2)) {
             maxhighest = 2 + (((lvl - 1) % 4) * 2);
             total_spells = stats[clsconfig.spellstat].mod + Math.floor(lvl / 2);
-            spells_day = DND.spells_day_half[lvl];
+            spells_day = DND.spells_day_half[lvl-1];
         } else if (n == 'Warlock') {
             maxhighest = lvl/2 == Math.floor(lvl/2) ? 4 : 2; // we could go higher.. but 4 is already ALL level 5 spells..
         } else {
@@ -810,15 +879,16 @@ NPCSchema.methods.randomizeSpells = function () {
 
         var choices = JSON.parse(JSON.stringify(clsconfig.spells)); // note: using JSON trick to deep-copy array.
         choices = choices.splice(1); // remove cantrips
-        //console.log(choices);
+
+        var highest_spell_level = n=='Warlock' ? clsconfig.spell_slots[lvl] : spells_day.length;
 
         for (var j=0; j<total_spells; j++) {
             // warlock is the only caster that has a different system
-            var highest_spell_level = n=='Warlock' ? clsconfig.spell_slots[lvl] : spells_day.length;
 
             //console.log(choices);
             if (j < maxhighest) {
-                this.classes[i].spells.push(choices[highest_spell_level-1].splice(Math.floor(Math.random() * choices[highest_spell_level-1].length), 1));
+                var choice = choices[highest_spell_level-1].splice(Math.floor(Math.random() * choices[highest_spell_level-1].length), 1);
+                this.classes[i].spells.push(choice);
             } else {
                 var max = highest_spell_level - 2;
                 if (max < 0) { max = 0; }
@@ -1246,12 +1316,13 @@ NPCSchema.methods.randomizeEquipment = function () {
     var fighting_style = null;
     var martial_arts = false;
     for (var i=0; i<this.classes.length; i++) {
-        if (this.classes[i].fighting_style != '') {
-            fighting_style = this.classes[i].fighting_style;
-            break;
-        }
         if (this.classes[i].name == 'Monk') {
             martial_arts = true;
+        }
+        if (this.classes[i].fighting_style != '') {
+            fighting_style = this.classes[i].fighting_style;
+            console.log(fighting_style);
+            break;
         }
     }
 
@@ -1272,14 +1343,19 @@ NPCSchema.methods.randomizeEquipment = function () {
             // add archery when dex >= str
             if (stats[1].mod >= stats[0].mod) {
                 choices.push('Archery');
+                choices.push('Two-Weapon Fighting');
             }
             if (martial_arts) {
                 choices.push('Unarmed');
             }
 
             fighting_style = choices.random();
+
         }
     }
+
+    console.log('fighting_style: ');
+    console.log(fighting_style);
 
     var finesse_weapons = [];
     for (var j=0; j<m1hmelee.length; j++) {
@@ -1352,7 +1428,12 @@ NPCSchema.methods.randomizeEquipment = function () {
             this.weapons.push(weapon)
             break;
         case 'Protection':
-            var index = m1hmelee.random();
+            if (stats[0].mod >= stats[1].mod) {
+                var index = non_finesse.random();
+            } else {
+                var index = finesse_weapons.random();
+            }
+
             this.hands.push(DND.WEAPONS[index]);
             //this.hands.push({'name': 'Shield','props':[]});
             this.weapons.push(DND.WEAPONS[index]);
@@ -1368,7 +1449,7 @@ NPCSchema.methods.randomizeEquipment = function () {
         case 'Two-Weapon Fighting':
             this.shield = {name: '-', ac: 0}; // reset shield
 
-            if (stats[0].mod >= stats[1].mod) {
+            if (stats[1].mod >= stats[0].mod) {
                 // 10% chance on dual-wielding two hand crossbows
                 if (Math.random() < .1) {
                     this.weapons.push(DND.WEAPONS[34]);
@@ -1383,6 +1464,7 @@ NPCSchema.methods.randomizeEquipment = function () {
                 weaps = non_finesse;
             }
 
+            console.log(weaps);
 
             var light_weapons = [];
             for (var j=0; j<weaps.length; j++) {
@@ -1390,10 +1472,12 @@ NPCSchema.methods.randomizeEquipment = function () {
                     light_weapons.push(weaps[j]);
                 }
             }
-            var index = m1hmelee.random();
+            console.log(light_weapons);
+
+            var index = weaps.random();
             this.weapons.push(DND.WEAPONS[index]);
             this.hands.push(DND.WEAPONS[index]);
-            if (Math.random() < .3) { // 30% chance to have the same weapon in both hands
+            if (Math.random() < .3 && light_weapons.length > 0) { // 30% chance to have the same weapon in both hands
                 var index = light_weapons.random();
             }
             this.weapons.push(DND.WEAPONS[index]);
@@ -1443,6 +1527,8 @@ NPCSchema.methods.randomizeEquipment = function () {
         }
         this.weapons.push(DND.WEAPONS[index]);
     }
+
+    console.log(this.weapons);
 }
 
 module.exports = mongoose.model('NPC', NPCSchema);

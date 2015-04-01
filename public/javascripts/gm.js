@@ -48,6 +48,56 @@
             }
         })
 
+        /*
+         This directive allows us to pass a function in on an enter key to do what we want.
+         */
+        .directive('ngEnter', function () {
+            return function (scope, element, attrs) {
+                element.bind("keydown keypress", function (event) {
+                    if(event.which === 13) {
+                        scope.$apply(function (){
+                            scope.$eval(attrs.ngEnter);
+                        });
+
+                        event.preventDefault();
+                    }
+                });
+            };
+        })
+
+        .directive("ngEscape", function() {
+            return function(scope, element, attrs) {
+                var target = angular.element(window);
+                if (element.nodeName == 'INPUT') {
+                    target = element;
+                }
+
+                element.bind("keydown keypress", function (event) {
+                    if(event.which === 27) {
+                        scope.$apply(function (){
+                            scope.$eval(attrs.ngEscape);
+                        });
+
+                        event.preventDefault();
+                    }
+                });
+            };
+        })
+
+        .directive('focusOn',function($timeout) {
+            return {
+                restrict : 'A',
+                link : function($scope,$element,$attr) {
+                    $scope.$watch($attr.focusOn,function(_focusVal) {
+                        $timeout(function() {
+                            _focusVal ? $element[0].focus() :
+                                $element[0].blur();
+                        });
+                    });
+                }
+            }
+        })
+
         /**
          * Main Controller
          */
@@ -81,7 +131,6 @@
             ;
 
             $scope.npcs = NPCManager.get();
-            console.log($scope.npcs);
 
             // toggle side menu
             $scope.toggleSide = function () {
@@ -95,26 +144,30 @@
             $scope.log = function (msg) {
                 console.log(msg);
             }
+
+            $scope.addToPanel = function (npc) {
+                $scope.panels.add('npc', npc);
+            }
         }])
 
         .directive('npcSide', function () {
             return {
                 restrict: 'E',
-                scope: {
-                    'npcs': '=',
-                    'user': '='
-                },
                 templateUrl: 'partial/side.html',
                 controller: ['$scope', 'NPCManager', function ($scope, NPCManager) {
                     this.search = '';
 
-                    this.addToPanel = function (npc) {
-                        npc.in_panel = true;
-                        NPCManager.patch(npc, 'in_panel');
-                    }
-
                     this.remove = function (index) {
                         NPCManager.remove(index);
+                    }
+
+                    // add
+                    $scope.addFirstSearchResultToPanel = function () {
+                        for (var i=0; i<$scope.npcs.length; i++) {
+                            if ($scope.npcs[i].filtered == true) {
+                                $scope.panels.add('npc', $scope.npcs[i]);
+                            }
+                        }
                     }
 
                     /**
@@ -130,7 +183,7 @@
                         search:
                         for (var i=0; i<$scope.npcs.length; i++) {
                             if ($scope.npcs[i].name.toLowerCase().indexOf(newVal) > -1) {
-                                $scope.npcs[i].panel.filtered = true;
+                                $scope.npcs[i].filtered = true;
                                 continue;
                             }
 
@@ -138,12 +191,12 @@
                             var tags = $scope.npcs[i].tags;
                             for (var j=0; j<tags.length; j++) {
                                 if (tags[j] == newVal) {
-                                    $scope.npcs[i].panel.filtered = true;
+                                    $scope.npcs[i].filtered = true;
                                     continue search;
                                 }
                             }
 
-                            $scope.npcs[i].panel.filtered = false;
+                            $scope.npcs[i].filtered = false;
                         }
                     });
                 }],
@@ -151,18 +204,67 @@
             }
         })
 
-        .directive('npcPanels', function () {
+        /*
+         * An attempt to seperate panel logic in it's own controller
+         */
+        .directive('gmPanels', function () {
             return {
                 restrict: 'E',
-                /*
-                require: ['^npcShowCtrl'],
-                scope: {
-                    npcs: '='
-                },
-                */
-                templateUrl: 'partial/panels.html'
+                templateUrl: 'partial/panels.html',
+                controller: ['$scope', 'NPCManager', function ($scope, NPCManager) {
+                    $scope.panels = [];
+                    $scope.panels.add = function (type, obj) {
+                        // check if already in panels
+                        for (var i=0; i<$scope.panels.length; i++) {
+                            console.log($scope.panels[i].obj._id, obj._id);
+                            if ($scope.panels[i].obj._id == obj._id) {
+                                return false;
+                            }
+                        }
+
+                        // otherwise add it
+                        $scope.panels.push({
+                            obj: obj,
+                            type: type
+                        });
+
+                        // TODO: when it's not only about NPCs, this should change..
+                        obj.in_panel = true;
+                        NPCManager.patch(obj, 'in_panel');
+                    }
+
+                    $scope.panels.remove = function (index) {
+                        $scope.panels[index].obj.in_panel = false;
+                        NPCManager.patch($scope.panels[index].obj, 'in_panel');
+                        $scope.panels.splice(index, 1);
+                    }
+
+                    // TODO: is this also the best performant? Maybe more logical is that the NPCCollection has a success method that adds the panels.
+                    // initially load panels from npc that have in_panel=true
+                    var unbindWatcher = $scope.$watchCollection('npcs', function (newval) {
+                        if (newval.length > 0) {
+                            for (var i=0; i<newval.length; i++) {
+                                if (newval[i].in_panel) {
+                                    $scope.panels.add('npc', newval[i]);
+                                }
+                            }
+                            unbindWatcher();
+                        }
+                    });
+
+                    console.log('test');
+                }],
+                controllerAlias: 'panelCtrl'
             }
         })
+
+        .directive('npcPanel', function () {
+            return {
+                restrict: 'E',
+                templateUrl: 'partial/npc-panel.html'
+            }
+        })
+
 
         /*
         .directive('npcItem', function () {
@@ -190,15 +292,16 @@
                     'config': '='
                 },
                 'controller': ['$http', '$scope', 'NPCManager', function ($http, $scope, NPCManager) {
-                    this.show = false;
+                    $scope.$watch('visible', function (newval) {
+                        if (newval === true) {
 
-                    console.log($scope.visible);
+                        }
+                    })
 
                     $scope.npc = {
                         classes: [{name: '', level: ''}],
                         multiclass: true,
                         in_panel: true,
-                        maximized: true
                     };
 
                     this.generate = function () {
@@ -220,6 +323,7 @@
                     this.npcChange = function (key) {
                         if (typeof $scope.npc[key] == 'undefined')
                             throw Error('key '+key+' is not in $scope.npc: '+$scope.npc);
+                        $scope.npcs[$scope.npc.index] = $scope.npc;
                         NPCManager.patch($scope.npc, key);
                     }
 
@@ -278,9 +382,10 @@
 
                     this.changeSkill = function (npc) {
                         for (var i = 0; i < npc.skills.length; i++) {
-                            for (var j = 0; j < config.SKILLS.length; j++) {
-                                if (npc.skills[i].name == config.SKILLS[j].name) {
-                                    npc.skills[i].stat = config.SKILLS[j].stat;
+                            for (var j = 0; j < $scope.config.SKILLS.length; j++) {
+                                if (npc.skills[i].name == $scope.config.SKILLS[j].name) {
+                                    npc.skills[i].stat = $scope.config.SKILLS[j].stat;
+                                    npc.skills[i].mod = npc.stats[npc.skills[i].stat].mod + npc.prof;
                                 }
                             }
                         }
@@ -334,24 +439,6 @@
                         self.npcChange('stats');
                     };
 
-                    this.toggleMaximize = function () {
-                        $scope.npc.panel.maximized = !$scope.npc.panel.maximized;
-                        self.npcChange('panel');
-                    };
-
-                    this.toggleShow = function () {
-                        $scope.npc.panel.show = !$scope.npc.panel.show;
-                        self.npcChange('panel');
-                    };
-
-                    this.toggleEdit = function () {
-                        $scope.npc.panel.edit = !$scope.npc.panel.edit;
-                        for (var i=0; i<$scope.npc.panel.sections.length; i++) {
-                            $scope.npc.panel.sections[i].edit = $scope.npc.panel.edit;
-                        }
-                        self.npcChange('panel');
-                    };
-
                     this.toggleLocked = function (type) {
                         var k = $.inArray(type, $scope.npc.unlocked);
                         if (k > -1) {
@@ -368,8 +455,9 @@
                         return $.inArray(type, $scope.npc.unlocked) == -1;
                     }
 
-                    this.show = function (npc) {
+                    this.show = function (npc, index) {
                         $scope.npc = npc;
+                        $scope.npc.index = index;
                         this.visible = true;
                     }
 
@@ -380,6 +468,11 @@
                                 $scope.npc = angular.extend($scope.npc, data);
                             })
                         ;
+                    }
+
+                    this.isEditing = function (npc, title) {
+                        if (npc)
+                            return npc.edit_panels.indexOf(title) == -1;
                     }
 
                 }],
@@ -397,7 +490,7 @@
                     'npc': '='
                 },
                 controller: ['$scope', 'NPCManager', function ($scope, NPCManager) {
-                    // show or hide panel body (and save in npc.panel.sections)
+                    // show or hide panel body (and save)
                     this.toggleShow = function () {
                         if (typeof $scope.npc.closed_panels == 'undefined') {
                             $scope.npc.closed_panels = [];
@@ -449,7 +542,7 @@
                     <div class="panel panel-primary">\
                         <div class="panel-heading">\
                             <button ng-click="panelCtrl.toggleShow(npc)" class="pull-right btn btn-xs"><i ng-class="{\'glyphicon-plus\': npc.closed_panels.indexOf(title) > -1, \'glyphicon-minus\': npc.closed_panels.indexOf(title) == -1}" class="glyphicon"></i></button>\
-                            <button ng-click="panelCtrl.toggleEdit(npc)" class="pull-right btn btn-xs"><i class="glyphicon"  ng-class="{\'glyphicon-search\': npc.edit_panels.indexOf(title) > -1, \'glyphicon-pencil\': npc.edit_panels.indexOf(title) == -1}"></i></button>\
+                            <button ng-click="panelCtrl.toggleEdit(npc)" class="pull-right btn btn-xs"><i class="glyphicon"  ng-class="{\'glyphicon-search\': npc.edit_panels.indexOf(title) == -1, \'glyphicon-pencil\': npc.edit_panels.indexOf(title) > -1}"></i></button>\
                             <button ng-click="panelCtrl.randomize(npc)" class="pull-right btn btn-xs"><i class="glyphicon glyphicon-repeat"></i></button>\
                             {{ title }}\
                         </div>\

@@ -11,4 +11,12 @@ router.get('/', function(req, res, next) {
     })
 });
 
+router.get('/:name', function(req, res, next) {
+    Spell.findOne({name: req.params.name}, function (err, spell) {
+        if (err) return next(err);
+        res.json(spell);
+    })
+});
+
+
 module.exports = router;

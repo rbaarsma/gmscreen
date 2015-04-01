@@ -8,19 +8,19 @@ block head
 block content
     npc-container(ng-controller="npcController" ng-class="{'collapsed': user.side_collapsed}")
         div(ng-show="loaded == total_to_load")
-            npc-side(npcs="npcs", user="user")
+            npc-side(npcs="npcs", user="user", addToPanel="addToPanel(npc)")
             npc-main
                 npc-header
-                    button(ng-click="toggleSide()").btn-primary
+                    button(ng-click="toggleSide()",tabindex=2).btn-primary
                         i.glyphicon.glyphicon-menu-hamburger
                         span  Menu
-                    button(ng-click="npc_new_visible = true").btn-primary
+                    button(ng-click="npc_new_visible = true",tabindex=3).btn-primary
                         i.glyphicon.glyphicon-plus
                         span  Create NPC
-                    button(ng-click="gm_settings_visible = true").btn-primary
+                    button(ng-click="gm_settings_visible = true",tabindex=4).btn-primary
                         i.glyphicon.glyphicon-cog
                         span  Settings
-                npc-panels
+                gm-panels
             npc-modals
                 npc-edit(visible="npc_edit_visible")
                 npc-new(config="config", visible="npc_new_visible")

@@ -1,8 +1,12 @@
-<input class="form-control" ng-model="sideCtrl.search" placeholder="Search..">
+<input class="form-control" ng-model="sideCtrl.search" placeholder="Search.." ng-enter="addFirstSearchResultToPanel()" autofocus tabindex="1" ng-escape="sideCtrl.search = '';">
 <npc-item ng-repeat="npc in npcs">
-    <div ng-show="npc.panel.filtered || !sideCtrl.search">
-        {{ npc.name }}
-        <button class="btn-success btn-xs" ng-click="sideCtrl.addToPanel(npc)"><i class="glyphicon glyphicon-plus-sign"></i></button>
-        <button onclick="return confirm('Are you sure you want to permanently delete this NPC?');" class="btn-danger btn-xs" ng-click="sideCtrl.remove($index)"><i class="glyphicon glyphicon-remove"></i></button>
+    <div class="npc-item-container" ng-show="npc.filtered || !sideCtrl.search">
+        <div class="npc-item-text">
+            {{ npc.name }}
+        </div>
+        <div class="npc-item-buttons">
+            <button class="btn-success btn-xs" ng-click="addToPanel(npc)"><i class="glyphicon glyphicon-plus-sign"></i></button>
+            <button onclick="return confirm('Are you sure you want to permanently delete this NPC?');" class="btn-danger btn-xs" ng-click="sideCtrl.remove($index)"><i class="glyphicon glyphicon-remove"></i></button>
+        </div>
     </div>
 </npc-item>

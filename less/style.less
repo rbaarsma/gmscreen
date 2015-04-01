@@ -53,7 +53,7 @@ npc-container {
   padding-left: @side-width;
 }
 
-npc-panels {
+gm-panels {
   display: block;
   position: relative;
   padding: 20px;
@@ -236,4 +236,21 @@ npc-panel-column {
 }
 .autocomplete ul {
   padding:0;
+}
+
+.npc-item-container {
+  border-bottom: 1px solid #a5a5a5;
+  width:100%;
+  padding: 3px 0;
+  position: relative;
+}
+.npc-item-text {
+  overflow:hidden;width:100%; height: 1.5em;
+}
+.npc-item-buttons {
+  position:absolute; top: 2px; right: 0; width: 3.85em; height: 1.6em;
+}
+
+select:focus {
+border: 1px solid #ddd;
 }

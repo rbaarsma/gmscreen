@@ -1,9 +1,9 @@
-<div class="modal modal-overflow" ng-show="npcEditCtrl.visible" ng-init="npcEditCtrl.visible = false">
+<div class="modal modal-overflow" ng-show="npcEditCtrl.visible" ng-init="npcEditCtrl.visible = false" ng-escape="npcEditCtrl.visible = false">
     <div class="modal-backdrop" ng-show="npcEditCtrl.visible"></div>
     <div class="modal-dialog modal-dialog-wide">
         <div class="modal-content">
             <div class="modal-header">
-                <button ng-click="npcEditCtrl.visible = false" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <button focus-on="npcEditCtrl.visible" ng-click="npcEditCtrl.visible = false" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                 <h4 class="modal-title">{{ npc.name }}</h4>
             </div>
             <div class="modal-body">
@@ -11,7 +11,7 @@
                     <div class="col-md-3">
                         <panel npc="npc" title="Image">
                             <div class="form-group">
-                                <input ng-show="npc.edit_panels.indexOf('Image') > -1" type="file" ng-file-select ng-file-change="npcEditCtrl.onFileSelect(npc, $files);" accept="image/png, image/jpeg, image/gif">
+                                <input ng-show="npcEditCtrl.isEditing(npc, 'Image')" type="file" ng-file-select ng-file-change="npcEditCtrl.onFileSelect(npc, $files);" accept="image/png, image/jpeg, image/gif">
                                 <img class="img-responsive" ng-model="npc._picture_id" ng-show="npc._picture_id" ng-src="/npcs/{{ npc._id }}/picture?{{ npc._picture_id }}">
                             </div>
                         </panel>
@@ -26,12 +26,12 @@
                                 <tr ng-repeat="stat in npc.stats">
                                     <td>{{ stat.name }}</td>
                                     <td>
-                                        <input ng-show="npc.edit_panels.indexOf('Stats') > -1" class="form-control" type="number" min="1" max="30" ng-change="npcEditCtrl.changeStat(npc, stat)" ng-model="npc.stats[$index].stat">
-                                        <span  ng-hide="npc.edit_panels.indexOf('Stats') > -1">{{ stat.stat }}</span>
+                                        <input ng-show="npcEditCtrl.isEditing(npc, 'Stats')" class="form-control" type="number" min="1" max="30" ng-change="npcEditCtrl.changeStat(npc, stat)" ng-model="npc.stats[$index].stat">
+                                        <span  ng-hide="npcEditCtrl.isEditing(npc, 'Stats')">{{ stat.stat }}</span>
                                     </td>
                                     <td>({{ stat.mod|modifier }})</td>
                                     <td>
-                                        <button ng-show="npc.edit_panels.indexOf('Stats') > -1" class='btn btn-xs' ng-click="npcEditCtrl.toggleSave(npc, $index)"><i class="glyphicon {{ npcEditCtrl.hasSave(npc, $index) ? 'glyphicon-star' : 'glyphicon-star-empty' }}"></i></button>
+                                        <button ng-show="npcEditCtrl.isEditing(npc, 'Stats')" class='btn btn-xs' ng-click="npcEditCtrl.toggleSave(npc, $index)"><i class="glyphicon {{ npcEditCtrl.hasSave(npc, $index) ? 'glyphicon-star' : 'glyphicon-star-empty' }}"></i></button>
                                         {{ (stat.mod + (npcEditCtrl.hasSave(npc, $index) ? npc.prof : 0))|modifier }}
                                     </td>
 
@@ -39,7 +39,7 @@
                             </table>
                         </panel>
                         <panel npc="npc" title="Attacks">
-                            <div ng-show="npc.edit_panels.indexOf('Attacks') == -1">
+                            <div ng-show="!npcEditCtrl.isEditing(npc, 'Attacks')">
 
                                 <div ng-repeat="attack in npc.attacks">
                                     <h5 ng-if="$index == 0">Main Attack ({{ attack.type }})</h5>
@@ -50,7 +50,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div ng-show="npc.edit_panels.indexOf('Attacks') > -1">
+                            <div ng-show="npcEditCtrl.isEditing(npc, 'Attacks')">
                                 <div ng-repeat="attack in npc.attacks">
                                     <button class="pull-right btn btn-xs btn-danger" ng-click="npcEditCtrl.removeClass(npc, $index)"><i class="glyphicon glyphicon-remove"></i></button>
                                     <h5>Attack #{{$index+1}}</h5>
@@ -78,34 +78,34 @@
                             <div class="form-group-tight">
                                 <label class="col-sm-5 control-label" for="hp">HP</label>
                                 <div class="col-sm-6">
-                                    <input ng-show="npc.edit_panels.indexOf('Calculated') > -1" class="form-control" id="hp" type="number" ng-disabled="npcEditCtrl.isLocked('hp')" ng-model="npc.hp" ng-change="npcEditCtrl.npcChange('hp')">
-                                    <span ng-hide="npc.edit_panels.indexOf('Calculated') > -1">{{ npc.hp }}</span>
+                                    <input ng-show="npcEditCtrl.isEditing(npc, 'Calculated')" class="form-control" id="hp" type="number" ng-disabled="npcEditCtrl.isLocked('hp')" ng-model="npc.hp" ng-change="npcEditCtrl.npcChange('hp')">
+                                    <span ng-hide="npcEditCtrl.isEditing(npc, 'Calculated')">{{ npc.hp }}</span>
                                 </div>
-                                <button ng-show="npc.edit_panels.indexOf('Calculated') > -1" class="col-sm-1 btn btn-xs {{ npcEditCtrl.isLocked('hp') ? 'btn-warning' : 'btn-default'}}" ng-click="npcEditCtrl.toggleLocked('hp')"><i class="glyphicon glyphicon-lock"></i></button>
+                                <button ng-show="npcEditCtrl.isEditing(npc, 'Calculated')" class="col-sm-1 btn btn-xs {{ npcEditCtrl.isLocked('hp') ? 'btn-warning' : 'btn-default'}}" ng-click="npcEditCtrl.toggleLocked('hp')"><i class="glyphicon glyphicon-lock"></i></button>
                             </div>
                             <div class="form-group-tight">
                                 <label class="col-sm-5 control-label" for="ac">AC</label>
                                 <div class="col-sm-6">
-                                    <input ng-show="npc.edit_panels.indexOf('Calculated') > -1" class="form-control" id="ac" type="number" ng-disabled="npcEditCtrl.isLocked('ac')" ng-model="npc.ac" ng-change="npcEditCtrl.npcChange('ac')">
-                                    <span ng-hide="npc.edit_panels.indexOf('Calculated') > -1">{{ npc.ac }}</span>
+                                    <input ng-show="npcEditCtrl.isEditing(npc, 'Calculated')" class="form-control" id="ac" type="number" ng-disabled="npcEditCtrl.isLocked('ac')" ng-model="npc.ac" ng-change="npcEditCtrl.npcChange('ac')">
+                                    <span ng-hide="npcEditCtrl.isEditing(npc, 'Calculated')">{{ npc.ac }}</span>
                                 </div>
-                                <button ng-show="npc.edit_panels.indexOf('Calculated') > -1" class="col-sm-1 btn btn-xs {{ npcEditCtrl.isLocked('ac') ? 'btn-warning' : 'btn-default'}}" ng-click="npcEditCtrl.toggleLocked('ac')"><i class="glyphicon glyphicon-lock"></i></button>
+                                <button ng-show="npcEditCtrl.isEditing(npc, 'Calculated')" class="col-sm-1 btn btn-xs {{ npcEditCtrl.isLocked('ac') ? 'btn-warning' : 'btn-default'}}" ng-click="npcEditCtrl.toggleLocked('ac')"><i class="glyphicon glyphicon-lock"></i></button>
                             </div>
                             <div class="form-group-tight">
                                 <label class="col-sm-5 control-label" for="it">IT</label>
                                 <div class="col-sm-6">
-                                    <input ng-show="npc.edit_panels.indexOf('Calculated') > -1" class="form-control" id="it" type="number" ng-disabled="npcEditCtrl.isLocked('it')" ng-model="npc.it" ng-change="npcEditCtrl.npcChange('it')">
-                                    <span ng-hide="npc.edit_panels.indexOf('Calculated') > -1">{{ npc.it|modifier }}</span>
+                                    <input ng-show="npcEditCtrl.isEditing(npc, 'Calculated')" class="form-control" id="it" type="number" ng-disabled="npcEditCtrl.isLocked('it')" ng-model="npc.it" ng-change="npcEditCtrl.npcChange('it')">
+                                    <span ng-hide="npcEditCtrl.isEditing(npc, 'Calculated')">{{ npc.it|modifier }}</span>
                                 </div>
-                                <button ng-show="npc.edit_panels.indexOf('Calculated') > -1" class="col-sm-1 btn btn-xs {{ npcEditCtrl.isLocked('it') ? 'btn-warning' : 'btn-default'}}" ng-click="npcEditCtrl.toggleLocked('it')"><i class="glyphicon glyphicon-lock"></i></button>
+                                <button ng-show="npcEditCtrl.isEditing(npc, 'Calculated')" class="col-sm-1 btn btn-xs {{ npcEditCtrl.isLocked('it') ? 'btn-warning' : 'btn-default'}}" ng-click="npcEditCtrl.toggleLocked('it')"><i class="glyphicon glyphicon-lock"></i></button>
                             </div>
                             <div class="form-group-tight">
                                 <label class="col-sm-5 control-label" for="prof">Prof. Bonus</label>
                                 <div class="col-sm-6">
-                                    <input ng-show="npc.edit_panels.indexOf('Calculated') > -1" class="form-control" id="prof" type="number" ng-disabled="npcEditCtrl.isLocked('prof')" ng-model="npc.prof" ng-change="npcEditCtrl.npcChange('prof')">
-                                    <span ng-hide="npc.edit_panels.indexOf('Calculated') > -1">{{ npc.prof|modifier }}</span>
+                                    <input ng-show="npcEditCtrl.isEditing(npc, 'Calculated')" class="form-control" id="prof" type="number" ng-disabled="npcEditCtrl.isLocked('prof')" ng-model="npc.prof" ng-change="npcEditCtrl.npcChange('prof')">
+                                    <span ng-hide="npcEditCtrl.isEditing(npc, 'Calculated')">{{ npc.prof|modifier }}</span>
                                 </div>
-                                <button ng-show="npc.edit_panels.indexOf('Calculated') > -1" class="col-sm-1 btn btn-xs {{ npcEditCtrl.isLocked('prof') ? 'btn-warning' : 'btn-default'}}" ng-click="npcEditCtrl.toggleLocked('prof')"><i class="glyphicon glyphicon-lock"></i></button>
+                                <button ng-show="npcEditCtrl.isEditing(npc, 'Calculated')" class="col-sm-1 btn btn-xs {{ npcEditCtrl.isLocked('prof') ? 'btn-warning' : 'btn-default'}}" ng-click="npcEditCtrl.toggleLocked('prof')"><i class="glyphicon glyphicon-lock"></i></button>
                             </div>
                         </panel>
                         <panel npc="npc" title="Base">
@@ -113,19 +113,19 @@
                                 <label class="control-label col-sm-4" for="npc-alignment">Alignment</label>
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('alignment')"><i class="glyphicon glyphicon-refresh"></i></button></div>
                                 <div class="col-sm-7">
-                                    <select ng-show="npc.edit_panels.indexOf('Base') > -1" class="form-control" ng-change="npcEditCtrl.npcChange('alignment')" id="npc-alignment" name="npc-alignment" ng-model="npc.alignment" ng-options="al as al for al in config.ALIGNMENTS"></select>
-                                    <span ng-hide="npc.edit_panels.indexOf('Base') > -1">{{ npc.alignment }}</span>
+                                    <select ng-show="npcEditCtrl.isEditing(npc, 'Base')" class="form-control" ng-change="npcEditCtrl.npcChange('alignment')" id="npc-alignment" name="npc-alignment" ng-model="npc.alignment" ng-options="al as al for al in config.ALIGNMENTS"></select>
+                                    <span ng-hide="npcEditCtrl.isEditing(npc, 'Base')">{{ npc.alignment }}</span>
                                 </div>
                             </div>
                             <div class="form-group-tight">
                                 <label class="control-label col-sm-4" for="npc-race">Race</label>
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('race')"><i class="glyphicon glyphicon-refresh"></i></button></div>
                                 <div class="col-sm-7">
-                                    <select ng-show="npc.edit_panels.indexOf('Base') > -1" class="form-control" ng-change="npcEditCtrl.npcChange('race')" id="npc-race" name="npc-race" ng-model="npc.race.name" ng-options="rc.name as rc.name group by rc.race for rc in config.RACES"></select>
-                                    <span ng-hide="npc.edit_panels.indexOf('Base') > -1">{{ npc.race.name }}</span>
+                                    <select ng-show="npcEditCtrl.isEditing(npc, 'Base')" class="form-control" ng-change="npcEditCtrl.npcChange('race')" id="npc-race" name="npc-race" ng-model="npc.race.name" ng-options="rc.name as rc.name group by rc.race for rc in config.RACES"></select>
+                                    <span ng-hide="npcEditCtrl.isEditing(npc, 'Base')">{{ npc.race.name }}</span>
                                 </div>
                             </div>
-                            <div ng-repeat="class in npc.classes" ng-show="npc.edit_panels.indexOf('Base') > -1">
+                            <div ng-repeat="class in npc.classes" ng-show="npcEditCtrl.isEditing(npc, 'Base')">
                                 <hr>
                                 <button class="pull-right btn btn-xs btn-danger" ng-click="npcEditCtrl.removeClass(npc, $index)"><i class="glyphicon glyphicon-remove"></i></button>
                                 <h5>Class #{{$index+1}}</h5>
@@ -150,30 +150,30 @@
                                     </div>
                                 </div>
                             </div>
-                            <div ng-hide="npc.edit_panels.indexOf('Base') > -1" class="form-group-tight">
+                            <div ng-hide="npcEditCtrl.isEditing(npc, 'Base')" class="form-group-tight">
                                 <label class="control-label col-sm-4" for="npc-race">Classes</label>
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('race')"><i class="glyphicon glyphicon-refresh"></i></button></div>
                                 <div class="col-sm-7">
                                     <span ng-repeat="class in npc.classes">{{ class.name }} ({{ class.path }}<span ng-show="class.fighting_style">, {{ class.fighting_style}}</span>) {{ class.level }} <span ng-show="$index != $last">/</span></span>
                                 </div>
                             </div>
-                            <button ng-show="npc.edit_panels.indexOf('Base') > -1" class="btn btn-success btn-sm" ng-click="npcEditCtrl.addClass(npc)"><i class="glyphicon glyphicon-plus-sign"></i> Add Class</button>
+                            <button ng-show="npcEditCtrl.isEditing(npc, 'Base')" class="btn btn-success btn-sm" ng-click="npcEditCtrl.addClass(npc)"><i class="glyphicon glyphicon-plus-sign"></i> Add Class</button>
                         </panel>
                         <panel npc="npc" title="Info">
                             <div class="form-group-tight">
                                 <label class="control-label col-sm-4" for="npc-name">Name</label>
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('name')"><i class="glyphicon glyphicon-refresh"></i></button></div>
                                 <div class="col-sm-7">
-                                    <input ng-show="npc.edit_panels.indexOf('Info') > -1" class="form-control" id="npc-name" type="text" ng-model="npc.name" ng-change="npcEditCtrl.npcChange('name');">
-                                    <span ng-hide="npc.edit_panels.indexOf('Info') > -1">{{ npc.name }}</span>
+                                    <input ng-show="npcEditCtrl.isEditing(npc, 'Info')" class="form-control" id="npc-name" type="text" ng-model="npc.name" ng-change="npcEditCtrl.npcChange('name');">
+                                    <span ng-hide="npcEditCtrl.isEditing(npc, 'Info')">{{ npc.name }}</span>
                                 </div>
                             </div>
                             <div class="form-group-tight">
                                 <label class="control-label col-sm-4" for="npc-gender">Gender</label>
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('gender')"><i class="glyphicon glyphicon-refresh"></i></button></div>
                                 <div class="col-sm-7">
-                                    <select ng-show="npc.edit_panels.indexOf('Info') > -1" class="form-control" ng-change="npcEditCtrl.npcChange('gender')" id="npc-gender" name="npc-gender" ng-model="npc.gender" ng-options="al as al for al in ['male','female']"></select>
-                                    <span ng-hide="npc.edit_panels.indexOf('Info') > -1">{{ npc.gender }}</span>
+                                    <select ng-show="npcEditCtrl.isEditing(npc, 'Info')" class="form-control" ng-change="npcEditCtrl.npcChange('gender')" id="npc-gender" name="npc-gender" ng-model="npc.gender" ng-options="al as al for al in ['male','female']"></select>
+                                    <span ng-hide="npcEditCtrl.isEditing(npc, 'Info')">{{ npc.gender }}</span>
                                 </div>
                             </div>
                             <div class="form-group-tight">
@@ -181,14 +181,14 @@
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('languages')"><i class="glyphicon glyphicon-refresh"></i></button></div>
                                 <div class="col-sm-7">
                                     <div ng-repeat="lang in npc.languages">
-                                        <select ng-show="npc.edit_panels.indexOf('Info') > -1" class="form-control" ng-change="npcEditCtrl.npcChange('languages')" id="npc-languages" name="npc-languages" ng-model="lang" ng-options="l as l for l in config.LANGUAGES"></select>
-                                        <span ng-hide="npc.edit_panels.indexOf('Info') > -1">{{ lang }}</span>
+                                        <select ng-show="npcEditCtrl.isEditing(npc, 'Info')" class="form-control" ng-change="npcEditCtrl.npcChange('languages')" id="npc-languages" name="npc-languages" ng-model="lang" ng-options="l as l for l in config.LANGUAGES"></select>
+                                        <span ng-hide="npcEditCtrl.isEditing(npc, 'Info')">{{ lang }}</span>
                                     </div>
                                 </div>
                             </div>
                         </panel>
                         <panel npc="npc" title="Equipment">
-                            <div ng-show="npc.edit_panels.indexOf('Equipment') == -1">
+                            <div ng-show="!npcEditCtrl.isEditing(npc, 'Equipment')">
                                 <dl class="dl-horizontal">
                                     <dt>Armor</dt>
                                     <dd>{{ npc.armor.name }} <span ng-show="npc.armor.ac">AC {{ npc.armor.ac|modifier }}</span></dd>
@@ -200,7 +200,7 @@
                                     </div>
                                 </dl>
                             </div>
-                            <div ng-show="npc.edit_panels.indexOf('Equipment') > -1">
+                            <div ng-show="npcEditCtrl.isEditing(npc, 'Equipment')">
                                 <div class="form-group-tight">
                                     <div class="col-sm-8">
                                         <div class="form-group-tight">
@@ -256,13 +256,13 @@
                             <div ng-repeat="feature in npc.features track by $index">
                                 <div class="form-group-tight">
                                     <div class="col-sm-10 col-md-11">
-                                        <input ng-show="npc.edit_panels.indexOf('Features') > -1" class="form-control" ng-model="npc.features[$index]" ng-change="npcEditCtrl.npcChange('features')">
-                                        <div ng-hide="npc.edit_panels.indexOf('Features') > -1">{{ feature }}</div>
+                                        <input ng-show="npcEditCtrl.isEditing(npc, 'Features')" class="form-control" ng-model="npc.features[$index]" ng-change="npcEditCtrl.npcChange('features')">
+                                        <div ng-hide="npcEditCtrl.isEditing(npc, 'Features')">{{ feature }}</div>
                                     </div>
-                                    <button ng-show="npc.edit_panels.indexOf('Features') > -1" class="col-sm-2 col-md-1 btn btn-xs btn-danger" ng-click="npc.features.splice($index, 1); NPCCollection.update(npc);"><i class="glyphicon glyphicon-remove"></i></button>
+                                    <button ng-show="npcEditCtrl.isEditing(npc, 'Features')" class="col-sm-2 col-md-1 btn btn-xs btn-danger" ng-click="npc.features.splice($index, 1); NPCCollection.update(npc);"><i class="glyphicon glyphicon-remove"></i></button>
                                 </div>
                             </div>
-                            <button ng-show="npc.edit_panels.indexOf('Features') > -1" class="btn btn-success btn-sm" ng-click="npc.features.push('')"><i class="glyphicon glyphicon-plus-sign"></i> Add Feature</button>
+                            <button ng-show="npcEditCtrl.isEditing(npc, 'Features')" class="btn btn-success btn-sm" ng-click="npc.features.push('')"><i class="glyphicon glyphicon-plus-sign"></i> Add Feature</button>
                         </panel>
                     </div>
                     <div class="col-md-3">
@@ -271,25 +271,25 @@
                                 <div class="form-group-tight">
                                     <label class="sr-only">Skill</label>
                                     <div class="col-sm-7 col-md-9">
-                                        <select ng-show="npc.edit_panels.indexOf('Skills') > -1" class="form-control" ng-model="skill.name" ng-change="npcEditCtrl.changeSkill(npc)" ng-options="skl.name as skl.name for skl in config.SKILLS"></select>
-                                        <span ng-hide="npc.edit_panels.indexOf('Skills') > -1">{{ skill.name }}</span>
+                                        <select ng-show="npcEditCtrl.isEditing(npc, 'Skills')" class="form-control" ng-model="skill.name" ng-change="npcEditCtrl.changeSkill(npc)" ng-options="skl.name as skl.name for skl in config.SKILLS"></select>
+                                        <span ng-hide="npcEditCtrl.isEditing(npc, 'Skills')">{{ skill.name }}</span>
                                     </div>
                                     <label class="sr-only">Mod</label>
                                     <div class="col-sm-3 col-md-2">
-                                        <input ng-show="npc.edit_panels.indexOf('Skills') > -1" class="form-control" type="number" ng-model="skill.mod" ng-change="npcEditCtrl.changeSkill(npc)">
-                                        <span ng-hide="npc.edit_panels.indexOf('Skills') > -1">{{ skill.mod|modifier }}</span>
+                                        <input ng-show="npcEditCtrl.isEditing(npc, 'Skills')" class="form-control" type="number" ng-model="skill.mod" ng-change="npcEditCtrl.npcChange('skills')">
+                                        <span ng-hide="npcEditCtrl.isEditing(npc, 'Skills')">{{ skill.mod|modifier }}</span>
                                     </div>
-                                    <button ng-show="npc.edit_panels.indexOf('Skills') > -1" class="col-sm-2 col-md-1 btn btn-xs btn-danger" ng-click="npc.skills.splice($index, 1); npcEditCtrl.npcChange('skills')"><i class="glyphicon glyphicon-remove"></i></button>
+                                    <button ng-show="npcEditCtrl.isEditing(npc, 'Skills')" class="col-sm-2 col-md-1 btn btn-xs btn-danger" ng-click="npc.skills.splice($index, 1); npcEditCtrl.npcChange('skills')"><i class="glyphicon glyphicon-remove"></i></button>
                                 </div>
                             </div>
-                            <button ng-show="npc.edit_panels.indexOf('Skills') > -1" class="btn btn-success btn-sm" ng-click="npc.skills.push({name: 'Athletics', mod: 0})"><i class="glyphicon glyphicon-plus-sign"></i> Add Skill</button>
+                            <button ng-show="npcEditCtrl.isEditing(npc, 'Skills')" class="btn btn-success btn-sm" ng-click="npc.skills.push({name: 'Athletics', mod: 0})"><i class="glyphicon glyphicon-plus-sign"></i> Add Skill</button>
                         </panel>
                         <panel npc="npc" title="Spells">
-                            <dl class="dl-horizontal" ng-show="npc.spells_day.length > 0">
-                                <dt>Spells/day</dt>
-                                <dd>{{ npc.spells_day|join:'/' }} (per long rest)</dd>
-                                <dt>Pact slots</dt>
-                                <dd>{{ npc.pactmagic_slots }} (per short rest)</dd>
+                            <dl class="dl-horizontal">
+                                <dt ng-if="npc.spells_day.length > 0">Spells/day</dt>
+                                <dd ng-if="npc.spells_day.length > 0">{{ npc.spells_day|join:'/' }} (per long rest)</dd>
+                                <dt ng-if="npc.pactmagic_slots.length > 0">Pact slots</dt>
+                                <dd ng-if="npc.pactmagic_slots.length > 0">{{ npc.pactmagic_slots }} (per short rest)</dd>
                             </dl>
 
                             <div ng-repeat="class in npc.classes" ng-show="class.spells.length > 0">
@@ -300,20 +300,20 @@
                                     <dt>Cantrips</dt>
                                     <dd>
                                         <span ng-repeat="cantrip in class.cantrips">{{ cantrip }}
-                                            <a ng-show="npc.edit_panels.indexOf('Spells') > -1" class="xs-remove" ng-click="class.spells.splice($index,1); npcEditCtrl.npcChange('classes');">
+                                            <a ng-show="npcEditCtrl.isEditing(npc, 'Spells')" class="xs-remove" ng-click="class.spells.splice($index,1); npcEditCtrl.npcChange('classes');">
                                                 <i class="glyphicon glyphicon-remove"></i>
                                             </a>
                                         </span>
-                                        <select ng-show="npc.edit_panels.indexOf('Spells') > -1" class="form-control" ng-model="npcEditCtrl.cantrip_to_add" ng-change="npcEditCtrl.addCantrip(class.cantrips)" ng-options="cantrip as cantrip for cantrip in config.CLASSES[class.index].cantrips"><option value="">.. add a cantrip</option></select>
+                                        <select ng-show="npcEditCtrl.isEditing(npc, 'Spells')" class="form-control" ng-model="npcEditCtrl.cantrip_to_add" ng-change="npcEditCtrl.addCantrip(class.cantrips)" ng-options="cantrip as cantrip for cantrip in config.CLASSES[class.index].cantrips"><option value="">.. add a cantrip</option></select>
                                     </dd>
                                     <dt>Spells</dt>
                                     <dd>
                                         <span ng-repeat="spell in class.spells">{{ spell }}
-                                            <a ng-show="npc.edit_panels.indexOf('Spells') > -1" class="xs-remove" ng-click="class.spells.splice($index,1); npcEditCtrl.npcChange('classes');">
+                                            <a ng-show="npcEditCtrl.isEditing(npc, 'Spells')" class="xs-remove" ng-click="class.spells.splice($index,1); npcEditCtrl.npcChange('classes');">
                                                 <i class="glyphicon glyphicon-remove"></i>
                                             </a>
                                         </span>
-                                        <select ng-show="npc.edit_panels.indexOf('Spells') > -1" class="form-control" ng-model="npcEditCtrl.spell_to_add" ng-change="npcEditCtrl.addSpell(class.spells)" ng-options="rc.name as rc.name group by rc.lvl for rc in config.CLASSES[class.index].spells"><option value="">.. add a spell</option></select>
+                                        <select ng-show="npcEditCtrl.isEditing(npc, 'Spells')" class="form-control" ng-model="npcEditCtrl.spell_to_add" ng-change="npcEditCtrl.addSpell(class.spells)" ng-options="rc.name as rc.name group by rc.lvl for rc in config.CLASSES[class.index].spells"><option value="">.. add a spell</option></select>
                                     </dd>
                                 </dl>
                             </div>
@@ -325,7 +325,7 @@
                                     <dt>Spells</dt>
                                     <dd>
                                         <span ng-repeat="spell in npc.race.spells">{{ spell }}
-                                            <a ng-show="npc.edit_panels.indexOf('Spells') > -1" class="xs-remove" ng-click="npc.race.spells.splice($index,1); npcEditCtrl.npcChange('race');">
+                                            <a ng-show="npcEditCtrl.isEditing(npc, 'Spells')" class="xs-remove" ng-click="npc.race.spells.splice($index,1); npcEditCtrl.npcChange('race');">
                                                 <i class="glyphicon glyphicon-remove"></i>
                                             </a>
                                         </span>
@@ -336,68 +336,66 @@
                     </div>
                     <div class="col-md-3">
                         <panel npc="npc" title="Background">
-                            <h4 ng-hide="npc.edit_panels.indexOf('Background') > -1">{{ npc.background.name }}</h4>
-                            <div class="form-group-tight" ng-show="npc.edit_panels.indexOf('Background') > -1">
+                            <h4 ng-hide="npcEditCtrl.isEditing(npc, 'Background')">{{ npc.background.name }}</h4>
+                            <div class="form-group-tight" ng-show="npcEditCtrl.isEditing(npc, 'Background')">
                                 <label class="control-label col-sm-5" for="npc-background">Background</label>
                                 <div class="col-sm-7">
                                     <select  class="form-control" ng-change="npcEditCtrl.npcChange('background')" id="npc-background" name="npc-background" ng-model="npc.background.name" ng-options="bg.name as bg.name for bg in config.BACKGROUNDS"></select>
                                 </div>
                             </div>
-                            <div class="form-group-tight" ng-hide="npc.edit_panels.indexOf('Background') == -1 && !npc.background.speciality">
+                            <div class="form-group-tight" ng-hide="!npcEditCtrl.isEditing(npc, 'Background') && !npc.background.speciality">
                                 <label class="control-label col-sm-4" for="npc-background-speciality">Speciality</label>
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('bg-speciality')"><i class="glyphicon glyphicon-refresh"></i></button></div>
-                                <input ng-show="npc.edit_panels.indexOf('Background') > -1" class="form-control" type="text" id="npc-background-speciality" rows="3" ng-model="npc.background.speciality" ng-change="">
-                                <div ng-hide="npc.edit_panels.indexOf('Background') > -1" class="col-sm-12 form-control-static">{{ npc.background.speciality }}</div>
+                                <input ng-show="npcEditCtrl.isEditing(npc, 'Background')" class="form-control" type="text" id="npc-background-speciality" rows="3" ng-model="npc.background.speciality" ng-change="npcEditCtrl.npcChange('background')">
+                                <div ng-hide="npcEditCtrl.isEditing(npc, 'Background')" class="col-sm-12 form-control-static">{{ npc.background.speciality }}</div>
                             </div>
                             <div class="form-group-tight">
                                 <label class="control-label col-sm-4" for="npc-background-personality">Personality</label>
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('bg-personality')"><i class="glyphicon glyphicon-refresh"></i></button></div>
-                                <textarea ng-show="npc.edit_panels.indexOf('Background') > -1" class="form-control" rows="3" id="npc-background-personality" ng-model="npc.background.personality" ng-change="npcEditCtrl.npcChange('background')"></textarea>
-                                <div ng-hide="npc.edit_panels.indexOf('Background') > -1" class="col-sm-12 form-control-static">{{ npc.background.personality }}</div>
+                                <textarea ng-show="npcEditCtrl.isEditing(npc, 'Background')" class="form-control" rows="3" id="npc-background-personality" ng-model="npc.background.personality" ng-change="npcEditCtrl.npcChange('background')"></textarea>
+                                <div ng-hide="npcEditCtrl.isEditing(npc, 'Background')" class="col-sm-12 form-control-static">{{ npc.background.personality }}</div>
                             </div>
                             <div class="form-group-tight">
                                 <label class="control-label col-sm-4" for="npc-background-ideal">Ideal</label>
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('bg-ideal')"><i class="glyphicon glyphicon-refresh"></i></button></div>
-                                <textarea ng-show="npc.edit_panels.indexOf('Background') > -1" class="form-control" rows="3" id="npc-background-ideal" ng-model="npc.background.ideal" ng-change="npcEditCtrl.npcChange('background')"></textarea>
-                                <div ng-hide="npc.edit_panels.indexOf('Background') > -1" class="col-sm-12 form-control-static">{{ npc.background.ideal }}</div>
+                                <textarea ng-show="npcEditCtrl.isEditing(npc, 'Background')" class="form-control" rows="3" id="npc-background-ideal" ng-model="npc.background.ideal" ng-change="npcEditCtrl.npcChange('background')"></textarea>
+                                <div ng-hide="npcEditCtrl.isEditing(npc, 'Background')" class="col-sm-12 form-control-static">{{ npc.background.ideal }}</div>
                             </div>
                             <div class="form-group-tight">
                                 <label class="control-label col-sm-4" for="npc-background-bond">Bond</label>
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('bg-bond')"><i class="glyphicon glyphicon-refresh"></i></button></div>
-                                <textarea ng-show="npc.edit_panels.indexOf('Background') > -1" class="form-control" rows="3" id="npc-background-bond" ng-model="npc.background.bond" ng-change="npcEditCtrl.npcChange('background')"></textarea>
-                                <div ng-hide="npc.edit_panels.indexOf('Background') > -1" class="col-sm-12 form-control-static">{{ npc.background.bond }}</div>
+                                <textarea ng-show="npcEditCtrl.isEditing(npc, 'Background')" class="form-control" rows="3" id="npc-background-bond" ng-model="npc.background.bond" ng-change="npcEditCtrl.npcChange('background')"></textarea>
+                                <div ng-hide="npcEditCtrl.isEditing(npc, 'Background')" class="col-sm-12 form-control-static">{{ npc.background.bond }}</div>
                             </div>
                             <div class="form-group-tight">
                                 <label class="control-label col-sm-4" for="npc-background-flaw">Flaw</label>
                                 <div class="col-sm-1"><button class="btn btn-primary btn-xs" ng-click="npcEditCtrl.randomize('bg-flaw')"><i class="glyphicon glyphicon-refresh"></i></button></div>
-                                <textarea ng-show="npc.edit_panels.indexOf('Background') > -1" class="form-control" rows="3" id="npc-background-flaw" ng-model="npc.background.flaw" ng-change="npcEditCtrl.npcChange('background')"></textarea>
-                                <div ng-hide="npc.edit_panels.indexOf('Background') > -1" class="col-sm-12 form-control-static">{{ npc.background.flaw }}</div>
+                                <textarea ng-show="npcEditCtrl.isEditing(npc, 'Background')" class="form-control" rows="3" id="npc-background-flaw" ng-model="npc.background.flaw" ng-change="npcEditCtrl.npcChange('background')"></textarea>
+                                <div ng-hide="npcEditCtrl.isEditing(npc, 'Background')" class="col-sm-12 form-control-static">{{ npc.background.flaw }}</div>
                             </div>
                         </panel>
                         <panel npc="npc" title="Notes">
-                            <div ng-show="npc.edit_panels.indexOf('Notes') == -1">
-                                <dl>
-                                    <dt>Notes</dt>
-                                    <dd>{{ npc.notes }}</dd>
-                                    <dt ng-show="npc.tags.length > 0">Tags</dt>
-                                    <dd ng-show="npc.tags.length > 0">{{ npc.tags|join:', ' }}</dd>
-                                </dl>
+                            <div class="form-group-tight" ng-hide="!npcEditCtrl.isEditing(npc, 'Notes')">
+                                <label class="control-label col-sm-5" for="npc-notes">Notes</label>
+                                <textarea class="form-control" id="npc-notes" rows="10" ng-model="npc.notes" ng-change="npcEditCtrl.npcChange('notes')"></textarea>
+                                <div ng-hide="npcEditCtrl.isEditing(npc, 'Notes')" class="col-sm-12 form-control-static">{{ npc.notes }}</div>
                             </div>
-                            <div ng-show="npc.edit_panels.indexOf('Notes') > -1">
-                                <div class="form-group">
-                                    <label for="npc-notes">Notes</label>
-                                    <div>
-                                        <textarea class="form-control" id="npc-notes" rows="10" ng-model="npc.notes" ng-change="npcEditCtrl.npcChange('notes')"></textarea>
+                            <div class="form-group-tight" ng-hide="!npcEditCtrl.isEditing(npc, 'Notes')">
+                                <label class="control-label col-sm-5" for="npc-notes">Tags</label>
+                                <div class="col-sm-7">
+                                    <div ng-show="npc.tags.length > 0">
+                                        <span ng-repeat="tag in npc.tags">
+                                            {{ tag }}
+                                            <a class="xs-remove" ng-click="npc.tags.splice($index, 1); npcEditCtrl.npcChange('tags')"><i class="glyphicon glyphicon-remove"></i></a>
+                                        </span>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-9">
+                                            <input class="form-control" ng-model="newtag" ng-enter="npc.tags.push(newtag); newtag = ''; npcEditCtrl.npcChange('tags');">
+                                        </div>
+                                        <button class="col-sm-3 btn btn-success btn-xs" ng-click="npc.tags.push(newtag); newtag = ''; npcEditCtrl.npcChange('tags');"><i class="glyphicon glyphicon-plus-sign"></i></button>
                                     </div>
                                 </div>
-                                <h5>Tags</h5>
-                                <div class="form-group-tight" ng-repeat="tag in npc.tags">
-                                    <div class="col-sm-10 col-md-11">
-                                        <input class="form-control" ng-model="npc.tags[$index]" ng-change="npcEditCtrl.npcChange('tags')">
-                                    </div>
-                                    <button class="col-sm-2 col-md-1 btn btn-xs btn-danger" ng-click="npc.tags.splice($index, 1); npcEditCtrl.npcChange('tags')"><i class="glyphicon glyphicon-remove"></i></button>
-                                </div>
-                                <button ng-click="npc.tags.push('')" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-plus"></i>Add Tag</button>
                             </div>
                         </panel>
                     </div>

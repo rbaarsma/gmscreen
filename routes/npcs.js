@@ -52,14 +52,19 @@ router.post('/', checkAuth, function (req, res, next) {
             npc.randomizeClasses(!!req.body.multiclass, npc.classes[0].name, level);
         if (!npc.background || !npc.background.name)
             npc.randomizeBackground();
+        console.log(npc.gender);
         if (!npc.gender)
             npc.randomizeGender();
+        console.log(npc.gender);
         if (!npc.name)
             npc.randomizeName();
 
         npc.randomizePath();
         npc.randomizeBackgroundStuff();
-        npc.randomizeAlignment();
+
+        if (!npc.alignment)
+            npc.randomizeAlignment();
+
         npc.randomizeStats();
         npc.randomizeSkills();
         npc.randomizeEquipment();
@@ -87,7 +92,16 @@ router.get('/:id', checkAuth, function(req, res, next) {
 router.patch('/:id', checkAuth, function (req, res, next) {
     NPC.findByIdAndUpdate(req.params.id, req.body, function (err, npc) {
         if (err) return next(err);
-        var changes = npc.recalculate();
+
+        var recalculate = false;
+        for (var prop in req.body) {
+            if (prop == 'stats' || prop == 'race' || prop == 'class' || prop == 'armor' || prop == 'shield' || prop == 'weapons') {
+                recalculate = true;
+                break;
+            }
+        }
+
+        var changes = recalculate ? npc.recalculate() : {};
         npc.save();
         res.json(changes);
     });
@@ -106,12 +120,24 @@ router.post('/:id/randomize', checkAuth, function(req, res, next) {
     var npc = NPC.findByIdAndUpdate(req.params.id, req.body, function (err, npc) {
         if (err) return next(err);
 
-        var changed = {};
+        var recalculate = false;
+        for (var prop in req.body) {
+            if (prop == 'stats' || prop == 'race' || prop == 'class' || prop == 'armor' || prop == 'shield' || prop == 'weapons') {
+                recalculate = true;
+                break;
+            }
+        }
+
+        var changed = recalculate ? npc.recalculate() : {};
+        
         //npc.calc('config');
         switch (req.query.type) {
             case 'all':
                 npc.randomizeAll();
                 changed = npc;
+                break;
+            case 'calculated':
+                changed = npc.recalculate();
                 break;
             case 'base':
                 console.log('randomize base');
@@ -120,7 +146,7 @@ router.post('/:id/randomize', checkAuth, function(req, res, next) {
                 npc.randomizeSpells();
                 npc.randomizeSkills();
                 npc.calc(['features']);
-                var changed = npc.recalculate();
+                changed = npc.recalculate();
                 changed.classes = npc.classes;
                 changed.features = npc.features;
                 changed.race = npc.race;
